@@ -3,5 +3,7 @@ const router = express.Router()
 const AccountController = require('../controllers/AccountController')
 const { validateRegister } = require('../validation/UserValidation');
 router.post('/register', validateRegister, AccountController.registerAccount);
+router.post('/login', AccountController.loginAccount);
+router.post('/logout', AccountController.logout);
 router.get('/:id', AccountController.getDetailAccount);
 module.exports = router

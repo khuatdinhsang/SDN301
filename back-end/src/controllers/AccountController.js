@@ -25,6 +25,29 @@ const registerAccount = async (req, res) => {
         })
     }
 }
+const loginAccount = async (req, res) => {
+    try {
+        const { username, password } = req.body
+        if (!username || !password) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'The input is required'
+            })
+        }
+        const response = await AccountServices.loginAccount(req.body)
+        const { refreshToken, ...newResponse } = response
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true, // chi lay dc qua http k lay dc qua js
+            secure: false,// khi nao deloy se chuyen thanh true
+            samesite: 'strict'
+        })
+        return res.status(200).json(newResponse)
+    } catch (error) {
+        return res.status(404).json({
+            message: error
+        })
+    }
+}
 const getDetailAccount = async (req, res) => {
     const userId = req.params.id;
     try {
@@ -44,6 +67,20 @@ const getDetailAccount = async (req, res) => {
     }
 }
 
+const logout = async (req, res) => {
+    try {
+        res.clearCookie('refreshToken')
+        return res.status(200).json({
+            status: 'OK',
+            message: 'Logout successfully'
+        })
+    } catch (error) {
+        return res.status(404).json({
+            message: error
+        })
+    }
+}
+
 module.exports = {
-    registerAccount, getDetailAccount
+    registerAccount, getDetailAccount, loginAccount, logout
 }

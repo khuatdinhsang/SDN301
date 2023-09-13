@@ -1,5 +1,6 @@
 const Account = require("../models/AccountModel")
 const bcrypt = require("bcrypt")
+const { generalAccessToken, generalRefreshToken } = require("./JwtServices")
 
 const registerAccount = (newUser) => {
     return new Promise(async (resolve, reject) => {
@@ -9,7 +10,7 @@ const registerAccount = (newUser) => {
                 username
             })
             if (checkExistIUser !== null) {
-                resolve({
+                reject({
                     status: 'ERR',
                     message: 'Username already exists!'
                 })
@@ -30,6 +31,48 @@ const registerAccount = (newUser) => {
             reject(err)
         }
 
+    })
+}
+
+const loginAccount = (userLogin) => {
+    return new Promise(async (resolve, reject) => {
+        const { username, password } = userLogin
+        try {
+            const checkUser = await Account.findOne({
+                username
+            })
+                .populate('role')
+            if (checkUser === null) {
+                resolve({
+                    status: 'ERR',
+                    message: `The user is not defined `
+                })
+            }
+            const comparePassword = bcrypt.compareSync(password, checkUser.password)
+            if (!comparePassword) {
+                resolve({
+                    status: 'ERR',
+                    message: 'The password  is incorrect',
+                })
+            }
+            const accessToken = await generalAccessToken({
+                id: checkUser?._id,
+                roleId: checkUser?.role?.roleId,
+                roleName: checkUser?.role?.roleName
+            })
+            const refreshToken = await generalRefreshToken({
+                id: checkUser?._id,
+                role: checkUser?.role?.roleId,
+                roleName: checkUser?.role?.roleName
+            })
+            resolve({
+                status: 'OK',
+                message: 'SUCCESS',
+                accessToken, refreshToken
+            })
+        } catch (e) {
+            reject(e)
+        }
     })
 }
 const getDetailAccount = (userId) => {
@@ -57,5 +100,5 @@ const getDetailAccount = (userId) => {
     })
 }
 module.exports = {
-    registerAccount, getDetailAccount
+    registerAccount, getDetailAccount, loginAccount
 }
