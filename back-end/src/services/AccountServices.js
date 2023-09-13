@@ -99,6 +99,71 @@ const getDetailAccount = (userId) => {
         }
     })
 }
+const deActiveAccount = (userId, deActiveAt, deActiveReason) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const user = await Account.findOne({
+                _id: userId
+            })
+                .populate('role')
+
+            if (user === null) {
+                resolve({
+                    status: 'ERR',
+                    message: `The user is not defined `
+                })
+            }
+            const userDeActive = {
+                ...user._doc,
+                isActive: false,
+                deActiveAt,
+                deActiveReason,
+            }
+            await Account.findByIdAndUpdate(userId, userDeActive, { new: true })
+
+            resolve({
+                status: 'OK',
+                message: 'SUCCESS',
+                data: userDeActive
+            })
+        } catch (err) {
+            reject(err)
+        }
+    })
+}
+const inActiveAccount = (userId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const user = await Account.findOne({
+                _id: userId
+            })
+                .populate('role')
+            if (user === null) {
+                resolve({
+                    status: 'ERR',
+                    message: `The user is not defined `
+                })
+            }
+            const userInActive = {
+                ...user._doc,
+                isActive: true,
+                deActiveAt: '',
+                deActiveReason: ''
+            }
+            await Account.findByIdAndUpdate(userId, userInActive, { new: true })
+
+            resolve({
+                status: 'OK',
+                message: 'SUCCESS',
+                data: userInActive
+            })
+        } catch (err) {
+            reject(err)
+        }
+    })
+}
 module.exports = {
-    registerAccount, getDetailAccount, loginAccount
+    registerAccount, getDetailAccount,
+    loginAccount, deActiveAccount,
+    inActiveAccount
 }

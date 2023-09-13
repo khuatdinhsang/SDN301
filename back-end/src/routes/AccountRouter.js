@@ -6,4 +6,6 @@ router.post('/register', validateRegister, AccountController.registerAccount);
 router.post('/login', AccountController.loginAccount);
 router.post('/logout', AccountController.logout);
 router.get('/:id', AccountController.getDetailAccount);
+router.post('/deActive/:id', AccountController.deActiveAccount)
+router.post('/inActive/:id', AccountController.inActiveAccount)
 module.exports = router
