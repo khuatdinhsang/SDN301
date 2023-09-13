@@ -58,7 +58,7 @@ const getDetailAccount = async (req, res) => {
             })
         }
         const response = await AccountServices.getDetailAccount(userId)
-        return res.status(201).json(response)
+        return res.status(200).json(response)
     } catch (error) {
         return res.status(404).json({
             status: 'ERR',
@@ -81,6 +81,46 @@ const logout = async (req, res) => {
     }
 }
 
+const deActiveAccount = async (req, res) => {
+    const userId = req.params.id;
+    const { deActiveAt, deActiveReason } = req.body
+    try {
+        if (!userId) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'The userId is required'
+            })
+        }
+        const response = await AccountServices.deActiveAccount(userId, deActiveAt, deActiveReason)
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(404).json({
+            status: 'ERR',
+            message: error.message
+        })
+    }
+}
+const inActiveAccount = async (req, res) => {
+    const userId = req.params.id;
+    try {
+        if (!userId) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'The userId is required'
+            })
+        }
+        const response = await AccountServices.inActiveAccount(userId)
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(404).json({
+            status: 'ERR',
+            message: error.message
+        })
+    }
+}
 module.exports = {
-    registerAccount, getDetailAccount, loginAccount, logout
+    registerAccount, getDetailAccount,
+    loginAccount, logout, deActiveAccount,
+    inActiveAccount
+
 }
