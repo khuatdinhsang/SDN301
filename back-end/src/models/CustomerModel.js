@@ -5,7 +5,7 @@ const customerSchema = new mongoose.Schema({
     image: { type: String },
     dateOfBirth: { type: Date },
     gender: { type: Boolean },
-    accountId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+    accountId: { type: mongoose.Schema.Types.ObjectId, ref: 'Account' }
 }, {
     timestamps: true
 })
