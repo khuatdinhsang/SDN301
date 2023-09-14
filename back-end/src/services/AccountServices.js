@@ -99,6 +99,19 @@ const getDetailAccount = (userId) => {
         }
     })
 }
+const getAllAccount = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const allAccount = await Account.find({})
+            resolve({
+                status: 'OK',
+                data: allAccount
+            })
+        } catch (err) {
+            reject(err)
+        }
+    })
+}
 const deActiveAccount = (userId, deActiveAt, deActiveReason) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -162,8 +175,40 @@ const inActiveAccount = (userId) => {
         }
     })
 }
+const changePassword = (username, newPassword) => {
+    console.log(username, newPassword)
+    return new Promise(async (resolve, reject) => {
+        try {
+            const user = await Account.findOne({
+                username: username
+            })
+                .populate('role')
+            if (user === null) {
+                resolve({
+                    status: 'ERR',
+                    message: `The user is not defined `
+                })
+            }
+            const hash = bcrypt.hashSync(newPassword, 10)
+            const userChangePass = {
+                ...user._doc,
+                password: hash
+            }
+            await Account.findByIdAndUpdate(user._id, userChangePass, { new: true })
+
+            resolve({
+                status: 'OK',
+                message: 'SUCCESS',
+                data: userChangePass
+            })
+        } catch (err) {
+            reject(err)
+        }
+    })
+}
+
 module.exports = {
     registerAccount, getDetailAccount,
     loginAccount, deActiveAccount,
-    inActiveAccount
+    inActiveAccount, changePassword, getAllAccount
 }
