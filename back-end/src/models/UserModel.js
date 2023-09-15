@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
-const customerSchema = new mongoose.Schema({
+const Account = require("./AccountModel");
+
+const userSchema = new mongoose.Schema({
     email: { type: String, unique: true },
     phone: { type: String },
     image: { type: String },
@@ -9,5 +11,5 @@ const customerSchema = new mongoose.Schema({
 }, {
     timestamps: true
 })
-const Customer = mongoose.model('Customer', customerSchema)
+const Customer = mongoose.model('User', userSchema)
 module.exports = Customer

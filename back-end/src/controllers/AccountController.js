@@ -68,7 +68,6 @@ const getDetailAccount = async (req, res) => {
 }
 const getAllAccount = async (req, res) => {
     try {
-        console.log("abc")
         const response = await AccountServices.getAllAccount()
         return res.status(200).json(response)
     } catch (error) {
