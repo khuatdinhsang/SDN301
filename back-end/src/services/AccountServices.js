@@ -62,7 +62,7 @@ const loginAccount = (userLogin) => {
             })
             const refreshToken = await generalRefreshToken({
                 id: checkUser?._id,
-                role: checkUser?.role?.roleId,
+                roleId: checkUser?.role?.roleId,
                 roleName: checkUser?.role?.roleName
             })
             resolve({

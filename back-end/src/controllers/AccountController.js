@@ -1,5 +1,6 @@
 const { body, validationResult } = require('express-validator');
 const AccountServices = require('../services/AccountServices')
+const JwtServices = require('../services/JwtServices')
 
 const registerAccount = async (req, res) => {
     const { username, password, confirmPassword } = req.body;
@@ -148,9 +149,26 @@ const changePassword = async (req, res) => {
         })
     }
 }
+const refreshToken = async (req, res) => {
+    try {
+        const token = req.cookies.refreshToken
+        if (!token) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'The token is required'
+            })
+        }
+        const response = await JwtServices.refreshTokenServices(token)
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(404).json({
+            message: e
+        })
+    }
+}
 module.exports = {
     registerAccount, getDetailAccount,
     loginAccount, logout, deActiveAccount,
-    inActiveAccount, changePassword, getAllAccount
+    inActiveAccount, changePassword, getAllAccount, refreshToken
 
 }

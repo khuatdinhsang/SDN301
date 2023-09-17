@@ -81,7 +81,6 @@ const updateUser = (userId, data) => {
                 email,
                 phone, image, dateOfBirth, gender
             }
-            console.log("84", userUpdate)
             await User.findByIdAndUpdate(user._id, userUpdate, { new: true })
             resolve({
                 status: 'OK',

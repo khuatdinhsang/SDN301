@@ -6,6 +6,7 @@ const bodyParser = require("body-parser")
 const cookieParser = require("cookie-parser")
 const cors = require('cors')
 const routes = require("./routes")
+const { swaggerDocs } = require("./configs/swagger")
 
 // config environment variables
 dotenv.config()
@@ -22,6 +23,7 @@ app.use(cookieParser())
 connectDB()
 // define routes in app
 
+// config swagger
 routes(app)
 app.get('/', (req, res) => {
     return res.send('Chin chao moi nguoi !')
@@ -30,7 +32,9 @@ app.get('/404', (req, res) => {
     return res.send('404 not found!')
 })
 
+
 const port = process.env.PORT || 3001;
 app.listen(port, () => {
+    swaggerDocs(app, process.env.PORT)
     console.log("Server is running on " + port)
 })
