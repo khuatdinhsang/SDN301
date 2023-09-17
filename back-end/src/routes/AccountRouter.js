@@ -4,6 +4,7 @@ const AccountController = require('../controllers/AccountController')
 const { validateRegisterAccount } = require('../validation/UserValidation');
 const { checkIsEmpty, checkMinLength } = require('../validation');
 const { adminMiddleware, authUserMiddleware, userMiddleware } = require('../middlewares/AdminMiddleware');
+
 router.post('/register', validateRegisterAccount, AccountController.registerAccount);
 router.post('/login', AccountController.loginAccount);
 router.post('/logout', AccountController.logout);
@@ -14,7 +15,7 @@ router.put('/inActive/:id', adminMiddleware, AccountController.inActiveAccount)
 router.put('/changePassword', [
     checkIsEmpty('newPassword', 'password can not be blank'),
     checkMinLength('newPassword', 6, 'password must be at least 6 characters'),
-], userMiddleware
-    , AccountController.changePassword)
+], userMiddleware, AccountController.changePassword)
 
+router.post('/refresh-token', AccountController.refreshToken)
 module.exports = router
