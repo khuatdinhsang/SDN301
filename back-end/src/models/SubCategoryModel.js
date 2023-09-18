@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const Category = require("./CategoryModel");
+
 const subCategorySchema = new mongoose.Schema({
     name: {
         type: String,
@@ -14,7 +16,6 @@ const subCategorySchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
         required: true,
-        defaultValue: 1
     }
 
 }, {
