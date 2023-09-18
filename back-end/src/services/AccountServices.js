@@ -102,7 +102,7 @@ const getDetailAccount = (userId) => {
 const getAllAccount = () => {
     return new Promise(async (resolve, reject) => {
         try {
-            const allAccount = await Account.find({})
+            const allAccount = await Account.find({}).populate('role')
             resolve({
                 status: 'OK',
                 data: allAccount

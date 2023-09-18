@@ -57,6 +57,8 @@ const getDetailCategory = (categoryId) => {
             const category = await Category.findOne({
                 _id: categoryId
             })
+                .populate('categoryId')
+
             if (category === null) {
                 resolve({
                     status: 'ERR',
@@ -77,6 +79,7 @@ const getAllCategory = () => {
     return new Promise(async (resolve, reject) => {
         try {
             const allCategory = await Category.find({})
+                .populate('categoryId')
             resolve({
                 status: 'OK',
                 data: allCategory
