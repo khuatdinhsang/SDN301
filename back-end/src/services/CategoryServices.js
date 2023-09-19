@@ -7,9 +7,8 @@ const createCategory = (data) => {
             const checkCategoryExists = await Category.findOne({
                 name: name
             })
-            console.log("10", checkCategoryExists)
             if (checkCategoryExists !== null) {
-                reject({
+                resolve({
                     status: 'ERR',
                     message: 'Category already exists!'
                 })
@@ -35,7 +34,7 @@ const updateCategory = (id, data) => {
                 _id: id
             })
             if (checkCategoryExists === null) {
-                reject({
+                resolve({
                     status: 'ERR',
                     message: 'Category is not defined!'
                 })

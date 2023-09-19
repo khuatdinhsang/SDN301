@@ -20,16 +20,21 @@ const createProduct = async (req, res) => {
     }
 }
 const createRandomProduct = async (req, res) => {
-    for (var i = 0; i < 10; i++) {
+    for (var i = 1; i < 5; i++) {
         await Product.create({
-            name: ` product random2 ${i}`,
+            name: ` product category3 ${i}`,
             image: `image ${i}`,
             quantity: 10 + `${i}`,
             price: 100000 + `${i}` * 1000,
             description: 'an cung ngon',
-            subCategoryId: '6506abd4ad570d7d9bfb0bfa'
+            subCategoryId: '65096c1b171837037d993270',
+            categoryId: '6509585b3c5e69282573ffe2'
         })
     }
+    return res.status(200).json({
+        status: 'OK',
+        message: "Created random product"
+    })
 }
 const updateProduct = async (req, res) => {
     const id = req.params.id

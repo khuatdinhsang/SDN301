@@ -6,27 +6,28 @@ const registerAccount = (newUser) => {
     return new Promise(async (resolve, reject) => {
         const { username, password, confirmPassword } = newUser
         try {
-            const checkExistIUser = await Account.findOne({
+            const checkExistUser = await Account.findOne({
                 username
             })
-            if (checkExistIUser !== null) {
-                reject({
+            if (checkExistUser !== null) {
+                resolve({
                     status: 'ERR',
                     message: 'Username already exists!'
                 })
             }
             const hash = bcrypt.hashSync(password, 10)
-            const createUser = await Account.create({
-                username,
-                password: hash
-            })
-            if (createUser) {
+            if (!checkExistUser) {
+                const createUser = await Account.create({
+                    username,
+                    password: hash
+                })
                 resolve({
                     status: 'OK',
                     message: 'User created successfully',
                     data: createUser
                 })
             }
+
         } catch (err) {
             reject(err)
         }

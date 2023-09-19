@@ -10,5 +10,6 @@ router.delete('/delete/:id', adminMiddleware, ProductController.deleteProduct);
 router.get('/getBySubcategoryId', ProductController.getAllProductBySubCategoryId)
 router.get('/getByCategoryId', ProductController.getAllProductByCategoryId)
 router.get('/search', ProductController.searchProductByName)
+// router.get('/random', ProductController.createRandomProduct)
 router.get('/:id', ProductController.getDetailProduct);
 module.exports = router
