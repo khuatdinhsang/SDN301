@@ -1,6 +1,6 @@
 const Account = require("../models/AccountModel")
 const User = require("../models/UserModel")
-
+const LIMIT_USER = 10;
 const registerUser = async (userId, data) => {
     const { email, phone, image, dateOfBirth, gender } = data
     return new Promise(async (resolve, reject) => {
@@ -92,13 +92,20 @@ const updateUser = (userId, data) => {
         }
     })
 }
-const getAllUsers = () => {
+const getAllUsers = (page = 1, limit = LIMIT_USER) => {
     return new Promise(async (resolve, reject) => {
         try {
+            var skipNumber = (page - 1) * limit;
+            const totalUser = await User.count()
             const allUser = await User.find({})
+                .skip(skipNumber)
+                .limit(limit)
             resolve({
                 status: 'OK',
-                data: allUser
+                data: totalUser,
+                allUser,
+                currentPage: parseInt(page),
+                limit: parseInt(limit)
             })
         } catch (err) {
             reject(err)

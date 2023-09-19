@@ -1,5 +1,5 @@
 const SubCategory = require("../models/SubCategoryModel")
-
+const LIMIT_SUBCATEGORY = 10
 const createSubCategory = (categoryId, data) => {
     return new Promise(async (resolve, reject) => {
         const { name, image, description } = data
@@ -8,7 +8,7 @@ const createSubCategory = (categoryId, data) => {
                 name: name
             })
             if (checkSubCategoryExists !== null) {
-                reject({
+                resolve({
                     status: 'ERR',
                     message: 'SubCategory already exists!'
                 })
@@ -75,28 +75,44 @@ const getDetailSubCategory = (subCategoryId) => {
         }
     })
 }
-const getAllSubCategory = () => {
+const getAllSubCategory = (page = 1, limit = LIMIT_SUBCATEGORY) => {
     return new Promise(async (resolve, reject) => {
         try {
+            var skipNumber = (page - 1) * limit;
+            const totalSubCategory = await SubCategory.count()
             const allSubCategory = await SubCategory.find({})
+                .skip(skipNumber)
+                .limit(limit)
             resolve({
                 status: 'OK',
-                data: allSubCategory
+                data: allSubCategory,
+                totalSubCategory,
+                currentPage: parseInt(page),
+                limit: parseInt(limit)
             })
         } catch (err) {
             reject(err)
         }
     })
 }
-const getAllSubCategoryByCategoryId = (categoryId) => {
+const getAllSubCategoryByCategoryId = (page = 1, limit = LIMIT_SUBCATEGORY, categoryId) => {
     return new Promise(async (resolve, reject) => {
         try {
+            var skipNumber = (page - 1) * limit;
+            const totalSubCategory = await SubCategory.count({
+                categoryId
+            })
             const allSubCategory = await SubCategory.find({
                 categoryId
             })
+                .skip(skipNumber)
+                .limit(limit)
             resolve({
                 status: 'OK',
-                data: allSubCategory
+                data: allSubCategory,
+                totalSubCategory,
+                currentPage: parseInt(page),
+                limit: parseInt(limit)
             })
         } catch (err) {
             reject(err)

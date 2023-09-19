@@ -62,7 +62,8 @@ const updateUser = async (req, res) => {
 }
 const getAllUsers = async (req, res) => {
     try {
-        const response = await UserServices.getAllUsers()
+        const { page, limit } = req.query
+        const response = await UserServices.getAllUsers(page, limit)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(404).json({
