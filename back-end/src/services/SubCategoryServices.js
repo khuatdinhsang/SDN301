@@ -1,3 +1,4 @@
+const Category = require("../models/CategoryModel")
 const SubCategory = require("../models/SubCategoryModel")
 const LIMIT_SUBCATEGORY = 10
 const createSubCategory = (categoryId, data) => {
@@ -7,23 +8,36 @@ const createSubCategory = (categoryId, data) => {
             const checkSubCategoryExists = await SubCategory.findOne({
                 name: name
             })
+            const checkCategoryExists = await Category.findOne({
+                _id: categoryId
+            }
+            )
             if (checkSubCategoryExists !== null) {
                 resolve({
                     status: 'ERR',
                     message: 'SubCategory already exists!'
                 })
             }
-            const createSubCategory = await SubCategory.create({
-                name,
-                image,
-                description,
-                categoryId
-            })
-            resolve({
-                status: 'OK',
-                message: 'SubCategory created successfully',
-                data: createSubCategory
-            })
+            if (!checkCategoryExists) {
+                resolve({
+                    status: 'ERR',
+                    message: 'CategoryId is not correct!'
+                })
+            }
+            if (checkCategoryExists && !checkSubCategoryExists) {
+                const createSubCategory = await SubCategory.create({
+                    name,
+                    image,
+                    description,
+                    categoryId
+                })
+                resolve({
+                    status: 'OK',
+                    message: 'SubCategory created successfully',
+                    data: createSubCategory
+                })
+            }
+
         } catch (err) {
             reject(err)
         }

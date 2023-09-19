@@ -22,7 +22,6 @@ const refreshTokenServices = (token) => {
                         message: 'The authentication'
                     })
                 }
-                console.log("25", user)
                 const accessToken = await generalAccessToken({
                     id: user?.id,
                     roleId: user?.roleId,

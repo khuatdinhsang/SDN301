@@ -37,6 +37,9 @@ const ProductSchema = new mongoose.Schema({
         ref: 'SubCategory',
         required: true,
     },
+    categoryId: {
+        type: String,
+    },
     feedback: [{
         id: {
             type: mongoose.Schema.Types.ObjectId,

@@ -1,3 +1,4 @@
+const Category = require("../models/CategoryModel")
 const Product = require("../models/ProductModel")
 const SubCategory = require("../models/SubCategoryModel")
 const LIMIT_PRODUCT = 10
@@ -12,7 +13,7 @@ const createProduct = (data) => {
             if (!checkSubCategoryExists) {
                 resolve({
                     status: 'ERR',
-                    message: "SubCategory is not defined"
+                    message: "SubCategoryId is not defined"
                 })
             }
             if (checkSubCategoryExists) {
@@ -22,7 +23,8 @@ const createProduct = (data) => {
                     quantity,
                     image,
                     description,
-                    subCategoryId
+                    subCategoryId,
+                    categoryId: checkSubCategoryExists.categoryId
                 })
                 resolve({
                     status: 'OK',
@@ -43,7 +45,7 @@ const updateProduct = (id, data) => {
                 _id: id
             })
             if (checkProductExists === null) {
-                reject({
+                resolve({
                     status: 'ERR',
                     message: 'Product is not defined!'
                 })
@@ -176,10 +178,10 @@ const getAllProductByCategoryId = (page = 1, limit = LIMIT_PRODUCT, categoryId) 
         try {
             var skipNumber = (page - 1) * limit;
             const totalProduct = await Product.count({
-                'subCategoryId.categoryId._id': categoryId
+                categoryId
             })
             const allProductByCategoryId = await Product.find({
-                'subCategoryId.name': 'category update'
+                categoryId
             })
                 .skip(skipNumber)
                 .limit(limit)
@@ -192,7 +194,7 @@ const getAllProductByCategoryId = (page = 1, limit = LIMIT_PRODUCT, categoryId) 
             resolve({
                 status: 'OK',
                 data: allProductByCategoryId,
-                // totalProduct,
+                totalProduct,
                 currentPage: parseInt(page),
                 limit: parseInt(limit)
             })
