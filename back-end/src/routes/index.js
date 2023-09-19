@@ -2,6 +2,7 @@ const AccountRouter = require('./AccountRouter.js');
 const UserRouter = require('./UserRouter.js');
 const CategoryRouter = require('./CategoryRouter.js');
 const SubCategoryRouter = require('./SubCategoryRouter.js');
+const ProductRouter = require('./ProductRouter.js');
 /**
  * @openapi
  * /test-swagger:
@@ -20,5 +21,6 @@ const routes = (app) => {
     app.use('/api/user', UserRouter)
     app.use('/api/category', CategoryRouter)
     app.use('/api/subCategory', SubCategoryRouter)
+    app.use('/api/product', ProductRouter)
 }
 module.exports = routes

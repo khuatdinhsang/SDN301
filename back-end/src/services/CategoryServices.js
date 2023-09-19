@@ -1,5 +1,5 @@
 const Category = require("../models/CategoryModel")
-
+const LIMIT_CATEGORY = 10;
 const createCategory = (data) => {
     return new Promise(async (resolve, reject) => {
         const { name, image } = data
@@ -57,7 +57,6 @@ const getDetailCategory = (categoryId) => {
             const category = await Category.findOne({
                 _id: categoryId
             })
-                .populate('categoryId')
 
             if (category === null) {
                 resolve({
@@ -75,14 +74,20 @@ const getDetailCategory = (categoryId) => {
         }
     })
 }
-const getAllCategory = () => {
+const getAllCategory = (page = 1, limit = LIMIT_CATEGORY) => {
     return new Promise(async (resolve, reject) => {
         try {
+            var skipNumber = (page - 1) * limit;
+            const totalCategory = await Category.count()
             const allCategory = await Category.find({})
-                .populate('categoryId')
+                .skip(skipNumber)
+                .limit(limit)
             resolve({
                 status: 'OK',
-                data: allCategory
+                data: allCategory,
+                totalCategory,
+                currentPage: parseInt(page),
+                limit: parseInt(limit)
             })
         } catch (err) {
             reject(err)

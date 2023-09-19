@@ -1,7 +1,7 @@
 const Account = require("../models/AccountModel")
 const bcrypt = require("bcrypt")
 const { generalAccessToken, generalRefreshToken } = require("./JwtServices")
-
+const LIMIT_ACCOUNT = 10;
 const registerAccount = (newUser) => {
     return new Promise(async (resolve, reject) => {
         const { username, password, confirmPassword } = newUser
@@ -99,13 +99,21 @@ const getDetailAccount = (userId) => {
         }
     })
 }
-const getAllAccount = () => {
+const getAllAccount = (page = 1, limit = LIMIT_ACCOUNT) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const allAccount = await Account.find({}).populate('role')
+            var skipNumber = (page - 1) * limit;
+            const totalAccount = await Account.count()
+            const allAccount = await Account.find({})
+                .skip(skipNumber)
+                .limit(limit)
+                .populate('role')
             resolve({
                 status: 'OK',
-                data: allAccount
+                data: allAccount,
+                totalAccount,
+                currentPage: parseInt(page),
+                limit: parseInt(limit)
             })
         } catch (err) {
             reject(err)
