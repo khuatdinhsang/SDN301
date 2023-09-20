@@ -1,6 +1,7 @@
 const Account = require("../models/AccountModel")
 const bcrypt = require("bcrypt")
-const { generalAccessToken, generalRefreshToken } = require("./JwtServices")
+const { generalAccessToken, generalRefreshToken } = require("./JwtServices");
+const Product = require("../models/ProductModel");
 const LIMIT_ACCOUNT = 10;
 const registerAccount = (newUser) => {
     return new Promise(async (resolve, reject) => {
@@ -21,10 +22,14 @@ const registerAccount = (newUser) => {
                     username,
                     password: hash
                 })
+                const newUser = {
+                    ...createUser._doc,
+                    password: '******'
+                }
                 resolve({
                     status: 'OK',
                     message: 'User created successfully',
-                    data: createUser
+                    data: newUser
                 })
             }
 
@@ -90,10 +95,14 @@ const getDetailAccount = (userId) => {
                     message: `The user is not defined `
                 })
             }
+            const newUser = {
+                ...createUser._doc,
+                password: '******'
+            }
             resolve({
                 status: 'OK',
                 message: 'SUCCESS',
-                data: user
+                data: newUser
             })
         } catch (err) {
             reject(err)
@@ -109,9 +118,12 @@ const getAllAccount = (page = 1, limit = LIMIT_ACCOUNT) => {
                 .skip(skipNumber)
                 .limit(limit)
                 .populate('role')
+            const newAccount = allAccount.map((account) => {
+                return { ...account._doc, password: '******' }
+            })
             resolve({
                 status: 'OK',
-                data: allAccount,
+                data: newAccount,
                 totalAccount,
                 currentPage: parseInt(page),
                 limit: parseInt(limit)
@@ -141,12 +153,15 @@ const deActiveAccount = (userId, deActiveAt, deActiveReason) => {
                 deActiveAt,
                 deActiveReason,
             }
-            await Account.findByIdAndUpdate(userId, userDeActive, { new: true })
-
+            const accountDisabled = await Account.findByIdAndUpdate(userId, userDeActive, { new: true })
+            const newAccountDisabled = {
+                ...accountDisabled._doc,
+                password: '******'
+            }
             resolve({
                 status: 'OK',
                 message: 'SUCCESS',
-                data: userDeActive
+                data: newAccountDisabled
             })
         } catch (err) {
             reject(err)
@@ -172,24 +187,27 @@ const inActiveAccount = (userId) => {
                 deActiveAt: '',
                 deActiveReason: ''
             }
-            await Account.findByIdAndUpdate(userId, userInActive, { new: true })
 
+            const accountActive = await Account.findByIdAndUpdate(userId, userInActive, { new: true })
+            const newAccountActive = {
+                ...accountActive._doc,
+                password: '******'
+            }
             resolve({
                 status: 'OK',
                 message: 'SUCCESS',
-                data: userInActive
+                data: newAccountActive
             })
         } catch (err) {
             reject(err)
         }
     })
 }
-const changePassword = (username, newPassword) => {
-    console.log(username, newPassword)
+const changePassword = (accountId, newPassword) => {
     return new Promise(async (resolve, reject) => {
         try {
             const user = await Account.findOne({
-                username: username
+                _id: accountId
             })
                 .populate('role')
             if (user === null) {
@@ -203,19 +221,21 @@ const changePassword = (username, newPassword) => {
                 ...user._doc,
                 password: hash
             }
-            await Account.findByIdAndUpdate(user._id, userChangePass, { new: true })
-
+            const userChangePassword = await Account.findByIdAndUpdate(user._id, userChangePass, { new: true })
+            const newUserChangePassword = {
+                ...userChangePassword._doc,
+                password: '******'
+            }
             resolve({
                 status: 'OK',
                 message: 'SUCCESS',
-                data: userChangePass
+                data: newUserChangePassword
             })
         } catch (err) {
             reject(err)
         }
     })
 }
-
 module.exports = {
     registerAccount, getDetailAccount,
     loginAccount, deActiveAccount,

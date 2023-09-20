@@ -133,7 +133,8 @@ const inActiveAccount = async (req, res) => {
     }
 }
 const changePassword = async (req, res) => {
-    const { username, newPassword } = req.body;
+    const { newPassword, confirmPassword } = req.body;
+    const accountId = req.params.id
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -141,7 +142,13 @@ const changePassword = async (req, res) => {
                 errors: errors.array()
             })
         }
-        const response = await AccountServices.changePassword(username, newPassword)
+        if (newPassword !== confirmPassword) {
+            res.status(400).json({
+                status: 'ERR',
+                message: 'Password is not match confirm Password'
+            })
+        }
+        const response = await AccountServices.changePassword(accountId, newPassword)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(404).json({
@@ -170,6 +177,6 @@ const refreshToken = async (req, res) => {
 module.exports = {
     registerAccount, getDetailAccount,
     loginAccount, logout, deActiveAccount,
-    inActiveAccount, changePassword, getAllAccount, refreshToken
+    inActiveAccount, changePassword, getAllAccount, refreshToken,
 
 }

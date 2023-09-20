@@ -58,7 +58,8 @@ const getDetailSubCategory = async (req, res) => {
 }
 const getAllSubCategoryByCategoryId = async (req, res) => {
     try {
-        const { categoryId, page, limit } = req.query;
+        const { page, limit } = req.query;
+        const { categoryId } = req.body
         const response = await SubCategoryServices.getAllSubCategoryByCategoryId(page, limit, categoryId)
         return res.status(200).json(response)
     } catch (error) {

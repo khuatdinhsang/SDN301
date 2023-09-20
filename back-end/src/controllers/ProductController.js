@@ -98,7 +98,8 @@ const deleteProduct = async (req, res) => {
 }
 const getAllProductBySubCategoryId = async (req, res) => {
     try {
-        const { page, limit, subCategoryId } = req.query;
+        const { page, limit } = req.query;
+        const { subCategoryId } = req.body
         const response = await ProductServices.getAllProductBySubCategoryId(page, limit, subCategoryId)
         return res.status(200).json(response)
     } catch (error) {
@@ -110,7 +111,8 @@ const getAllProductBySubCategoryId = async (req, res) => {
 }
 const getAllProductByCategoryId = async (req, res) => {
     try {
-        const { page, limit, categoryId } = req.query;
+        const { page, limit } = req.query;
+        const { categoryId } = req.body
         const response = await ProductServices.getAllProductByCategoryId(page, limit, categoryId)
         return res.status(200).json(response)
     } catch (error) {
@@ -131,6 +133,8 @@ const searchProductByName = async (req, res) => {
         })
     }
 }
+
+
 module.exports = {
     createProduct, updateProduct,
     getDetailProduct, getAllProduct,

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const SubCategory = require("./SubCategoryModel");
 const ProductSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -39,15 +39,7 @@ const ProductSchema = new mongoose.Schema({
     },
     categoryId: {
         type: String,
-    },
-    feedback: [{
-        id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Account'
-        },
-        content: String,
-        timeAt: Date
-    }]
+    }
 }, {
     timestamps: true
 })

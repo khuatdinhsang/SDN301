@@ -8,9 +8,8 @@ router.post('/create/:id',
     SubCategoryController.createSubCategory)
 router.put('/update/:id', adminMiddleware, validateCreateSubCategory, SubCategoryController.updateSubCategory)
 router.get('/getAll', SubCategoryController.getAllSubCategory)
-router.get('/getByCategoryId', SubCategoryController.getAllSubCategoryByCategoryId)
+router.put('/getByCategoryId', SubCategoryController.getAllSubCategoryByCategoryId)
 router.delete('/delete/:id', SubCategoryController.deleteSubCategory)
 router.get('/:id', SubCategoryController.getDetailSubCategory)
-
 module.exports = router
 

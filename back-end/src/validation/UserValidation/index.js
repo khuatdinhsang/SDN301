@@ -15,6 +15,13 @@ const validateRegisterUser = [
     checkIsBoolean('gender', 'Gender is not valid'),
 ]
 
+const checkChangePassword = [
+    checkIsEmpty('newPassword', 'password can not be blank'),
+    checkMinLength('newPassword', 6, 'password must be at least 6 characters'),
+    checkIsEmpty('confirmPassword', 'confirmPassword can not be blank'),
+    checkMinLength('confirmPassword', 6, 'confirmPassword must be at least 6 characters'),
+
+]
 module.exports = {
-    validateRegisterUser, validateRegisterAccount
+    validateRegisterUser, validateRegisterAccount, checkChangePassword
 }
