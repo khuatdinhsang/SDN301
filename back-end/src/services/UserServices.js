@@ -25,11 +25,11 @@ const registerUser = async (userId, data) => {
         }
     })
 }
-const getDetailUser = (userId) => {
+const getDetailUser = (accountId) => {
     return new Promise(async (resolve, reject) => {
         try {
             const user = await User.findOne({
-                accountId: userId
+                accountId: accountId
             })
                 .populate('accountId')
                 .populate({
@@ -45,6 +45,7 @@ const getDetailUser = (userId) => {
                     message: `The user is not defined `
                 })
             }
+            user._doc.accountId.password = "******";
             resolve({
                 status: 'OK',
                 message: 'SUCCESS',
@@ -55,12 +56,12 @@ const getDetailUser = (userId) => {
         }
     })
 }
-const updateUser = (userId, data) => {
+const updateUser = (accountId, data) => {
     return new Promise(async (resolve, reject) => {
         try {
             const { email, phone, image, dateOfBirth, gender } = data
             const user = await User.findOne({
-                accountId: userId
+                accountId
             })
                 .populate('accountId')
                 .populate({
@@ -82,6 +83,7 @@ const updateUser = (userId, data) => {
                 phone, image, dateOfBirth, gender
             }
             await User.findByIdAndUpdate(user._id, userUpdate, { new: true })
+            userUpdate.accountId.password = "******";
             resolve({
                 status: 'OK',
                 message: 'SUCCESS',
@@ -100,10 +102,24 @@ const getAllUsers = (page = 1, limit = LIMIT_USER) => {
             const allUser = await User.find({})
                 .skip(skipNumber)
                 .limit(limit)
+                .populate('accountId')
+                .populate({
+                    path: 'accountId',
+                    populate: {
+                        path: 'role'
+                    }
+                })
+            const newAllUser = allUser.map((user) => {
+                const newUser = { ...user._doc };
+                if (newUser.accountId) {
+                    newUser.accountId.password = '******'
+                }
+                return newUser;
+            })
             resolve({
                 status: 'OK',
-                data: totalUser,
-                allUser,
+                data: newAllUser,
+                totalUser,
                 currentPage: parseInt(page),
                 limit: parseInt(limit)
             })

@@ -23,7 +23,7 @@ const options = {
             }
         ],
     },
-    apis: ['./src/routes/index.js', './src/models/*.js']
+    apis: ['src/routes/index.js', 'src/models/*.js']
 }
 const swaggerSpec = swaggerJSDoc(options)
 function swaggerDocs(app, port) {

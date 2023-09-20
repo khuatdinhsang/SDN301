@@ -7,8 +7,8 @@ router.post('/create', adminMiddleware, validateCreateProduct, ProductController
 router.put('/update/:id', adminMiddleware, validateCreateProduct, ProductController.updateProduct);
 router.get('/getAll', ProductController.getAllProduct);
 router.delete('/delete/:id', adminMiddleware, ProductController.deleteProduct);
-router.get('/getBySubcategoryId', ProductController.getAllProductBySubCategoryId)
-router.get('/getByCategoryId', ProductController.getAllProductByCategoryId)
+router.put('/getBySubcategoryId', ProductController.getAllProductBySubCategoryId)
+router.put('/getByCategoryId', ProductController.getAllProductByCategoryId)
 router.get('/search', ProductController.searchProductByName)
 // router.get('/random', ProductController.createRandomProduct)
 router.get('/:id', ProductController.getDetailProduct);

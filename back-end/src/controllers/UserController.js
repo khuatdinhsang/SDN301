@@ -25,15 +25,15 @@ const registerUser = async (req, res) => {
     }
 }
 const getDetailUser = async (req, res) => {
-    const userId = req.params.id;
+    const accountId = req.params.id;
     try {
-        if (!userId) {
+        if (!accountId) {
             return res.status(200).json({
                 status: 'ERR',
-                message: 'The userId is required'
+                message: 'The accountId is required'
             })
         }
-        const response = await UserServices.getDetailUser(userId)
+        const response = await UserServices.getDetailUser(accountId)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(404).json({
@@ -43,15 +43,15 @@ const getDetailUser = async (req, res) => {
     }
 }
 const updateUser = async (req, res) => {
-    const userId = req.params.id;
+    const accountId = req.params.id;
     try {
-        if (!userId) {
+        if (!accountId) {
             return res.status(200).json({
                 status: 'ERR',
-                message: 'The userId is required'
+                message: 'The accountId is required'
             })
         }
-        const response = await UserServices.updateUser(userId, req.body)
+        const response = await UserServices.updateUser(accountId, req.body)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(404).json({
