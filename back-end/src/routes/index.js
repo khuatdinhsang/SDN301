@@ -4,6 +4,8 @@ const CategoryRouter = require('./CategoryRouter.js');
 const SubCategoryRouter = require('./SubCategoryRouter.js');
 const ProductRouter = require('./ProductRouter.js');
 const FeedbackRouter = require('./FeedbackRouter.js');
+const OrderRouter = require('./OrderRouter.js');
+const AddressShippingRouter = require('./AddressShippingRouter.js');
 const routes = (app) => {
     /**
      * @openapi
@@ -22,5 +24,7 @@ const routes = (app) => {
     app.use('/api/subCategory', SubCategoryRouter)
     app.use('/api/product', ProductRouter)
     app.use('/api/feedback', FeedbackRouter)
+    app.use('/api/order', OrderRouter)
+    app.use('/api/address', AddressShippingRouter)
 }
 module.exports = routes

@@ -11,7 +11,6 @@ const adminMiddleware = (req, res, next) => {
                 message: 'The authentication'
             })
         }
-        console.log("14", user)
         if (user?.roleId === 1) {
             next()
         } else {
@@ -22,6 +21,26 @@ const adminMiddleware = (req, res, next) => {
         }
     })
 }
+
+const auth = (req, res, next) => {
+    try {
+        const Authorization = req.header('Authorization');
+        const token = Authorization.replace('Bearer ', '');
+        if (!token)
+            return res.status(400).json({ msg: 'Token is required' });
+
+        jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
+            if (err) {
+                console.log(err);
+                return res.status(400).json({ msg: 'Invalid Authentication' });
+            }
+            req.user = user;
+            next();
+        });
+    } catch (error) {
+        return res.status(500).json({ msg: err.message });
+    }
+};
 const userMiddleware = (req, res, next) => {
     const Authorization = req.header('Authorization')
     const token = Authorization.replace('Bearer ', '')
@@ -113,5 +132,5 @@ const authUserMiddlewareByBody = (req, res, next) => {
 
 module.exports = {
     adminMiddleware, userMiddleware, authUserMiddleware,
-    userMiddlewareByBody, authUserMiddlewareByBody
+    userMiddlewareByBody, authUserMiddlewareByBody, auth
 }
