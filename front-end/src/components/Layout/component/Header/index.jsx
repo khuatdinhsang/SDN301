@@ -1,10 +1,16 @@
 import React from "react";
-import { useNavigate } from "react-router";
+import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router";
 import './style.scss'
 
 
 const Header = () => {
   const navigate = useNavigate()
+  const location = useLocation()
+  
+  useEffect(()=>{
+
+  },[location.pathname])
 
   return (<React.Fragment>
     <div className="contain">
@@ -13,11 +19,11 @@ const Header = () => {
               <h1 onClick={() => navigate("/")}>Hola<b>Food</b></h1>
             </div>
             <ul>
-              <li className="active" onClick={() => navigate("/")}><span>Home</span></li>
-              <li><span>Menu</span></li>
-              <li><span>Service</span></li>
-              <li><span>About Us</span></li>
-              <li><span>Gallery</span></li>
+              <li className="active home" onClick={() => navigate("/")}><span>Home</span></li>
+              <li className="menu" onClick={() => navigate("/menu")}><span>Menu</span></li>
+              <li className="services"><span>Service</span></li>
+              <li className="about"><span>About Us</span></li>
+              <li className="gallery"><span>Gallery</span></li>
             </ul>
             <div className="action">
               <button className="signIn" onClick={() => navigate("/login")}>Sign In</button>

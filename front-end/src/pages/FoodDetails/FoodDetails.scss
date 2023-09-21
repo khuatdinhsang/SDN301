@@ -1,0 +1,152 @@
+.detailContent{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .topDetail{
+        width: 80%;
+        .foodDetail{
+        display: flex;
+
+        .imgDetail{
+            width: 70%;
+            display: flex;
+            justify-content: center;
+
+            img{
+                width: 70%;
+            }
+        }
+
+        .inforDetail{
+            width: 25%;
+            display: flex;
+            flex-direction: column;
+
+            .detailTitle{
+                text-transform: uppercase;
+                font-weight: 600;
+                font-size: 20px;
+                margin-bottom: 16px;
+            }
+            
+            .detailPrice{
+                margin-bottom: 16px;
+            }
+
+            .star{
+                margin-bottom: 20px;
+            }
+
+            .foodSize{
+                padding: 8px 24px 8px 3px;
+                outline: none;
+                margin-bottom: 16px;
+            }
+
+            .numberFood{
+                padding: 8px 0px 8px 0px;
+                margin-bottom: 16px;
+                text-align: center;
+            }
+
+            .addFood{
+                padding: 12px 24px;
+                font-weight: 700;
+                border: 1px solid transparent;
+                background-color: rgba($color: #ff511c, $alpha: 0.8);
+                color: white;
+                transition: .4s;
+                cursor: pointer;
+
+                &:hover{
+                    transform: scale(1.05);
+                }
+            }
+        }
+    }
+    }
+
+    .bottomDetail{
+        margin: 50px 0;
+        width: 80%;
+
+        .listSimilarProduct{
+            margin-top: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+            justify-content: space-around;
+
+            .cardSimilar{
+                display: flex;
+                flex-direction: column;
+                width: 23%;
+                // margin-right: 20px;
+                cursor: pointer;
+
+                .imgCardSimilar{
+                    width: 70%;
+                }
+
+                .detailTitle{
+                    font-weight: 700;
+                    padding: 8px 0 4px 0;
+                }
+
+                .detailPrice{
+                    font-weight: 600;
+                    font-size: 12px;
+                }
+            }
+        }
+    }
+    .comment{
+        width: 90%;
+        margin-top: 20px;
+
+        .actionComment{
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            .leftComment{
+                width: 20%;
+                text-align: right;
+
+                img{
+                    width: 30%;
+                }
+            }
+
+            .rightComment{
+                width: 70%;
+                display: flex;
+                flex-direction: column;
+
+                .textComment{
+                    width: 50%;
+                    outline: none;
+                    padding: 8px ;
+                    margin-bottom: 16px;
+                }
+
+                .submitComment{
+                    width: 20%;
+                    padding: 10px 18px;
+                    font-weight: 700;
+                    border: 1px solid transparent;
+                    background-color: rgba($color: #ff511c, $alpha: 0.8);
+                    color: #fff;
+                    cursor: pointer;
+                    transition: .4s;
+                    border-radius: 5px;
+
+                    &:hover{
+                        transform: scale(1.05);
+                    }
+                }
+            }
+        }
+    }
+}
