@@ -28,9 +28,11 @@ const ProductSchema = new mongoose.Schema({
     },
     numberSold: {
         type: Number,
+        default: 0
     },
     numberDiscount: {
         type: Number,
+        default: 0
     },
     subCategoryId: {
         type: mongoose.Schema.Types.ObjectId,

@@ -236,8 +236,43 @@ const changePassword = (accountId, newPassword) => {
         }
     })
 }
+const addCart = (accountId, data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const checkAccountExist = await Account.findOne({ _id: accountId });
+            if (checkAccountExist === null) {
+                resolve({
+                    status: 'ERR',
+                    message: `The account is not defined `
+                })
+            }
+            for (i = 0; i < data.length; i++) {
+                var checkProductExist = await Product.findOne({ _id: data[i].productId })
+                if (checkProductExist.quantity < data[i].quantity) {
+                    resolve({
+                        status: 'ERR',
+                        message: 'Not enough quantity',
+                    })
+                }
+            }
+            const newAccount = await Account.findByIdAndUpdate(
+                checkAccountExist._id, {
+                cart: data,
+            }, { new: true }
+            );
+            resolve({
+                status: 'OK',
+                message: 'SUCCESS',
+                cart: newAccount.cart
+            })
+        } catch (err) {
+            reject(err)
+        }
+    })
+}
 module.exports = {
     registerAccount, getDetailAccount,
     loginAccount, deActiveAccount,
-    inActiveAccount, changePassword, getAllAccount
+    inActiveAccount, changePassword, getAllAccount,
+    addCart
 }

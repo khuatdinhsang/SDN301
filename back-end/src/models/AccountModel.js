@@ -25,6 +25,10 @@ const accountSchema = new mongoose.Schema({
     },
     deActiveReason: {
         type: String,
+    },
+    cart: {
+        type: Array,
+        default: []
     }
 }, {
     timestamps: true
