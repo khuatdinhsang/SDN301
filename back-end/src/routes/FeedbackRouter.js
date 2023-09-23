@@ -1,18 +1,18 @@
 const express = require('express')
 const router = express.Router()
-const { userMiddleware, adminMiddleware, userMiddlewareByBody, authUserMiddlewareByBody } = require('../middlewares/AdminMiddleware');
+const { auth, adminMiddleware } = require('../middlewares/AdminMiddleware');
 const FeedbackController = require('../controllers/FeedbackController');
 const { checkIsNumber } = require('../validation');
-router.post('/create/', userMiddlewareByBody,
+router.post('/create/', auth,
     [checkIsNumber('rate', 'rate must be a number')],
     FeedbackController.feedbackProduct)
-router.put('/update/:id', userMiddlewareByBody,
+router.put('/update/:id', auth,
     [checkIsNumber('rate', 'rate must be a number')],
     FeedbackController.updateFeedbackProduct)
-router.delete('/delete/:id', authUserMiddlewareByBody, FeedbackController.deleteFeedbackProduct)
+router.delete('/delete/:id', auth, FeedbackController.deleteFeedbackProduct)
 router.get('/getAll', FeedbackController.getAllFeedbackProduct)
-router.put('/getByProductId', FeedbackController.getAllFeedbackByProductId)
-router.put('/getByAccountId', authUserMiddlewareByBody, FeedbackController.getAllFeedbackByAccountId)
+router.get('/getByProductId/:id', FeedbackController.getAllFeedbackByProductId)
+router.get('/getByAccountId', auth, FeedbackController.getAllFeedbackByAccountId)
 router.get('/:id', FeedbackController.getDetailFeedbackProduct)
 module.exports = router
 

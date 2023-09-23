@@ -1,4 +1,5 @@
 const Feedback = require("../models/FeedbackModel")
+const Product = require("../models/ProductModel")
 
 const getAverageRateByProduct = async (productId) => {
     const numberRate = await Feedback.count({
@@ -40,4 +41,34 @@ const getAverageRateByAccount = async (accountId) => {
     ])
     return Number((averageRate[0]?.total / numberRate).toFixed(1))
 }
-module.exports = { getAverageRateByProduct, getAverageRateByAccount }
+const sold = async (id, quantity) => {
+    const productExist = await Product.findOne({
+        _id: id
+    })
+    let prod = await Product.findOneAndUpdate({ _id: id }, {
+        numberSold: parseInt(productExist?.numberSold + quantity),
+        quantity: parseInt(productExist?.quantity - quantity),
+    }, { new: true });
+    if (prod.quantity === 0) {
+        prod = await Product.findOneAndUpdate({ _id: id }, {
+            status: false,
+        }, { new: true });
+    }
+    return prod;
+};
+const reSold = async (id, quantity) => {
+    const productExist = await Product.findOne({
+        _id: id
+    })
+    let prod = await Product.findOneAndUpdate({ _id: id }, {
+        numberSold: parseInt(productExist?.numberSold - quantity),
+        quantity: parseInt(productExist?.quantity + quantity),
+    }, { new: true });
+    return prod;
+};
+
+
+module.exports = {
+    getAverageRateByProduct,
+    getAverageRateByAccount, sold, reSold
+}

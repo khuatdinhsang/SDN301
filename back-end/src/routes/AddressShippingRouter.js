@@ -2,7 +2,6 @@ const express = require('express')
 const router = express.Router()
 const AddressShippingController = require('../controllers/AddressShippingController');
 const { auth } = require('../middlewares/AdminMiddleware');
-const { validateCreateCategory } = require('../validation/CategoryValidation');
 router.put('/update/:id', auth, AddressShippingController.updateAddressShipping)
 router.get('/getAll', auth, AddressShippingController.getAllAddressShipping)
 router.delete('/delete/:id', auth, AddressShippingController.deleteAddressShipping)

@@ -81,11 +81,11 @@ const loginAccount = (userLogin) => {
         }
     })
 }
-const getDetailAccount = (userId) => {
+const getDetailAccount = (accountId) => {
     return new Promise(async (resolve, reject) => {
         try {
             const user = await Account.findOne({
-                _id: userId
+                _id: accountId
             })
                 .populate('role')
 
@@ -248,12 +248,19 @@ const addCart = (accountId, data) => {
             }
             for (i = 0; i < data.length; i++) {
                 var checkProductExist = await Product.findOne({ _id: data[i].productId })
+                if (checkProductExist.quantity === 0) {
+                    resolve({
+                        status: 'ERR',
+                        message: 'Product is sold out',
+                    })
+                }
                 if (checkProductExist.quantity < data[i].quantity) {
                     resolve({
                         status: 'ERR',
                         message: 'Not enough quantity',
                     })
                 }
+
             }
             const newAccount = await Account.findByIdAndUpdate(
                 checkAccountExist._id, {

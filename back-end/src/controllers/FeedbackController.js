@@ -4,13 +4,8 @@ const FeedbackServices = require('../services/FeedbackServices')
 
 const feedbackProduct = async (req, res) => {
     try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({
-                errors: errors.array()
-            })
-        }
-        const response = await FeedbackServices.feedbackProduct(req.body)
+        const accountId = req.user.id
+        const response = await FeedbackServices.feedbackProduct(accountId, req.body)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(404).json({
@@ -22,12 +17,6 @@ const feedbackProduct = async (req, res) => {
 const updateFeedbackProduct = async (req, res) => {
     const feedbackProductId = req.params.id
     try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({
-                errors: errors.array()
-            })
-        }
         const response = await FeedbackServices.updateFeedbackProduct(feedbackProductId, req.body)
         return res.status(200).json(response)
     } catch (error) {
@@ -83,7 +72,7 @@ const getAllFeedbackProduct = async (req, res) => {
 const getAllFeedbackByProductId = async (req, res) => {
     try {
         const { page, limit } = req.query;
-        const { productId } = req.body
+        const productId = req.params.id
         const response = await FeedbackServices.getAllFeedbackByProductId(page, limit, productId)
         return res.status(200).json(response)
     } catch (error) {
@@ -96,7 +85,7 @@ const getAllFeedbackByProductId = async (req, res) => {
 const getAllFeedbackByAccountId = async (req, res) => {
     try {
         const { page, limit } = req.query;
-        const { accountId } = req.body;
+        const accountId = req.user.id
         const response = await FeedbackServices.getAllFeedbackByAccountId(page, limit, accountId)
         return res.status(200).json(response)
     } catch (error) {
@@ -106,6 +95,7 @@ const getAllFeedbackByAccountId = async (req, res) => {
         })
     }
 }
+
 module.exports = {
     feedbackProduct, updateFeedbackProduct, deleteFeedbackProduct,
     getDetailFeedbackProduct, getAllFeedbackProduct, getAllFeedbackByProductId,

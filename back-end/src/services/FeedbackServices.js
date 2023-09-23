@@ -3,29 +3,20 @@ const Feedback = require("../models/FeedbackModel")
 const Product = require("../models/ProductModel");
 const { getAverageRateByProduct, getAverageRateByAccount } = require("../utils");
 const LIMIT_FEEDBACK = 10;
-const feedbackProduct = (data) => {
+const feedbackProduct = (accountId, data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const { accountId, productId, content, image, rate } = data
-            const checkAccountExists = await Account.findOne({
-                _id: accountId
-            })
+            const { productId, content, image, rate } = data
             const checkProductExists = await Product.findOne({
                 _id: productId
             })
-            if (!checkAccountExists) {
-                resolve({
-                    status: 'ERR',
-                    message: 'Account not found'
-                })
-            }
             if (!checkProductExists) {
                 resolve({
                     status: 'ERR',
                     message: 'Product not found'
                 })
             }
-            if (checkAccountExists && checkProductExists) {
+            if (checkProductExists) {
                 const feedbackProduct = await Feedback.create({
                     accountId,
                     productId,
@@ -55,26 +46,18 @@ const feedbackProduct = (data) => {
 const updateFeedbackProduct = (feedbackProductId, data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const { accountId, productId } = data
-            const checkAccountExists = await Account.findOne({
-                _id: accountId
-            })
+            const { productId } = data
+
             const checkProductExists = await Product.findOne({
                 _id: productId
             })
-            if (!checkAccountExists) {
-                resolve({
-                    status: 'ERR',
-                    message: 'Account not found'
-                })
-            }
             if (!checkProductExists) {
                 resolve({
                     status: 'ERR',
                     message: 'Product not found'
                 })
             }
-            if (checkAccountExists && checkProductExists) {
+            if (checkProductExists) {
                 const feedbackUpdate = await Feedback.findByIdAndUpdate(feedbackProductId, data, { new: true })
                 const productUpdateRate = {
                     ...checkProductExists._doc,
@@ -207,8 +190,6 @@ const getAllFeedbackByAccountId = (page = 1, limit = LIMIT_FEEDBACK, accountId) 
         }
     })
 }
-
-
 module.exports = {
     feedbackProduct, updateFeedbackProduct, deleteFeedbackProduct,
     getDetailFeedbackProduct, getDetailFeedbackProduct,

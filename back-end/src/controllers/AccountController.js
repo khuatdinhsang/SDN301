@@ -50,15 +50,10 @@ const loginAccount = async (req, res) => {
     }
 }
 const getDetailAccount = async (req, res) => {
-    const userId = req.params.id;
+    const accountId = req.user.id;
     try {
-        if (!userId) {
-            return res.status(200).json({
-                status: 'ERR',
-                message: 'The userId is required'
-            })
-        }
-        const response = await AccountServices.getDetailAccount(userId)
+
+        const response = await AccountServices.getDetailAccount(accountId)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(404).json({
@@ -134,7 +129,7 @@ const inActiveAccount = async (req, res) => {
 }
 const changePassword = async (req, res) => {
     const { newPassword, confirmPassword } = req.body;
-    const accountId = req.params.id
+    const accountId = req.user.id
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
