@@ -9,7 +9,8 @@ const registerUser = async (req, res) => {
                 errors: errors.array()
             })
         }
-        const response = await UserServices.registerUser(req.userId, req.body)
+        const accountId = req.user.id
+        const response = await UserServices.registerUser(accountId, req.body)
         return res.status(201).json(response)
     } catch (error) {
         if (error.code === 11000) {
@@ -25,7 +26,7 @@ const registerUser = async (req, res) => {
     }
 }
 const getDetailUser = async (req, res) => {
-    const accountId = req.params.id;
+    const accountId = req.user.id;
     try {
         if (!accountId) {
             return res.status(200).json({
@@ -43,7 +44,7 @@ const getDetailUser = async (req, res) => {
     }
 }
 const updateUser = async (req, res) => {
-    const accountId = req.params.id;
+    const accountId = req.user.id;
     try {
         if (!accountId) {
             return res.status(200).json({

@@ -4,6 +4,8 @@ const Category = require("../models/CategoryModel")
 const Order = require("../models/OrderModel")
 const Product = require("../models/ProductModel")
 const SubCategory = require("../models/SubCategoryModel")
+const { sold, reSold } = require("../utils")
+const LIMIT_ORDER = 10;
 const createOrder = (accountId, data) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -49,19 +51,123 @@ const createOrder = (accountId, data) => {
         }
     })
 }
-const sold = async (id, quantity) => {
-    const productExist = await Product.findOne({
-        _id: id
+
+
+const getAllOrderByAccountId = (page, limit = LIMIT_ORDER, accountId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            var skipNumber = (page - 1) * limit;
+            const totalOrderByAccountId = await Order.count({
+                accountId
+            })
+            const allOrderByAccountId = await Order.find({
+                accountId
+            })
+                .populate('addressShippingId')
+                .skip(skipNumber)
+                .limit(limit)
+            resolve({
+                status: 'OK',
+                data: allOrderByAccountId,
+                totalOrderByAccountId,
+                currentPage: parseInt(page),
+                limit: parseInt(limit)
+            })
+        } catch (err) {
+            reject(err)
+        }
     })
-    let prod = await Product.findOneAndUpdate({ _id: id }, {
-        numberSold: parseInt(productExist?.numberSold + quantity),
-        quantity: parseInt(productExist?.quantity - quantity),
-    }, { new: true });
-    if (prod.quantity === 0) {
-        prod = await Product.findOneAndUpdate({ _id: id }, {
-            status: false
-        }, { new: true });
-    }
-    return prod;
-};
-module.exports = { createOrder }
+}
+const getAllOrder = (page, limit = LIMIT_ORDER) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            var skipNumber = (page - 1) * limit;
+            const totalOrder = await Order.count()
+            const allOrder = await Order.find()
+                .populate('addressShippingId')
+                .skip(skipNumber)
+                .limit(limit)
+            resolve({
+                status: 'OK',
+                data: allOrder,
+                totalOrder,
+                currentPage: parseInt(page),
+                limit: parseInt(limit)
+            })
+        } catch (err) {
+            reject(err)
+        }
+    })
+}
+const getDetailOrder = (orderId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const orderDetail = await Order.findOne({
+                _id: orderId
+            })
+                .populate('addressShippingId')
+            resolve({
+                status: 'OK',
+                data: orderDetail,
+            })
+        } catch (err) {
+            reject(err)
+        }
+    })
+}
+const cancelOrder = (orderId, data) => {
+    const { message } = data
+    return new Promise(async (resolve, reject) => {
+        try {
+            const orderExist = await Order.findOne({
+                _id: orderId
+            })
+                .populate('addressShippingId')
+            for (i = 0; i < orderExist.cart.length; i++) {
+                //update Product
+                reSold(orderExist.cart[i].productId, orderExist.cart[i].quantity)
+            }
+            await Order.findByIdAndUpdate(orderId, {
+                status: false,
+                isCancel: true,
+                reasonCancel: message
+            })
+            resolve({
+                status: 'OK',
+                message: 'Order cancel successfully'
+            })
+        } catch (err) {
+            reject(err)
+        }
+    })
+}
+// const reSoldOrder = (orderId) => {
+//     return new Promise(async (resolve, reject) => {
+//         try {
+//             const orderExist = await Order.findOne({
+//                 _id: orderId
+//             })
+//                 .populate('addressShippingId')
+//             for (i = 0; i < orderExist.cart.length; i++) {
+//                 //update Product
+//                 sold(orderExist.cart[i].productId, orderExist.cart[i].quantity)
+//             }
+//             await Order.findByIdAndUpdate(orderId, {
+//                 status: true,
+//                 isCancel: false,
+//                 reasonCancel: ''
+//             })
+//             resolve({
+//                 status: 'OK',
+//                 message: 'Resold Order  successfully'
+//             })
+//         } catch (err) {
+//             reject(err)
+//         }
+//     })
+// }
+
+module.exports = {
+    createOrder, getAllOrderByAccountId,
+    getAllOrder, getDetailOrder, cancelOrder,
+}

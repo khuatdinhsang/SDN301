@@ -21,7 +21,15 @@ const OrderSchema = new mongoose.Schema({
     status: {
         type: Boolean,
         default: true
+    },
+    isCancel: {
+        type: Boolean,
+        default: false
+    },
+    reasonCancel: {
+        type: String,
     }
+
 }, {
     timestamps: true
 })

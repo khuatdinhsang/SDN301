@@ -1,7 +1,7 @@
 const Account = require("../models/AccountModel")
 const User = require("../models/UserModel")
 const LIMIT_USER = 10;
-const registerUser = async (userId, data) => {
+const registerUser = async (accountId, data) => {
     const { email, phone, image, dateOfBirth, gender } = data
     return new Promise(async (resolve, reject) => {
         try {
@@ -11,7 +11,7 @@ const registerUser = async (userId, data) => {
                 image,
                 dateOfBirth,
                 gender,
-                accountId: userId
+                accountId
             })
             if (createUser) {
                 resolve({

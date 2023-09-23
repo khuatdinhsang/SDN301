@@ -41,56 +41,12 @@ const auth = (req, res, next) => {
         return res.status(500).json({ msg: err.message });
     }
 };
-const userMiddleware = (req, res, next) => {
-    const Authorization = req.header('Authorization')
-    const token = Authorization.replace('Bearer ', '')
-    const userId = req.params.id
-    jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
-        if (err) {
-            return res.status(404).json({
-                message: 'The authentication',
-                status: 'ERROR'
-            })
-        }
-        if (user?.id === userId) {
-            req.userId = userId
-            next()
-        } else {
-            return res.status(404).json({
-                message: 'Access denied',
-                status: 'ERROR'
-            })
-        }
-    })
-}
-const userMiddlewareByBody = (req, res, next) => {
-    const Authorization = req.header('Authorization')
-    const token = Authorization.replace('Bearer ', '')
-    const userId = req.body.accountId
-    jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
-        if (err) {
-            return res.status(404).json({
-                message: 'The authentication',
-                status: 'ERROR'
-            })
-        }
-        if (user?.id === userId) {
-            req.userId = userId
-            next()
-        } else {
-            return res.status(404).json({
-                message: 'Access denied',
-                status: 'ERROR'
-            })
-        }
-    })
-}
-
 // admin or user
-const authUserMiddleware = (req, res, next) => {
+const authAdminMiddleware = (req, res, next) => {
     const Authorization = req.header('Authorization')
     const token = Authorization.replace('Bearer ', '')
-    const userId = req.params.id
+    const { accountId } = req.body
+    console.log("acc", accountId)
     jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
         if (err) {
             return res.status(404).json({
@@ -98,28 +54,8 @@ const authUserMiddleware = (req, res, next) => {
                 status: 'ERROR'
             })
         }
-        if (user?.id === userId || user?.roleId === 1) {
-            next()
-        } else {
-            return res.status(404).json({
-                message: 'Access denied',
-                status: 'ERROR'
-            })
-        }
-    })
-}
-const authUserMiddlewareByBody = (req, res, next) => {
-    const Authorization = req.header('Authorization')
-    const token = Authorization.replace('Bearer ', '')
-    const userId = req.body.accountId
-    jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
-        if (err) {
-            return res.status(404).json({
-                message: 'The authentication',
-                status: 'ERROR'
-            })
-        }
-        if (user?.id === userId || user?.roleId === 1) {
+        console.log("user", user)
+        if (user?.id === accountId || user?.roleId === 1) {
             next()
         } else {
             return res.status(404).json({
@@ -131,6 +67,5 @@ const authUserMiddlewareByBody = (req, res, next) => {
 }
 
 module.exports = {
-    adminMiddleware, userMiddleware, authUserMiddleware,
-    userMiddlewareByBody, authUserMiddlewareByBody, auth
+    adminMiddleware, auth, authAdminMiddleware
 }
