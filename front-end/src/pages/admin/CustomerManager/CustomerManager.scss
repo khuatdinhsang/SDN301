@@ -1,0 +1,147 @@
+.customerManager{
+    padding: 30px;
+
+    .portfolio{
+        background-color: rgba($color: #fff, $alpha: 0.8);
+        margin-bottom: 40px;
+
+        .portfolioTitle{
+            padding: 20px 16px ;
+            color: rgba($color: #000, $alpha: 0.8);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .portfolioBox{
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 30px 40px;
+            transition: .4s;
+
+           
+
+            .totalUsers, .activeMembers, .newUser{
+                width: 26%;
+                box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+                padding: 24px 20px;
+                border-radius: 5px;
+                transition: .4s;
+
+                 &:hover{
+                    transform: scale(1.05);
+                }
+
+                    .totalUsersTitle, .activeMembersTitle, .newUserTitle{
+                        text-transform: uppercase;
+                        color: rgb(162, 159, 159);
+                        letter-spacing: 1.5px;
+                        margin-bottom: 10px;
+                    }
+
+                    .totalUsersBox, .activeMemebersBox, .newUserBox{
+                        span{
+                            color: rgba($color: #000, $alpha: 0.7);
+                            font-weight: 500;
+
+                            b{
+                                font-size: 22px;
+                                color: #000;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    .listUsers{
+        // box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+        background-color: rgba($color: #fff, $alpha: 0.8);
+
+        
+        .listUsersHeader{
+            padding: 20px;
+
+            .inputSearchUser{
+                padding: 8px 20px 8px 4px;
+                outline: none;
+                border: 1px solid transparent;
+                border-bottom: 2px solid #ccc;
+                transition: .4s;
+
+                &:focus{
+                    border-bottom: 2px solid var(--primary);
+                }
+            }
+        }
+
+        .tableUser{
+
+            .tableHeader{
+                display: flex;
+                padding: 20px;
+                justify-content: space-between;
+                background-color: rgba($color: #ccc, $alpha: 0.7);
+                color: rgba($color: #000, $alpha: 0.7);
+                font-weight: 600;
+                text-transform: uppercase;
+                margin-bottom: 20px;
+                
+                .nameHeader{
+                    width: 28%;
+                }
+
+                .addressHeader, .statusHeader, .roleHeader, .handleBox{
+                    width: 18%;
+                }
+            }
+
+            .tableBody{
+                // padding: 20px;
+                display: flex;
+                flex-direction: column;
+
+
+                .rowBody{
+                    display: flex;
+                    justify-content: space-between;
+                    padding: 20px;
+                    margin-bottom: 20px;
+                    border-bottom: 1.5px solid #ccc;
+                    
+                    .nameBody{
+                        width: 28%;
+                        font-weight: 600;
+                        display: flex;
+                        
+                    }
+
+                    .addressBody, .statusBody, .roleBody{
+                        width: 18%;
+                    }
+
+                    .handleBoxBody{
+                        width: 18%;
+
+                        button{
+                            padding: 6px 20px;
+                            outline: none;
+                            border: 1px solid transparent;
+                            cursor: pointer;
+                            background-color: var(--primary);
+                            font-weight: 600;
+                            color: #fff;
+                            border-radius: 5px;
+                            transition: .4s;
+                            
+                            &:hover{
+                                transform: scale(1.05);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

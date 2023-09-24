@@ -1,11 +1,16 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import "./MenuPage.scss"
 
 function MenuPage(){
     let price =50000;
     const navigate = useNavigate()
+     useEffect(() =>{
+        window.scrollTo(0,0)
+    },[])
     return (
         <div className="menuPage">
+            <h2 className="menuTitle">HolaFood Menu</h2>
             <div className="cardList">
                 <div className="card" onClick={() => {navigate("/menu/foodDetail")}}>
                     <img src="https://i.pinimg.com/736x/30/da/50/30da50228346d0976ff6f87e7eb5db29--dwarf-planet-royalty-free-image.jpg" alt="" />

@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router";
 import "./style.scss"
 
 const HomePage = () => {
 
   const navigate = useNavigate()
+   useEffect(() =>{
+    window.scrollTo(0,0)
+  },[])
 
   return (<React.Fragment>
     <div className="content">

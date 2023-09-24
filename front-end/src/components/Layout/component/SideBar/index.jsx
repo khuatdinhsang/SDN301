@@ -17,10 +17,10 @@ function SideBar(){
                 <h1>Hola<b>Food</b></h1>
             </div>
             <div className="listAction ">
-                <div className="generalDashboard">
-                    <span>Dashboard</span>
+                <div className="generalDashboard" onClick={() => {navigate("/admin/general")}}>
+                    <span>General</span>
                 </div>
-                <div className="customerManager" >
+                <div className="customerManager"  onClick={() => {navigate("/admin/customerManager")}}>
                     <span>Customers</span>
                 </div>
                 <div className="orderManager">
