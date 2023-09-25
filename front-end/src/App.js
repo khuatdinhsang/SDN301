@@ -1,10 +1,13 @@
+import axios from "axios"
 import { Fragment } from "react"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
+import { ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css";
 import DefaultLayout from "./components/Layout/DefaultLayout"
 import Page404 from "./pages/404Page"
 import { publicRoutes } from "./routes"
 
-
+axios.defaults.baseURL="http://localhost:3001"
 
 function App(){
     return (
@@ -34,6 +37,7 @@ function App(){
                 <Route path="*" element={<Page404/>}/>
             </Routes>
         </div>
+        <ToastContainer/>
     </BrowserRouter>
     )
 }

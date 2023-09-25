@@ -1,5 +1,6 @@
 import Dashboard from "../components/Layout/Dashboard";
 import HeaderOnly from "../components/Layout/HeaderOnly";
+import CategoryManager from "../pages/admin/CategoryManager";
 import CustomerManager from "../pages/admin/CustomerManager";
 import General from "../pages/admin/General";
 import ProductManager from "../pages/admin/ProductManager";
@@ -18,10 +19,11 @@ const publicRoutes = [
     {path: "/menu", component: MenuPage},
     {path: "/menu/foodDetail", component: FoodDetails},
     {path: "/admin/upload", component:UploadPage, layout: Dashboard},
-    {path: "/admin/products", component: ProductManager, layout: Dashboard},
+    {path: "/admin/productsManager", component: ProductManager, layout: Dashboard},
     {path: "/cart", component: CartPage},
     {path: "/admin/general", component: General, layout: Dashboard},
-    {path: "/admin/customerManager", component: CustomerManager, layout: Dashboard}
+    {path: "/admin/customerManager", component: CustomerManager, layout: Dashboard},
+    {path: "/admin/categoriesManager", component: CategoryManager, layout: Dashboard}
 ]
 
 const privateRoutes = [

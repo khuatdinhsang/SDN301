@@ -1,9 +1,51 @@
+import axios from 'axios'
+import { useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router'
+import { toast } from 'react-toastify'
+import { loginAccount, logout } from '../../actions/accountAction'
 import './Login.scss'
 
 
 function Login(){
+    const [username, setUsername] = useState('')
+    const [password, setPassword] = useState('')
     const navigate = useNavigate()
+    const dispatch = useDispatch()
+    useEffect(() => {
+        const action = logout();
+        dispatch(action);
+        axios
+        .post("/api/account/logout")
+        .then((res) => {
+            console.log(res.data);
+        })
+        .catch(err => console.log(err))
+    },[])
+
+    const handleLogin = () => {
+        const userLogin = {
+            username: username,
+            password: password
+        }
+        axios
+        .post("/api/account/login", userLogin)
+        .then(
+            (res) => {
+                // console.log(res.data);
+                if(res.data.status === "OK"){
+                    const action = loginAccount(userLogin)
+                    dispatch(action)
+                    toast.success("Login successfully")
+                    navigate("/")
+                }else{
+                    toast.error("Username or Password is not correct!")
+                }
+            }
+        )
+        .catch(err => toast(err))
+    }
+
 
     return(
          <div className="container">
@@ -18,6 +60,8 @@ function Login(){
                     <label htmlFor="mail">Username: </label>
                     <input
                     placeholder="Enter Username "
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                     id="mail"
                     />
                 </div>
@@ -26,6 +70,8 @@ function Login(){
                     <input
                     placeholder="Password"
                     type={"password"}
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
                     id="password"
                     />
                 </div>
@@ -50,12 +96,12 @@ function Login(){
                     Account is Blocked
                 </p>
                 <div className="handle">
-                    <button >Login</button>
-                    <a 
+                    <button onClick={() => handleLogin()} >Login</button>
+                    <i
                     className="remember"
                     style={{textAlign: "center"}} 
-                    >Change Password</a>
-                    <a className="remember" >Remember Password</a>
+                    >Change Password</i>
+                    <i className="remember" >Remember Password</i>
                 </div>
                 <div className="register">
                     <b >You don't have an account? </b>
