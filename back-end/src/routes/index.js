@@ -26,5 +26,6 @@ const routes = (app) => {
     app.use('/api/feedback', FeedbackRouter)
     app.use('/api/order', OrderRouter)
     app.use('/api/address', AddressShippingRouter)
+    app.use('/api/shipping', AddressShippingRouter)
 }
 module.exports = routes

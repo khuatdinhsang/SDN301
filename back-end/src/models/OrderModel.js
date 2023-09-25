@@ -22,6 +22,10 @@ const OrderSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
+    isDelivery: {
+        type: Boolean,
+        default: false
+    },
     isCancel: {
         type: Boolean,
         default: false
