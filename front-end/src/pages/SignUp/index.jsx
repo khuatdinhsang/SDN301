@@ -1,8 +1,40 @@
+import axios from "axios"
+import { useState } from "react"
 import { useNavigate } from "react-router"
+import { toast } from "react-toastify"
 import "./SignUp.scss"
 
 function SignUp(){
+    const [username, setUsername] = useState('')
+    const [password, setPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
     const navigate = useNavigate()
+
+    const handleSignUp= () => {
+      if(!username || !password || !confirmPassword){
+        toast.warning("Have a blank information")
+      }else if(password !== confirmPassword){
+          toast.warning("Password is not match Confirm Password")
+      }else{
+        const userRegister = {
+          username: username,
+          password: password,
+          confirmPassword: confirmPassword
+        }
+        axios
+        .post("/api/account/register",userRegister)
+        .then((res) => {
+          // console.log(res.data);
+          if(res.data.status === "ERR"){
+            toast.error("Username already exists!")
+          }else{
+            toast.success("Create account successfully")
+            navigate("/login")
+          }
+        })
+        .catch(err => toast(err))
+      }
+    }
 
     return (
         <div className="container">
@@ -17,6 +49,8 @@ function SignUp(){
             <label htmlFor="mail">Username: </label>
             <input
               placeholder="Enter Username "
+              value={username}
+              onChange={e => setUsername(e.target.value)}
               id="mail"
             />
           </div>
@@ -26,6 +60,8 @@ function SignUp(){
               placeholder="Password"
               type={"password"}
               id="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
             />
           </div>
           <div className="input">
@@ -34,18 +70,20 @@ function SignUp(){
               placeholder="Confirm Password"
               type={"password"}
               id="confirmPassword"
+              value={confirmPassword}
+              onChange={e => setConfirmPassword(e.target.value)}
             />
           </div>
-          <div className="input">
+          {/* <div className="input">
             <label htmlFor="displayName">Display Name: </label>
             <input
               placeholder="Enter Display Name"
               id="displayName"
             />
-          </div>
+          </div> */}
           <div className="handle">
             <button onClick={() =>  {navigate("/login")}}>Back to Log In</button>
-            <button onClick={() => {}}>Sign Up</button>
+            <button onClick={() => {handleSignUp()}}>Sign Up</button>
           </div>
         </div>
       </div>

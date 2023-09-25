@@ -1,16 +1,29 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import "./MenuPage.scss"
 
 function MenuPage(){
     let price =50000;
+    const [search, setSearch] = useState('')
     const navigate = useNavigate()
      useEffect(() =>{
         window.scrollTo(0,0)
     },[])
     return (
         <div className="menuPage">
-            <h2 className="menuTitle">HolaFood Menu</h2>
+            <div className="menuHeader">
+                <div className="blankDivMenu"></div>
+                <h2 className="menuTitle">HolaFood Menu</h2>
+                <div className="menuSearch">
+                    <input 
+                        type="text"
+                        value={search}
+                        onChange={() => setSearch()}
+                        className="inputSearchMenu"
+                        placeholder="Enter name"
+                        />
+                </div>
+            </div>
             <div className="cardList">
                 <div className="card" onClick={() => {navigate("/menu/foodDetail")}}>
                     <img src="https://i.pinimg.com/736x/30/da/50/30da50228346d0976ff6f87e7eb5db29--dwarf-planet-royalty-free-image.jpg" alt="" />
