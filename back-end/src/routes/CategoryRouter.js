@@ -8,4 +8,3 @@ router.put('/update/:id', adminMiddleware, validateCreateCategory, CategoryContr
 router.get('/getAll', CategoryController.getAllCategory)
 router.get('/:id', CategoryController.getDetailCategory)
 module.exports = router
-

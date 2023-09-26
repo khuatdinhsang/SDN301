@@ -1,6 +1,6 @@
-
 const { validationResult } = require('express-validator');
 const SubCategoryServices = require('../services/SubCategoryServices')
+
 const createSubCategory = async (req, res) => {
     try {
         const categoryId = req.params.id
