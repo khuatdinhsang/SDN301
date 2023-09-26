@@ -12,4 +12,3 @@ router.put('/getByCategoryId', SubCategoryController.getAllSubCategoryByCategory
 router.delete('/delete/:id', adminMiddleware, SubCategoryController.deleteSubCategory)
 router.get('/:id', SubCategoryController.getDetailSubCategory)
 module.exports = router
-

@@ -37,7 +37,6 @@ const createOrder = (accountId, data) => {
                 totalPrice: totalPrice,
                 cart
             })
-
             cart.filter(item => {
                 return sold(item.productId, item.quantity);
             });
@@ -127,14 +126,15 @@ const cancelOrder = (orderId, data) => {
                 //update Product
                 reSold(orderExist.cart[i].productId, orderExist.cart[i].quantity)
             }
-            await Order.findByIdAndUpdate(orderId, {
+            const orderCancel = await Order.findByIdAndUpdate(orderId, {
                 status: false,
                 isCancel: true,
                 reasonCancel: message
-            })
+            }, { new: true })
             resolve({
                 status: 'OK',
-                message: 'Order cancel successfully'
+                message: 'Order cancel successfully',
+                data: orderCancel
             })
         } catch (err) {
             reject(err)
@@ -156,7 +156,7 @@ const cancelOrder = (orderId, data) => {
 //                 status: true,
 //                 isCancel: false,
 //                 reasonCancel: ''
-//             })
+//             },{new:true})
 //             resolve({
 //                 status: 'OK',
 //                 message: 'Resold Order  successfully'

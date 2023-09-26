@@ -1,4 +1,3 @@
-
 const { validationResult } = require('express-validator');
 const CategoryServices = require('../services/CategoryServices')
 const createCategory = async (req, res) => {
