@@ -15,7 +15,7 @@ const OrderSchema = new mongoose.Schema({
     },
     accountId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Account',
         required: true,
     },
     status: {
@@ -30,8 +30,17 @@ const OrderSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    isDeliverySuccess: {
+        type: Boolean,
+        default: false
+    },
     reasonCancel: {
         type: String,
+        default: ''
+    },
+    shippingId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Account',
     }
 
 }, {

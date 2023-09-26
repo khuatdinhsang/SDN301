@@ -96,7 +96,7 @@ const getDetailAccount = (accountId) => {
                 })
             }
             const newUser = {
-                ...createUser._doc,
+                ...user._doc,
                 password: '******'
             }
             resolve({
