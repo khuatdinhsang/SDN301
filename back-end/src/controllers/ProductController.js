@@ -74,8 +74,12 @@ const getDetailProduct = async (req, res) => {
 }
 const getAllProduct = async (req, res) => {
     try {
+        let checkIsPagination = false
         const { page, limit } = req.query;
-        const response = await ProductServices.getAllProduct(page, limit)
+        if (page && limit) {
+            checkIsPagination = true
+        }
+        const response = await ProductServices.getAllProduct(page, limit, checkIsPagination)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(404).json({
