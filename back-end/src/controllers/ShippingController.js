@@ -5,6 +5,9 @@ const startReceiveOrder = async (req, res) => {
     try {
         const shippingId = req.user.id
         const response = await ShippingServices.startReceiveOrder(shippingId, req.body)
+        if (response.status === 'OK') {
+            await ShippingServices.sendEmailStartShipping(response.data)
+        }
         return res.status(200).json(response)
     } catch (error) {
         return res.status(404).json({
@@ -30,6 +33,9 @@ const failedDeliveryOrder = async (req, res) => {
     try {
         const shippingId = req.user.id
         const response = await ShippingServices.failedDeliveryOrder(shippingId, req.body)
+        if (response.status === 'OK') {
+            await ShippingServices.sendEmailFailedShipping(response.data)
+        }
         return res.status(200).json(response)
     } catch (error) {
         return res.status(404).json({
@@ -88,6 +94,7 @@ const returnOrder = async (req, res) => {
         })
     }
 }
+
 module.exports = {
     startReceiveOrder, successDeliveryOrder, failedDeliveryOrder,
     getAllOrder, getDetailOrder, returnOrder, getAllOrderSuccessByShipping
