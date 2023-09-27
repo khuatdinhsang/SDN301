@@ -3,6 +3,7 @@ const AddressShipping = require("../models/AddressShippingModel")
 const Category = require("../models/CategoryModel")
 const Order = require("../models/OrderModel")
 const Product = require("../models/ProductModel")
+const User = require("../models/UserModel")
 const SubCategory = require("../models/SubCategoryModel")
 const { sold, reSold } = require("../utils")
 const LIMIT_ORDER = 10;
@@ -37,13 +38,17 @@ const createOrder = (accountId, data) => {
                 totalPrice: totalPrice,
                 cart
             })
+            const user = await User.findOne({
+                accountId: checkAccountExist._id
+            })
             cart.filter(item => {
                 return sold(item.productId, item.quantity);
             });
+
             resolve({
                 status: 'OK',
                 message: 'Order successfully',
-                data: newOrder
+                data: { ...newOrder._doc, email: user.email }
             })
         } catch (err) {
             reject(err)

@@ -101,28 +101,45 @@ const getDetailProduct = (productId) => {
         }
     })
 }
-const getAllProduct = (page = 1, limit = LIMIT_PRODUCT) => {
+const getAllProduct = (page = 1, limit = LIMIT_PRODUCT, checkIsPagination) => {
     return new Promise(async (resolve, reject) => {
         try {
             var skipNumber = (page - 1) * limit;
             const totalProduct = await Product.count()
-            const allProduct = await Product.find({})
-                .skip(skipNumber)
-                .limit(limit)
-                .populate('subCategoryId')
-                .populate({
-                    path: 'subCategoryId',
-                    populate: {
-                        path: 'categoryId',
-                    }
+            if (checkIsPagination) {
+                const allProduct = await Product.find({})
+                    .skip(skipNumber)
+                    .limit(limit)
+                    .populate('subCategoryId')
+                    .populate({
+                        path: 'subCategoryId',
+                        populate: {
+                            path: 'categoryId',
+                        }
+                    })
+                resolve({
+                    status: 'OK',
+                    data: allProduct,
+                    totalProduct,
+                    currentPage: parseInt(page),
+                    limit: parseInt(limit)
                 })
-            resolve({
-                status: 'OK',
-                data: allProduct,
-                totalProduct,
-                currentPage: parseInt(page),
-                limit: parseInt(limit)
-            })
+            } else {
+                const allProduct = await Product.find({})
+                    .populate('subCategoryId')
+                    .populate({
+                        path: 'subCategoryId',
+                        populate: {
+                            path: 'categoryId',
+                        }
+                    })
+                resolve({
+                    status: 'OK',
+                    data: allProduct,
+                    totalProduct,
+                })
+            }
+
         } catch (err) {
             reject(err)
         }
