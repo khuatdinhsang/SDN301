@@ -149,7 +149,7 @@ const getAllOrderSuccessByShipping = (shippingId) => {
     return new Promise(async (resolve, reject) => {
         try {
             const allOrder = await Order.find({
-                shippingId, isDeliverySuccess: true
+                shippingId,  isDeliverySuccess: true
             })
                 .populate('addressShippingId')
             resolve({
