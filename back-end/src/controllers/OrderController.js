@@ -1,6 +1,5 @@
 const { validationResult } = require('express-validator');
 const OrderServices = require('../services/OrderServices');
-const { sendEmailCreateOrder } = require('../services/EmailOrderServices');
 
 const createOrder = async (req, res) => {
     try {
@@ -15,7 +14,7 @@ const createOrder = async (req, res) => {
         }
         const accountId = req.user.id
         const response = await OrderServices.createOrder(accountId, req.body)
-        await sendEmailCreateOrder(response?.data?.email, response.data)
+        await OrderServices.sendEmailCreateOrder(response?.data?.email, response.data)
         return res.status(201).json(response)
     } catch (error) {
         return res.status(404).json({
