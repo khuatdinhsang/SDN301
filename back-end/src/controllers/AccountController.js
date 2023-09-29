@@ -199,10 +199,22 @@ const addCart = async (req, res) => {
         })
     }
 }
+const loginGoogle = async (req, res) => {
+    try {
+        console.log("ac")
+        return res.status(200).json('oke')
+    } catch (error) {
+        return res.status(404).json({
+            status: 'ERR',
+            message: error.message
+        })
+    }
+}
+
 module.exports = {
     registerAccount, getDetailAccount,
     loginAccount, logout, deActiveAccount,
     inActiveAccount, changePassword,
     getAllAccount, refreshToken,
-    addCart, forgotPassword
+    addCart, forgotPassword, loginGoogle
 }
