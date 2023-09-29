@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import StarsRating from 'react-star-rate'
 import { toast } from 'react-toastify';
 import { addDetail } from '../../actions/cartAction';
@@ -25,6 +25,7 @@ function FoodDetails(){
 
     const dispatch = useDispatch();
     const { slug } = useParams()
+    const navigate = useNavigate()    
 
     useEffect(() => {
         window.scrollTo(0,0)
@@ -35,7 +36,7 @@ function FoodDetails(){
             setFoodDetail(res.data.data);
             setStar(res.data.data.rate)
             // setStar(res.data.data.rate)
-            console.log(res.data.data);
+            // console.log(res.data.data);
         })
         .catch(err => console.log(err))
 
@@ -114,7 +115,7 @@ function FoodDetails(){
                     // setRatingStar()
                     // setImage()
                     // setShowImgUpload()
-                    console.log(foodDetail?._id);
+                    // console.log(foodDetail?._id);
                     // toast('success')
                     
                 })
@@ -123,6 +124,11 @@ function FoodDetails(){
                
         }
         
+    }
+
+    const handleSimilarProduct = (productId) => {
+        navigate(`/menu/foodDetail/${productId}`)
+        // console.log(productId);
     }
 
     const handleAddtoCart = () =>{
@@ -163,7 +169,7 @@ function FoodDetails(){
                                 disabled='true'
                             />
                         </div>
-                        <select className='foodSize' defaultValue={foodSize} onChange={e => {setFoodSize(e.target.value); console.log(e.target.value);}}>
+                        <select className='foodSize' defaultValue={foodSize} onChange={e => {setFoodSize(e.target.value); }}>
                             <option value="0">Choose an option</option>
                             <option value="1">S</option>
                             <option value="2">M</option>
@@ -184,8 +190,8 @@ function FoodDetails(){
                     {similarProduct.map((product, index) => {
                         return (
                              index<4? (
-                             <div className="cardSimilar" key={product?._id}>
-                                <img className='imgCardSimilar' src={product?.image} alt="" />
+                             <div className="cardSimilar" key={product?._id} >
+                                <img className='imgCardSimilar' src={product?.image} alt="" onClick={() => handleSimilarProduct(product?._id)} />
                                 <span className='detailTitle'>{product?.name}</span>
                                 <p className='detailPrice'>
                                     {price.toLocaleString("vi", {

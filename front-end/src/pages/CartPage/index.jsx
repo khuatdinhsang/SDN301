@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { decreaseItem, increaseItem, removeItem } from "../../actions/cartAction";
 import "./CartPage.scss"
@@ -11,6 +12,7 @@ function CartPage(){
     const cartList = useSelector((state) => state.cart)
     const [total, setTotal] = useState(0)
     const dispatch = useDispatch();
+    const navigate = useNavigate()
 
     useEffect(()=>{
         window.scrollTo(0,0)
@@ -133,7 +135,7 @@ function CartPage(){
                         </div>
                     </div>
                     <div className="paying">
-                        <button>Paying</button>
+                        <button onClick={() => navigate("/payment")}>Paying</button>
                     </div>
                 </div>
             </div>
