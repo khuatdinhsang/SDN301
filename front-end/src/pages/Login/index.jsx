@@ -46,6 +46,11 @@ function Login(){
         .catch(err => toast(err))
     }
 
+    const handleKeypress = e => {
+        if(e.keyCode === 13){
+            handleLogin()
+        }
+    }
 
     return(
          <div className="container">

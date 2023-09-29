@@ -5,6 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { logout } from "../../../../actions/accountAction";
+import LoginIcon from '@mui/icons-material/Login';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import './style.scss'
 
 
@@ -12,6 +14,8 @@ const Header = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const account = useSelector(state => state.account)
+  const cartList = useSelector((state) => state.cart)
+
   const dispatch = useDispatch()
  
   const handleLogout = () =>{
@@ -55,6 +59,10 @@ const Header = () => {
             <div className="action">
               {account?.username !== undefined?
               <>
+                <span className="cartIcon" onClick={() => navigate('/cart')}><ShoppingCartIcon className="shoppingCart"/>
+                <span className="dot">{cartList?.length}</span>
+
+                </span>
                 <span className="usernameHeader">Hello, {account?.username}</span>
                 <button className="signIn" onClick={() => {
                   handleAdmin();
@@ -64,8 +72,9 @@ const Header = () => {
                 }}>Logout</button>
               </>:
               <>
-                <button className="signIn" onClick={() => navigate("/login")}>Sign In</button>
-                <button className="signUp" onClick={() => navigate("/signUp")}>Sign Up</button>
+                <span className="cartIcon" onClick={() => navigate('/cart')}><ShoppingCartIcon className="shoppingCart" /></span>
+                <button className="signIn" onClick={() => navigate("/signUp")}>Sign Up</button>
+                <button className="signUp" onClick={() => navigate("/login")}><span>Sign In <LoginIcon className="loginIcon"/></span></button>
               </>}
               
             </div>

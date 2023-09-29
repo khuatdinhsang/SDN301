@@ -17,7 +17,7 @@ const publicRoutes = [
     {path: "/login", component: Login, layout: HeaderOnly},
     {path: "/signUp", component: SignUp, layout: HeaderOnly},
     {path: "/menu", component: MenuPage},
-    {path: "/menu/foodDetail", component: FoodDetails},
+    {path: "/menu/foodDetail/:slug", component: FoodDetails},
     {path: "/admin/upload", component:UploadPage, layout: Dashboard},
     {path: "/admin/productsManager", component: ProductManager, layout: Dashboard},
     {path: "/cart", component: CartPage},

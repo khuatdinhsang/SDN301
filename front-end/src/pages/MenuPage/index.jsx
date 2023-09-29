@@ -1,136 +1,214 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
+import { addToCart } from "../../actions/cartAction";
+import Loading from "../Loading";
 import "./MenuPage.scss"
 
 function MenuPage(){
-    let price =50000;
     const [search, setSearch] = useState('')
+    const [optionDisplay, setOptionDisplay] = useState('')
+    const [optionDisplay1, setOptionDisplay1] = useState('')
+    const [category, setCategory] = useState([])
+    const [subcategory, setSubcategory] = useState([])
+    const [listProducts, setListProducts] = useState([])
+    const [loading, setLoading] = useState(false)
+
     const navigate = useNavigate()
+    const dispatch = useDispatch()
+
+
      useEffect(() =>{
         window.scrollTo(0,0)
+
+         axios
+        .get('/api/category/getAll')
+        .then((res) =>{
+            setCategory(res.data.data)
+            setLoading(true)
+        })
+        .catch(err => console.log(err))
+    
+        axios
+        .get('/api/product/getAll')
+        .then(res => {
+            setListProducts(res.data.data)
+            setLoading(true)
+            // console.log(res.data.data);
+        })
+        .catch(err => console.log(err))
+
     },[])
+
+    useEffect(() =>{
+        if(optionDisplay===''){
+            axios
+            .get('/api/product/getAll')
+            .then(res => {
+                setListProducts(res.data.data)
+                setLoading(true)
+            })
+            .catch(err => console.log(err))
+            setOptionDisplay1('')
+            setSearch('')
+        }else{
+            const categoryId = { categoryId: optionDisplay}
+            axios
+            .put('/api/product/getByCategoryId',categoryId)
+            .then(res => {
+                setListProducts(res.data.data)
+                setLoading(true)
+                // console.log(res.data.data);
+            })
+            .catch(err => console.log(err))
+
+            axios
+            .put('/api/subCategory/getByCategoryId', categoryId)
+            .then((res) =>{
+                setSubcategory(res.data.data)
+                setLoading(true)
+            })
+            .catch(err => console.log(err))
+
+        }
+    }, [optionDisplay])
+
+    useEffect(() => {
+        if(optionDisplay1 !== ''){
+            const categoryId1 = { subCategoryId: optionDisplay1}
+            axios
+            .put('/api/product/getBySubcategoryId',categoryId1)
+            .then(res => {
+                setListProducts(res.data.data)
+                setLoading(true)
+            })
+            .catch(err => console.log(err))
+        }else{
+            const categoryId = { categoryId: optionDisplay}
+            axios
+            .put('/api/product/getByCategoryId',categoryId)
+            .then(res => {
+                setListProducts(res.data.data)
+                setLoading(true)
+                // console.log(res.data.data);
+            })
+            .catch(err => console.log(err))
+        }
+    },[optionDisplay1])
+
+    useEffect(() =>{
+        if(search===''){
+            if(optionDisplay !== ''){
+                if(optionDisplay1 !== ''){
+                    const categoryId1 = { subCategoryId: optionDisplay1}
+                    axios
+                    .put('/api/product/getBySubcategoryId',categoryId1)
+                    .then(res => {
+                        setListProducts(res.data.data)
+                        setLoading(true)
+                    })
+                    .catch(err => console.log(err))
+                }else{
+                    const categoryId = { categoryId: optionDisplay}
+                    axios
+                    .put('/api/product/getByCategoryId',categoryId)
+                    .then(res => {
+                        setListProducts(res.data.data)
+                        setLoading(true)
+                        // console.log(res.data.data);
+                    })
+                    .catch(err => console.log(err))
+                }
+            }else{
+                axios
+                .get('/api/product/getAll')
+                .then(res => {
+                    setListProducts(res.data.data)
+                    setLoading(true)
+                })
+                .catch(err => console.log(err))
+            }
+        }else{
+            if(optionDisplay!==''){
+                const newList = listProducts.filter(product => {
+                    return product?.name.includes(search)
+                })
+                // console.log(newList);
+                setListProducts(newList)
+            }else{
+                axios
+                .get(`/api/product/search?page=1&limit=10&name=${search}`)
+                .then(res => {
+                    setListProducts(res.data.data)
+                    setLoading(true)
+                })
+                .catch(err => console.log(err))
+            }
+        }
+    },[search])
+
+    const handleAddtoCart = (item) => {
+        const newItem = item;
+        const action = addToCart(newItem);
+        dispatch(action);
+        toast.success(`Add ${item?.name} successfully`);
+        console.log(item);
+        
+    }
+
     return (
         <div className="menuPage">
             <div className="menuHeader">
-                <div className="blankDivMenu"></div>
+                <div className="optionDisplay">
+                    <select
+                        className="option"
+                        value={optionDisplay}
+                        onChange={e => setOptionDisplay(e.target.value)}
+                    >
+                        <option value="">All Products</option>
+                       {loading ? category?.map((e) => {
+                            return <option value={e?._id} key={e?._id}>{e?.name}</option>
+                        } ): <Loading/>}
+                    </select>
+                    <select
+                        className="option"
+                        value={optionDisplay1}
+                        onChange={e => setOptionDisplay1(e.target.value)}
+                        style={optionDisplay === '' ?{'display':"none"}:{'display':"inline-block"}}
+                    >
+                        <option value="">Choose A Subcategory</option>
+                       {loading ?subcategory?.map((e) => {
+                            return <option value={e?._id} key={e?._id}>{e?.name}</option>
+                        } ):<Loading/>}
+                    </select>
+                </div>
                 <h2 className="menuTitle">HolaFood Menu</h2>
                 <div className="menuSearch">
                     <input 
                         type="text"
                         value={search}
-                        onChange={() => setSearch()}
+                        onChange={(e) => setSearch(e.target.value)}
                         className="inputSearchMenu"
                         placeholder="Enter name"
                         />
                 </div>
             </div>
             <div className="cardList">
-                <div className="card" onClick={() => {navigate("/menu/foodDetail")}}>
-                    <img src="https://i.pinimg.com/736x/30/da/50/30da50228346d0976ff6f87e7eb5db29--dwarf-planet-royalty-free-image.jpg" alt="" />
-                    <span className="foodName">Pizza Mozzarella</span>
-                    <p className="foodPrice">{price.toLocaleString('vi', {style : 'currency', currency : 'VND'})}</p>
-                    <button className="addBtn">Add</button>
-                </div>
-                <div className="card"  onClick={() => {navigate("/menu/foodDetail")}}>
-                    <img src="https://i.pinimg.com/originals/46/72/70/467270305df7265e02415e6c24234bd7.jpg" alt="" />
-                    <span className="foodName">Hamburger</span>
-                    <p className="foodPrice">{price.toLocaleString('vi', 
-                    {style : 'currency',
-                    currency : 'VND'})}
-                    </p>
-                    <button className="addBtn">Add</button>
-                </div>
-                <div className="card"  onClick={() => {navigate("/menu/foodDetail")}}>
-                    <img src="https://i.pinimg.com/1200x/3a/24/5c/3a245c183940e49e02b6780a24380060.jpg" alt="" />
-                    <span className="foodName">Pho</span>
-                    <p className="foodPrice">{price.toLocaleString("vi", {
-                        style: "currency",
-                        currency: "VND",
-                      })}</p>
-                    <button className="addBtn">Add</button>
-                </div>
-                <div className="card"  onClick={() => {navigate("/menu/foodDetail")}}>
-                    <img src="https://i.pinimg.com/1200x/48/9c/39/489c3910a3e65a3c8eacfbec586cb0f9.jpg" alt="" />
-                    <span className="foodName">Sashimi</span>
-                    <p className="foodPrice">{price.toLocaleString("vi", {
-                        style: "currency",
-                        currency: "VND",
-                      })}</p>
-                    <button className="addBtn">Add</button>
-                </div>
-                <div className="card"  onClick={() => {navigate("/menu/foodDetail")}}>
-                    <img src="https://i.pinimg.com/736x/30/da/50/30da50228346d0976ff6f87e7eb5db29--dwarf-planet-royalty-free-image.jpg" alt="" />
-                    <span className="foodName">Pizza Mozzarella</span>
-                    <p className="foodPrice">{price.toLocaleString("vi", {
-                        style: "currency",
-                        currency: "VND",
-                      })}</p>
-                    <button className="addBtn">Add</button>
-                </div>
-                <div className="card" onClick={() => {navigate("/menu/foodDetail")}}>
-                    <img src="https://i.pinimg.com/originals/46/72/70/467270305df7265e02415e6c24234bd7.jpg" alt="" />
-                    <span className="foodName">Hamburger</span>
-                    <p className="foodPrice">{price.toLocaleString("vi", {
-                        style: "currency",
-                        currency: "VND",
-                      })}</p>
-                    <button className="addBtn">Add</button>
-                </div>
-                <div className="card" onClick={() => {navigate("/menu/foodDetail")}}>
-                    <img src="https://i.pinimg.com/1200x/3a/24/5c/3a245c183940e49e02b6780a24380060.jpg" alt="" />
-                    <span className="foodName">Pho</span>
-                    <p className="foodPrice">{price.toLocaleString("vi", {
-                        style: "currency",
-                        currency: "VND",
-                      })}</p>
-                    <button className="addBtn">Add</button>
-                </div>
-                <div className="card" onClick={() => {navigate("/menu/foodDetail")}}>
-                    <img src="https://i.pinimg.com/1200x/48/9c/39/489c3910a3e65a3c8eacfbec586cb0f9.jpg" alt="" />
-                    <span className="foodName">Sashimi</span>
-                    <p className="foodPrice">{price.toLocaleString("vi", {
-                        style: "currency",
-                        currency: "VND",
-                      })}</p>
-                    <button className="addBtn">Add</button>
-                </div>
-                <div className="card" onClick={() => {navigate("/menu/foodDetail")}}>
-                    <img src="https://i.pinimg.com/736x/30/da/50/30da50228346d0976ff6f87e7eb5db29--dwarf-planet-royalty-free-image.jpg" alt="" />
-                    <span className="foodName">Pizza Mozzarella</span>
-                    <p className="foodPrice">{price.toLocaleString("vi", {
-                        style: "currency",
-                        currency: "VND",
-                      })}</p>
-                    <button className="addBtn">Add</button>
-                </div>
-                <div className="card" onClick={() => {navigate("/menu/foodDetail")}}>
-                    <img src="https://i.pinimg.com/originals/46/72/70/467270305df7265e02415e6c24234bd7.jpg" alt="" />
-                    <span className="foodName">Hamburger</span>
-                    <p className="foodPrice">{price.toLocaleString("vi", {
-                        style: "currency",
-                        currency: "VND",
-                      })}</p>
-                    <button className="addBtn">Add</button>
-                </div>
-                <div className="card" onClick={() => {navigate("/menu/foodDetail")}}>
-                    <img src="https://i.pinimg.com/1200x/3a/24/5c/3a245c183940e49e02b6780a24380060.jpg" alt="" />
-                    <span className="foodName">Pho</span>
-                    <p className="foodPrice">{price.toLocaleString("vi", {
-                        style: "currency",
-                        currency: "VND",
-                      })}</p>
-                    <button className="addBtn">Add</button>
-                </div>
-                <div className="card" onClick={() => {navigate("/menu/foodDetail")}}>
-                    <img src="https://i.pinimg.com/1200x/48/9c/39/489c3910a3e65a3c8eacfbec586cb0f9.jpg" alt="" />
-                    <span className="foodName">Sashimi</span>
-                    <p className="foodPrice">{price.toLocaleString("vi", {
-                        style: "currency",
-                        currency: "VND",
-                      })}</p>
-                    <button className="addBtn">Add</button>
-                </div>
+                {loading ? listProducts?.map(e => {
+                    return (
+                    <div className="card" key={e?._id}>
+                        <img src={e?.image} alt="" onClick={() => {navigate(`/menu/foodDetail/${e?._id}`)}}/>
+                        <span className="foodName">{e?.name}</span>
+                        <p className="foodPrice">{e?.price.toLocaleString('vi', {style : 'currency', currency : 'VND'})}</p>
+                        <button className="addBtn" onClick={() => handleAddtoCart(e)}>Add</button>
+                    </div>)
+                }): <Loading/>}
+
+                
             </div>
+
         </div>
     )
 }
