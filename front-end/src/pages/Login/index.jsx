@@ -114,7 +114,9 @@ function Login(){
                     style={{ cursor: "pointer" }}
                     onClick={() => {navigate("/signUp")}}
                     >
-                    Register
+                    Register  
+
+                    
                     </p>
                 </div>
                 </div>
