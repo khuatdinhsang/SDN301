@@ -23,7 +23,8 @@ const publicRoutes = [
     {path: "/cart", component: CartPage},
     {path: "/admin/general", component: General, layout: Dashboard},
     {path: "/admin/customerManager", component: CustomerManager, layout: Dashboard},
-    {path: "/admin/categoriesManager", component: CategoryManager, layout: Dashboard}
+    {path: "/admin/categoriesManager", component: CategoryManager, layout: Dashboard},
+    // {path: "/admin/orderManager", component: OrderManager, layout: Dashboard}
 ]
 
 const privateRoutes = [
