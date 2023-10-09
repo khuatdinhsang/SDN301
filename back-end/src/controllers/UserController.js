@@ -26,6 +26,7 @@ const registerUser = async (req, res) => {
     }
 }
 const getDetailUser = async (req, res) => {
+    console.log("sad", req.cookies.refreshToken);
     const accountId = req.user.id;
     try {
         if (!accountId) {
@@ -73,6 +74,18 @@ const getAllUsers = async (req, res) => {
         })
     }
 }
+const getDetailUserByAccountId = async (req, res) => {
+    try {
+        const accountId = req.params.id
+        const response = await UserServices.getDetailUserByAccountId(accountId)
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(404).json({
+            status: 'ERR',
+            message: error.message
+        })
+    }
+}
 module.exports = {
-    registerUser, getDetailUser, updateUser, getAllUsers
+    registerUser, getDetailUser, updateUser, getAllUsers, getDetailUserByAccountId
 }

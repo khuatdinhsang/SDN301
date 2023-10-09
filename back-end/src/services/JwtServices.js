@@ -3,7 +3,7 @@ const dotenv = require('dotenv');
 const generalAccessToken = async (payload) => {
     const accessToken = jwt.sign({
         ...payload
-    }, process.env.ACCESS_TOKEN, { expiresIn: '30d' })
+    }, process.env.ACCESS_TOKEN, { expiresIn: '10d' })
     return accessToken
 }
 const generalRefreshToken = async (payload) => {
@@ -22,6 +22,7 @@ const refreshTokenServices = (token) => {
                         message: 'The authentication'
                     })
                 }
+                console.log("user", user)
                 const accessToken = await generalAccessToken({
                     id: user?.id,
                     roleId: user?.roleId,

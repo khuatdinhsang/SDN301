@@ -1,5 +1,7 @@
 const Feedback = require("../models/FeedbackModel")
+const Invoice = require("../models/InvoiceModel")
 const Product = require("../models/ProductModel")
+const User = require("../models/UserModel")
 
 const getAverageRateByProduct = async (productId) => {
     const numberRate = await Feedback.count({
@@ -18,7 +20,6 @@ const getAverageRateByProduct = async (productId) => {
             },
         },
     ])
-    console.log(averageRate)
     return Number((averageRate[0]?.total / numberRate).toFixed(1))
 }
 
@@ -78,10 +79,26 @@ const generateRandomString = (length) => {
 
     return result;
 }
-
-
-
+const totalExpenditure = async () => {
+    const allInvoices = await Invoice.find({});
+    let totalInvoices = 0;
+    for (let i = 0; i < allInvoices.length; i++) {
+        totalInvoices += allInvoices[i]?.totalPrice
+    }
+    return totalInvoices
+}
+const totalSalaryEmployees = async () => {
+    const allEmployee = await User.find({});
+    console.log("a", allEmployee)
+    let totalSalaryEmployee = 0;
+    for (let i = 0; i < allEmployee.length; i++) {
+        totalSalaryEmployee += allEmployee[i]?.salary ?? 0
+    }
+    return totalSalaryEmployee
+}
 module.exports = {
     getAverageRateByProduct,
-    getAverageRateByAccount, sold, reSold, generateRandomString
+    getAverageRateByAccount, sold, reSold,
+    totalExpenditure,
+    generateRandomString, totalSalaryEmployees
 }

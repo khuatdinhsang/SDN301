@@ -209,7 +209,7 @@ const inActiveAccount = (userId) => {
         }
     })
 }
-const changePassword = (accountId, newPassword) => {
+const changePassword = (accountId, newPassword, currentPassword) => {
     return new Promise(async (resolve, reject) => {
         try {
             const user = await Account.findOne({
@@ -222,21 +222,30 @@ const changePassword = (accountId, newPassword) => {
                     message: `The user is not defined `
                 })
             }
-            const hash = bcrypt.hashSync(newPassword, 10)
-            const userChangePass = {
-                ...user._doc,
-                password: hash
+            const comparePassword = bcrypt.compareSync(currentPassword, user.password)
+            if (!comparePassword) {
+                resolve({
+                    status: 'ERR',
+                    message: 'The password  is incorrect',
+                })
             }
-            const userChangePassword = await Account.findByIdAndUpdate(user._id, userChangePass, { new: true })
-            const newUserChangePassword = {
-                ...userChangePassword._doc,
-                password: '******'
+            if (comparePassword) {
+                const hash = bcrypt.hashSync(newPassword, 10)
+                const userChangePass = {
+                    ...user._doc,
+                    password: hash
+                }
+                const userChangePassword = await Account.findByIdAndUpdate(user._id, userChangePass, { new: true })
+                const newUserChangePassword = {
+                    ...userChangePassword._doc,
+                    password: '******'
+                }
+                resolve({
+                    status: 'OK',
+                    message: 'SUCCESS',
+                    data: newUserChangePassword
+                })
             }
-            resolve({
-                status: 'OK',
-                message: 'SUCCESS',
-                data: newUserChangePassword
-            })
         } catch (err) {
             reject(err)
         }

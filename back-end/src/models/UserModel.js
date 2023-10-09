@@ -8,10 +8,8 @@ const userSchema = new mongoose.Schema({
     dateOfBirth: { type: Date },
     gender: { type: Boolean },
     address: { type: String },
+    salary: { type: Number },
     accountId: { type: mongoose.Schema.Types.ObjectId, ref: 'Account' },
-    googleId: {
-        type: String
-    }
 }, {
     timestamps: true
 })
