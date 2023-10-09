@@ -73,6 +73,27 @@
       }
     }
   }
+
+  .googleIcon{
+    color: blue;
+    transition: .4s;
+    background-color: #fff;
+    
+  }
+  
+  .buttonGoogle{
+    padding: 8px 14px;
+    border: 1px solid transparent;
+    background-color: #f9004d;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: .4s;
+
+    &:hover{
+      transform: scale(1.05);
+    }
+  }
   .handle {
     display: flex;
     flex-direction: column;

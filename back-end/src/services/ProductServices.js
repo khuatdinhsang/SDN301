@@ -2,7 +2,7 @@ const Category = require("../models/CategoryModel")
 const Product = require("../models/ProductModel")
 const SubCategory = require("../models/SubCategoryModel")
 const LIMIT_PRODUCT = 10
-const createProduct = (data) => {
+const   createProduct = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
             const { name, price, quantity, image, description,

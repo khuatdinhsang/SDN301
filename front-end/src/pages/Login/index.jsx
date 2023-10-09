@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { loginAccount, logout } from "../../actions/accountAction";
 import "./Login.scss";
 import { Link as MuiLink } from "@mui/material";
+import GoogleIcon from '@mui/icons-material/Google';
 import { getGoogleUrl } from "../../utils.js";
 
 function Login() {
@@ -26,16 +27,21 @@ function Login() {
 
   const handleLogin = () => {
     const userLogin = {
-      username: username,
-      password: password,
-    };
+            username: username,
+            password: password
+          }
     axios
       .post("/api/account/login", userLogin)
       .then((res) => {
         // console.log(res.data);
         if (res.data.status === "OK") {
-          const action = loginAccount(userLogin);
+          const user = {
+              username: username,
+              accessToken: res.data.accessToken
+          }
+          const action = loginAccount(user);
           dispatch(action);
+          // console.log(res.data.accessToken);
           toast.success("Login successfully");
           navigate("/");
         } else {
