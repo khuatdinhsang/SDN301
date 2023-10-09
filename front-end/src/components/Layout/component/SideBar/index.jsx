@@ -23,7 +23,7 @@ function SideBar(){
                 <div className="customerManager"  onClick={() => {navigate("/admin/customerManager")}}>
                     <span>Customers</span>
                 </div>
-                <div className="orderManager">
+                <div className="orderManager" onClick={() => { navigate("/admin/OrderManager") }}>
                     <span>Orders</span>
                 </div>
                 <div className="productManager" onClick={() => navigate("/admin/productsManager")}>
