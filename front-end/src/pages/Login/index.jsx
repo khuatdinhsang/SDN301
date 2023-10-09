@@ -5,10 +5,6 @@ import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { loginAccount, logout } from "../../actions/accountAction";
 import "./Login.scss";
-import { Link as MuiLink } from "@mui/material";
-import GoogleIcon from '@mui/icons-material/Google';
-import { getGoogleUrl } from "../../utils.js";
-
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
