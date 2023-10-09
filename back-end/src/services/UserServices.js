@@ -56,6 +56,37 @@ const getDetailUser = (accountId) => {
         }
     })
 }
+const getDetailUserByAccountId = (accountId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const user = await User.findOne({
+                accountId: accountId
+            })
+                .populate('accountId')
+                .populate({
+                    path: 'accountId',
+                    populate: {
+                        path: 'role'
+                    }
+                })
+
+            if (user === null) {
+                resolve({
+                    status: 'ERR',
+                    message: `The user is not defined `
+                })
+            }
+            user._doc.accountId.password = "******";
+            resolve({
+                status: 'OK',
+                message: 'SUCCESS',
+                data: user
+            })
+        } catch (err) {
+            reject(err)
+        }
+    })
+}
 const updateUser = (accountId, data) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -129,5 +160,5 @@ const getAllUsers = (page = 1, limit = LIMIT_USER) => {
     })
 }
 module.exports = {
-    registerUser, getDetailUser, updateUser, getAllUsers
+    registerUser, getDetailUser, updateUser, getAllUsers, getDetailUserByAccountId
 }

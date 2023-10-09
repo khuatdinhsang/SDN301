@@ -152,6 +152,24 @@ const changePassword = async (req, res) => {
         })
     }
 }
+const forgotPassword = async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                errors: errors.array()
+            })
+        }
+        const { email } = req.body;
+        const response = await AccountServices.forgotPassword(email)
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(404).json({
+            status: 'ERR',
+            message: error.message
+        })
+    }
+}
 const refreshToken = async (req, res) => {
     try {
         const token = req.cookies.refreshToken
@@ -181,11 +199,22 @@ const addCart = async (req, res) => {
         })
     }
 }
+const loginGoogle = async (req, res) => {
+    try {
+        console.log("ac")
+        return res.status(200).json('oke')
+    } catch (error) {
+        return res.status(404).json({
+            status: 'ERR',
+            message: error.message
+        })
+    }
+}
+
 module.exports = {
     registerAccount, getDetailAccount,
     loginAccount, logout, deActiveAccount,
     inActiveAccount, changePassword,
     getAllAccount, refreshToken,
-    addCart
-
+    addCart, forgotPassword, loginGoogle
 }

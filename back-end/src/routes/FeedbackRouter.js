@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { auth, adminMiddleware } = require('../middlewares/AdminMiddleware');
+const { auth } = require('../middlewares/AdminMiddleware');
 const FeedbackController = require('../controllers/FeedbackController');
 const { checkIsNumber } = require('../validation');
 router.post('/create/', auth,

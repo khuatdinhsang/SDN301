@@ -1,5 +1,5 @@
 import axios from "axios";
-import React from "react";
+import React, { useState } from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
@@ -15,6 +15,7 @@ const Header = () => {
   const location = useLocation()
   const account = useSelector(state => state.account)
   const cartList = useSelector((state) => state.cart)
+  const [classActive, setClassActive] = useState('')
 
   const dispatch = useDispatch()
  
@@ -40,7 +41,7 @@ const Header = () => {
   }
 
   useEffect(()=>{
-
+    setClassActive(location.pathname)
   },[location.pathname])
 
   return (<React.Fragment>
@@ -50,8 +51,8 @@ const Header = () => {
               <h1 onClick={() => navigate("/")}>Hola<b>Food</b></h1>
             </div>
             <ul>
-              <li className="active home" onClick={() => navigate("/")}><span>Home</span></li>
-              <li className="menu" onClick={() => navigate("/menu")}><span>Menu</span></li>
+              <li className={classActive === '/' ? "active home" : "home"} onClick={() => navigate("/")}><span>Home</span></li>
+              <li className={classActive.includes('menu') ? "active menu" : "menu"} onClick={() => navigate("/menu")}><span>Menu</span></li>
               <li className="services"><span>Service</span></li>
               <li className="about"><span>About Us</span></li>
               <li className="gallery"><span>Gallery</span></li>

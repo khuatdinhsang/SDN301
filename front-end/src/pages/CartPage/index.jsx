@@ -64,7 +64,11 @@ function CartPage(){
                     return (
                         <div className="itemBox">
                             <div className="leftBox">
-                                <img src={cart?.image} alt="" />
+                                <img 
+                                    src={cart?.image} 
+                                    alt="" 
+                                    onClick={() => navigate(`/menu/foodDetail/${cart?._id}`)}
+                                    style={{"cursor": "pointer"}} />
                                 <div className="detailItem">
                                     <h4 className="itemTitle">{cart?.name}</h4>
                                     <p className="itemDescription">{cart?.description}</p>

@@ -1,8 +1,10 @@
 import axios from 'axios'
 import { useEffect } from 'react'
 import { useState } from 'react'
+import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { toast } from 'react-toastify'
+import Loading from '../../Loading'
 import './UploadPage.scss'
 
 function UploadPage(){
@@ -15,6 +17,9 @@ function UploadPage(){
     const [typeSubcategory, setTypeSubcategory] = useState('')
     const [category, setCategory] = useState([])
     const [subcategory, setSubcategory] = useState([])
+    const [loadingUpload, setLoadingUpload] = useState(true)
+
+    const account = useSelector(state => state.account)
 
     useEffect(() =>{
         axios
@@ -24,13 +29,25 @@ function UploadPage(){
         })
         .catch(err => console.log(err))
 
+        // axios
+        // .get('/api/subCategory/getAll')
+        // .then((res) =>{
+        //     setSubcategory(res.data.data)
+        // })
+        // .catch(err => console.log(err))
+    },[])
+
+    useEffect(() => {
         axios
-        .get('/api/subCategory/getAll')
-        .then((res) =>{
+        .put('/api/subCategory/getByCategoryId',{
+            categoryId: type
+        })
+        .then(res => {
             setSubcategory(res.data.data)
         })
-        .catch(err => console.log(err))
-    },[])
+        .catch(err => console.log(err + "Can not get subcategory"))
+
+    }, [type])
     
     useEffect(() => {
 
@@ -53,8 +70,9 @@ function UploadPage(){
 
     const handleUpload = () =>{
         if(!name || !price || !type || !typeSubcategory){
-            toast.warning("An Inforation is blank!")
+            toast.warning("An Information is blank!")
         }else{
+            setLoadingUpload(false)
             const data = new FormData();
             data.append("file",img);
             data.append("upload_preset", "seafood");
@@ -66,23 +84,44 @@ function UploadPage(){
             })
             .then((res) => res.json())
             .then((data) => {
-            // const newProduct = {
-            //     name: name, 
-            //     price: price, 
-            //     type: type, 
-            //     img: data.url
-            // };
-            console.log(data.url);
+                const newProduct = {
+                    name: name, 
+                    price: price, 
+                    quantity: 1,
+                    image: data.url,
+                    categoryId: type,
+                    subCategoryId: typeSubcategory
+                };
+                
+                axios
+                .post('/api/product/create',newProduct,{
+                    headers: {
+                        Authorization: `Bearer ${account?.accessToken}`
+                    }
+                })
+                .then(res => {
+                    toast.success(`Upload Product ${name} successfully!`)
+                    setName('')
+                    setPrice()
+                    setType('')
+                    setTypeSubcategory('')
+                    setImg()
+                    setShowImg()
+                    setLoadingUpload(true)
+                })
+                .catch(err => console.log(err + "Can not upload new product"))
 
-            // axios.post()
-            });           
+
+            })
+             .catch(err => console.log(err + "Can not upload"))
+
         }
 
     }
 
     return (
        <div className="uploadPage">
-            <div className='uploadContain'>
+           {loadingUpload  ?  <div className='uploadContain'>
                 <h3 className="uploadTitle">Upload Product</h3>
                 <div className="uploadContent">
                     <div className="inputBox">
@@ -150,7 +189,7 @@ function UploadPage(){
 
                 </div>
 
-            </div>  
+            </div> : <Loading/> }
        </div>
     )
 }

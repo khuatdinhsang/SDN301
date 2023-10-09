@@ -5,6 +5,7 @@ import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { addToCart } from "../../actions/cartAction";
 import Loading from "../Loading";
+import SwiperHome from "../Swiper";
 import "./MenuPage.scss"
 
 function MenuPage(){
@@ -43,6 +44,7 @@ function MenuPage(){
     },[])
 
     useEffect(() =>{
+        setLoading(false);
         if(optionDisplay===''){
             axios
             .get('/api/product/getAll')
@@ -76,6 +78,7 @@ function MenuPage(){
     }, [optionDisplay])
 
     useEffect(() => {
+        setLoading(false);
         if(optionDisplay1 !== ''){
             const categoryId1 = { subCategoryId: optionDisplay1}
             axios
@@ -99,6 +102,7 @@ function MenuPage(){
     },[optionDisplay1])
 
     useEffect(() =>{
+        setLoading(false);
         if(search===''){
             if(optionDisplay !== ''){
                 if(optionDisplay1 !== ''){
@@ -137,6 +141,7 @@ function MenuPage(){
                 })
                 // console.log(newList);
                 setListProducts(newList)
+                setLoading(true)
             }else{
                 axios
                 .get(`/api/product/search?page=1&limit=10&name=${search}`)
@@ -160,6 +165,7 @@ function MenuPage(){
 
     return (
         <div className="menuPage">
+                        
             <div className="menuHeader">
                 <div className="optionDisplay">
                     <select

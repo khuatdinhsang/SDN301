@@ -6,6 +6,8 @@ const ProductRouter = require('./ProductRouter.js');
 const FeedbackRouter = require('./FeedbackRouter.js');
 const OrderRouter = require('./OrderRouter.js');
 const AddressShippingRouter = require('./AddressShippingRouter.js');
+const ShippingRouter = require('./ShippingRouter.js');
+const PassportRouter = require('./PassportRouter.js');
 const routes = (app) => {
     /**
      * @openapi
@@ -26,5 +28,7 @@ const routes = (app) => {
     app.use('/api/feedback', FeedbackRouter)
     app.use('/api/order', OrderRouter)
     app.use('/api/address', AddressShippingRouter)
+    app.use('/api/shipping', ShippingRouter)
+    app.use('/', PassportRouter)
 }
 module.exports = routes

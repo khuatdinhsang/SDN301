@@ -15,19 +15,32 @@ const OrderSchema = new mongoose.Schema({
     },
     accountId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Account',
         required: true,
     },
     status: {
         type: Boolean,
         default: true
     },
+    isDelivery: {
+        type: Boolean,
+        default: false
+    },
     isCancel: {
+        type: Boolean,
+        default: false
+    },
+    isDeliverySuccess: {
         type: Boolean,
         default: false
     },
     reasonCancel: {
         type: String,
+        default: ''
+    },
+    shippingId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Account',
     }
 
 }, {

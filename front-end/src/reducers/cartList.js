@@ -32,7 +32,7 @@ const cartReducer = (state = initState, action) => {
 
       return [...newList];
     }
-    case "ADD_DETAILS": {
+    case "ADD_DETAIL": {
       const newList = [...state];
       const newItem = action.payload;
       const findIndex = newList.findIndex((item) => item._id === newItem._id);
