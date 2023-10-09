@@ -10,8 +10,22 @@
         justify-content: space-around;
         align-items: center;
         
-        .blankDivMenu{
+        .optionDisplay{
             width: 30%;
+            margin-left: 30px;
+            
+            .option{
+                padding: 8px 16px 8px 3px;
+                border: 1px solid transparent;
+                outline: none;
+                border-bottom: 2px solid #ccc;
+                transition: .4s;
+                margin-right: 10px;
+
+                &:focus{
+                    border-bottom: 2px solid var(--primary);
+                }
+            }
         }
 
         .menuTitle{
@@ -100,6 +114,25 @@
             &:hover{
                box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px;
             
+            }
+        }
+    }
+
+    .paging{
+        width: 80%;
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+        
+
+        .pagingAction{
+            width: 15%;
+            display: flex;
+            justify-content: center;
+
+            button{
+                padding: 4px;
+                
             }
         }
     }
