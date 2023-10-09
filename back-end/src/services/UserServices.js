@@ -160,5 +160,6 @@ const getAllUsers = (page = 1, limit = LIMIT_USER) => {
     })
 }
 module.exports = {
-    registerUser, getDetailUser, updateUser, getAllUsers, getDetailUserByAccountId
+    registerUser, getDetailUser, updateUser, getAllUsers,
+    getDetailUserByAccountId
 }

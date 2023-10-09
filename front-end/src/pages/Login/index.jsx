@@ -50,11 +50,7 @@ function Login() {
       })
       .catch((err) => toast(err));
   };
-  // const test = () => {
-  //   axios.post("/auth/google").then((res) => {
-  //     console.log(res.data);
-  //   });
-  // };
+
   return (
     <div className="container">
       <div className="loginContent">
@@ -124,35 +120,6 @@ function Login() {
               Register
             </p>
           </div>
-          <MuiLink
-            href={"http://localhost:3001/auth/google"}
-            sx={{
-              borderRadius: 1,
-              py: "0.6rem",
-              columnGap: "1rem",
-              textDecoration: "none",
-              color: "#393e45",
-              cursor: "pointer",
-              fontWeight: 500,
-              margin: "10px 0",
-              transition: ".4s",
-
-              "&:hover": {
-                backgroundColor: "#fff",
-                boxShadow: "0 1px 13px 0 rgb(0 0 0 / 15%)",
-                transform: "scale(1.05)"
-              },
-            }}
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <GoogleIcon className="googleIcon"/>
-          </MuiLink>
-          {/* <button onClick={test}>Goi di</button> */}
-          <form action="http://localhost:3001/auth/google" method="post">
-            <input className="buttonGoogle" type="submit" value="Press to log in" />
-          </form>
         </div>
       </div>
     </div>

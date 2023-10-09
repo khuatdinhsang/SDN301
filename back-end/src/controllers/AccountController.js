@@ -40,7 +40,7 @@ const loginAccount = async (req, res) => {
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true, // chi lay dc qua http k lay dc qua js
             secure: false,// khi nao deloy se chuyen thanh true
-            samesite: 'strict'
+            sameSite: 'strict'
         })
         return res.status(200).json(newResponse)
     } catch (error) {
@@ -128,7 +128,7 @@ const inActiveAccount = async (req, res) => {
     }
 }
 const changePassword = async (req, res) => {
-    const { newPassword, confirmPassword } = req.body;
+    const { currentPassword, newPassword, confirmPassword } = req.body;
     const accountId = req.user.id
     try {
         const errors = validationResult(req);
@@ -143,7 +143,7 @@ const changePassword = async (req, res) => {
                 message: 'Password is not match confirm Password'
             })
         }
-        const response = await AccountServices.changePassword(accountId, newPassword)
+        const response = await AccountServices.changePassword(accountId, newPassword, currentPassword)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(404).json({
@@ -172,18 +172,20 @@ const forgotPassword = async (req, res) => {
 }
 const refreshToken = async (req, res) => {
     try {
-        const token = req.cookies.refreshToken
+        const refreshToken = req.cookies.refreshToken
+        console.log("refreshToken Cookie", refreshToken)
         if (!token) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'The token is required'
             })
         }
-        const response = await JwtServices.refreshTokenServices(token)
+        const response = await JwtServices.refreshTokenServices(refreshToken)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(404).json({
-            message: e
+            status: 'ERR',
+            message: error
         })
     }
 }
@@ -199,22 +201,12 @@ const addCart = async (req, res) => {
         })
     }
 }
-const loginGoogle = async (req, res) => {
-    try {
-        console.log("ac")
-        return res.status(200).json('oke')
-    } catch (error) {
-        return res.status(404).json({
-            status: 'ERR',
-            message: error.message
-        })
-    }
-}
+
 
 module.exports = {
     registerAccount, getDetailAccount,
     loginAccount, logout, deActiveAccount,
     inActiveAccount, changePassword,
     getAllAccount, refreshToken,
-    addCart, forgotPassword, loginGoogle
+    addCart, forgotPassword
 }

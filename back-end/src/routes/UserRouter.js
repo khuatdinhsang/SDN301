@@ -7,5 +7,6 @@ router.post('/register', auth, validateRegisterUser, UserController.registerUser
 router.get('/getAll', adminMiddleware, UserController.getAllUsers)
 router.put('/update', auth, validateRegisterUser, UserController.updateUser)
 router.get('/getDetail', auth, UserController.getDetailUser)
+router.get('/getDetailUserByAccountId/:id', auth, UserController.getDetailUserByAccountId)
 module.exports = router
 
