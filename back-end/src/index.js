@@ -7,8 +7,6 @@ const cookieParser = require("cookie-parser")
 const cors = require('cors')
 const routes = require("./routes")
 const { swaggerDocs } = require("./configs/swagger")
-const { totalExpenditure, totalSalaryEmployees } = require("./utils")
-
 // config environment variables
 dotenv.config()
 
@@ -19,9 +17,6 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 //connect to frontend 
 app.use(cors())
 app.use(cookieParser())
-
-totalExpenditure()
-totalSalaryEmployees()
 
 //connect to mongoose db
 connectDB()
