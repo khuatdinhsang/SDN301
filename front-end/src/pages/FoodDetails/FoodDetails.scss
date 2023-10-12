@@ -16,6 +16,7 @@
 
             img{
                 width: 70%;
+                object-fit: cover;
             }
         }
 
@@ -29,6 +30,12 @@
                 font-weight: 600;
                 font-size: 20px;
                 margin-bottom: 16px;
+            }
+            
+            .soldOut{
+                color: red;
+                font-weight: 600;
+                margin-bottom: 20px;
             }
             
             .detailPrice{

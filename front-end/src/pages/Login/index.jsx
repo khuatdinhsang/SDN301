@@ -5,9 +5,6 @@ import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { loginAccount, logout } from "../../actions/accountAction";
 import "./Login.scss";
-import { Link as MuiLink } from "@mui/material";
-import GoogleIcon from '@mui/icons-material/Google';
-import { getGoogleUrl } from "../../utils.js";
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -25,30 +22,33 @@ function Login() {
       .catch((err) => console.log(err));
   }, []);
 
-  const handleLogin = () => {
+  
+
+  const handleLogin = (e) => {
     const userLogin = {
-            username: username,
-            password: password
+            username: username.trim(),
+            password: password.trim()
           }
-    axios
-      .post("/api/account/login", userLogin)
-      .then((res) => {
-        // console.log(res.data);
-        if (res.data.status === "OK") {
-          const user = {
-              username: username,
-              accessToken: res.data.accessToken
-          }
-          const action = loginAccount(user);
-          dispatch(action);
-          // console.log(res.data.accessToken);
-          toast.success("Login successfully");
-          navigate("/");
-        } else {
-          toast.error("Username or Password is not correct!");
-        }
-      })
-      .catch((err) => toast(err));
+    
+        axios
+          .post("/api/account/login", userLogin)
+          .then((res) => {
+            // console.log(res.data);
+            if (res.data.status === "OK") {
+              const user = {
+                  username: username,
+                  accessToken: res.data.accessToken
+              }
+              const action = loginAccount(user);
+              dispatch(action);
+              // console.log(res.data.accessToken);
+              toast.success("Login successfully");
+              navigate("/");
+            } else {
+              toast.error("Username or Password is not correct!");
+            }
+          })
+          .catch((err) => toast(err));
   };
   // const test = () => {
   //   axios.post("/auth/google").then((res) => {
@@ -124,35 +124,7 @@ function Login() {
               Register
             </p>
           </div>
-          <MuiLink
-            href={"http://localhost:3001/auth/google"}
-            sx={{
-              borderRadius: 1,
-              py: "0.6rem",
-              columnGap: "1rem",
-              textDecoration: "none",
-              color: "#393e45",
-              cursor: "pointer",
-              fontWeight: 500,
-              margin: "10px 0",
-              transition: ".4s",
-
-              "&:hover": {
-                backgroundColor: "#fff",
-                boxShadow: "0 1px 13px 0 rgb(0 0 0 / 15%)",
-                transform: "scale(1.05)"
-              },
-            }}
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <GoogleIcon className="googleIcon"/>
-          </MuiLink>
-          {/* <button onClick={test}>Goi di</button> */}
-          <form action="http://localhost:3001/auth/google" method="post">
-            <input className="buttonGoogle" type="submit" value="Press to log in" />
-          </form>
+        
         </div>
       </div>
     </div>
