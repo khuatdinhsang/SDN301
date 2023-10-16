@@ -13,6 +13,7 @@ import MenuPage from "../pages/MenuPage";
 import Payment from "../pages/Payment";
 import SignUp from "../pages/SignUp";
 import OrderManager from "../pages/admin/OrderManager";
+import UpdateProduct from "../pages/admin/ProductManager/UpdateProduct";
 
 const publicRoutes = [
     {path: "/", component: HomePage},
@@ -27,7 +28,8 @@ const publicRoutes = [
     {path: "/admin/general", component: General, layout: Dashboard},
     {path: "/admin/customerManager", component: CustomerManager, layout: Dashboard},
     {path: "/admin/categoriesManager", component: CategoryManager, layout: Dashboard},
-    { path: "/admin/OrderManager", component: OrderManager, layout: Dashboard }
+    { path: "/admin/OrderManager", component: OrderManager, layout: Dashboard },
+    {path: "/admin/updateProduct/:slug", component: UpdateProduct, layout: Dashboard}
 ]
 
 const privateRoutes = [

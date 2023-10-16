@@ -21,6 +21,10 @@ function ProductManager(){
         })
     },[])
 
+    const handleUpdate = (id) => {
+        navigate(`/admin/updateProduct/${id}`)
+    }
+
     return (
         <div className="productsManager">
             <h3 className="productsManagerTitle">Products Manager</h3>
@@ -31,7 +35,7 @@ function ProductManager(){
                 </div>
                 {listProduct?.map(product => {
                     return (
-                        <div className="cardProduct">
+                        <div className="cardProduct" onClick={() => handleUpdate(product?._id)}>
                             <img className="productImg" src={product?.image} alt="" />
                             <span >{product?.name}</span>
                             <p className="productPrice">{product?.price.toLocaleString('vi', {style : 'currency', currency : 'VND'})}</p>

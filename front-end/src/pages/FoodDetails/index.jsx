@@ -198,19 +198,25 @@ function FoodDetails(){
     }
 
     const handleAddtoCart = () =>{
-        const newItem = {
-             _id: foodDetail?._id,
-            name: foodDetail?.name,
-            price: foodDetail?.price,
-            image: foodDetail?.image,
-            description: foodDetail?.description,
-            total: +number,
-            totalPrice: foodDetail?.price * +number,
+        if(foodDetail?.quantity <= 0 ){
+            toast.warning(`${foodDetail?.name} is sold out`)
+        }else if(account?.username === undefined){
+            toast.warning("You have to login to add food!")
+        } else{
+            const newItem = {
+                _id: foodDetail?._id,
+                name: foodDetail?.name,
+                price: foodDetail?.price,
+                image: foodDetail?.image,
+                description: foodDetail?.description,
+                total: +number,
+                totalPrice: foodDetail?.price * +number,
+            }
+            const action = addDetail(newItem);
+            // console.log(newItem);
+            dispatch(action);
+            toast.success(`Add ${foodDetail?.name} to cart successfully!`)
         }
-        const action = addDetail(newItem);
-        // console.log(newItem);
-        dispatch(action);
-        toast.success(`Add ${foodDetail?.name} to cart successfully!`)
     }
 
     
@@ -227,6 +233,7 @@ function FoodDetails(){
                     </div>
                     <div className="inforDetail">
                         <span className='detailTitle'>{foodDetail?.name}</span>
+                        {foodDetail?.quantity <= 0 ?<p className='soldOut'>SOLD OUT</p>:'' }
                         <p className='detailPrice'>
                             {foodDetail?.price.toLocaleString('vi', {style : 'currency', currency : 'VND'})}
                         </p>

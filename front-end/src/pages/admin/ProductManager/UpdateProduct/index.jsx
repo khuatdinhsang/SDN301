@@ -1,54 +1,57 @@
+import './UpdateProduct.scss'
 import axios from 'axios'
 import { useEffect } from 'react'
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import { toast } from 'react-toastify'
-import Loading from '../../Loading'
-import './UploadPage.scss'
+import Loading from '../../../Loading'
+import { faHandsAmericanSignLanguageInterpreting } from '@fortawesome/free-solid-svg-icons'
 
-function UploadPage(){
+
+function UpdateProduct(){
 
     const [name,setName] = useState('')
     const [price, setPrice] = useState('')
-    const [type, setType] = useState('')
     const [img, setImg] = useState('')
+    const [quantity, setQuantity] = useState()
     const [showImg, setShowImg] = useState()
     const [typeSubcategory, setTypeSubcategory] = useState('')
-    const [quantity, setQuantity] = useState()
-    const [category, setCategory] = useState([])
     const [subcategory, setSubcategory] = useState([])
     const [loadingUpload, setLoadingUpload] = useState(true)
 
     const account = useSelector(state => state.account)
+    const { slug } = useParams()
+
 
     useEffect(() =>{
-        axios
-        .get('/api/category/getAll')
-        .then((res) =>{
-            setCategory(res.data.data)
-        })
-        .catch(err => console.log(err))
 
-        // axios
-        // .get('/api/subCategory/getAll')
-        // .then((res) =>{
-        //     setSubcategory(res.data.data)
-        // })
-        // .catch(err => console.log(err))
-    },[])
-
-    useEffect(() => {
         axios
-        .put('/api/subCategory/getByCategoryId',{
-            categoryId: type
-        })
+        .get(`/api/product/${slug}`)
         .then(res => {
-            setSubcategory(res.data.data)
+            const data = res.data.data
+            setName(data?.name)
+            setPrice(data?.price)
+            setImg(data?.image)
+            setQuantity(data?.quantity)
+            axios
+            .put(`/api/subCategory/getByCategoryId`, {
+                categoryId: data.subCategoryId.categoryId._id
+            })
+            .then(res => {
+                setSubcategory(res.data.data)
+            })
+            .catch(err => console.log(err + "can not get Subcategory"))
+            setTypeSubcategory(data?.subCategoryId._id)
         })
-        .catch(err => console.log(err + "Can not get subcategory"))
+        .catch(err => console.log(err + "Can not get product"))
 
-    }, [type])
+        
+    },[slug])
+
+
+
+   
     
     useEffect(() => {
 
@@ -70,9 +73,9 @@ function UploadPage(){
     const navigate = useNavigate()
 
     const handleUpload = () =>{
-        if(!name || !price || !type || !typeSubcategory){
+        if(!name || !price || !typeSubcategory){
             toast.warning("An Information is blank!")
-        }else{
+        }else {
             setLoadingUpload(false)
             const data = new FormData();
             data.append("file",img);
@@ -90,27 +93,27 @@ function UploadPage(){
                     price: price, 
                     quantity: quantity,
                     image: data.url,
-                    categoryId: type,
                     subCategoryId: typeSubcategory
                 };
                 
                 axios
-                .post('/api/product/create',newProduct,{
+                .put(`/api/product/update/${slug}`,newProduct,{
                     headers: {
                         Authorization: `Bearer ${account?.accessToken}`
                     }
                 })
                 .then(res => {
-                    toast.success(`Upload Product ${name} successfully!`)
+                    toast.success(`Update Product ${name} successfully!`)
                     setName('')
                     setPrice()
-                    setType('')
                     setTypeSubcategory('')
+                    setQuantity()
                     setImg()
                     setShowImg()
                     setLoadingUpload(true)
+                    navigate("/admin/productsManager")
                 })
-                .catch(err => console.log(err + "Can not upload new product"))
+                .catch(err => console.log(err + "Can not update new product"))
 
 
             })
@@ -120,10 +123,11 @@ function UploadPage(){
 
     }
 
+
     return (
-       <div className="uploadPage">
+        <div className="uploadPage">
            {loadingUpload  ?  <div className='uploadContain'>
-                <h3 className="uploadTitle">Upload Product</h3>
+                <h3 className="uploadTitle">Update Product</h3>
                 <div className="uploadContent">
                     <div className="inputBox">
                         <label htmlFor='inputName'>Name</label>
@@ -145,7 +149,7 @@ function UploadPage(){
                             value={price}
                             onChange={e => setPrice(e.target.value)}/>
                     </div>
-                    <div className="inputBox">
+                     <div className="inputBox">
                         <label htmlFor='inputQuantity'>Quantity</label>
                         <input 
                             type="number"  
@@ -155,20 +159,7 @@ function UploadPage(){
                             value={quantity}
                             onChange={e => setQuantity(e.target.value)}/>
                     </div>
-                    <div className="inputBox">
-                        <label htmlFor='inputType'>Category</label>
-                        <select 
-                            className='inputType' 
-                            id='inputType' 
-                            value={type}
-                            onChange={e => setType(e.target.value)}>
-                            
-                            <option value="">Choose a category</option>
-                            {category?.map((e) => {
-                                return <option value={e?._id} key={e?._id}>{e?.name}</option>
-                            } )}
-                        </select>
-                    </div>
+                  
                     <div className="inputBox">
                         <label htmlFor='inputTypeSub'>Subcategory</label>
                         <select 
@@ -193,6 +184,7 @@ function UploadPage(){
                         {showImg && (
                             <img src={showImg.preview} alt='' width={"100%"}/>
                         )}
+                        
                     </div>
                     <div className="submitForm">
                         <button className='uploadBtn' onClick={handleUpload}>Upload</button>
@@ -205,4 +197,4 @@ function UploadPage(){
     )
 }
 
-export default UploadPage
+export default UpdateProduct
