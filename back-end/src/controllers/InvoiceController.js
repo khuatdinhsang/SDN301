@@ -31,8 +31,8 @@ const getDetailOrderCompany = async (req, res) => {
 
 const getAllOrderCompany = async (req, res) => {
     try {
-        const { page, limit } = req.query;
-        const response = await InvoiceServices.getAllOrderCompany(page, limit)
+        const { page, limit, startDate, endDate } = req.query;
+        const response = await InvoiceServices.getAllOrderCompany(page, limit, startDate, endDate)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(404).json({

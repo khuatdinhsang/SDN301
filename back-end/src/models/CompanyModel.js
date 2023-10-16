@@ -21,7 +21,8 @@ const companySchema = new mongoose.Schema({
     inventory: [{
         name: {
             type: String,
-            require: true
+            require: true,
+            unique: true,
         },
         price: {
             type: Number,

@@ -58,7 +58,7 @@ const createOrder = (accountId, data) => {
             resolve({
                 status: 'OK',
                 message: 'Order successfully',
-                data: { ...newOrder._doc, email: user.email }
+                data: { ...newOrder._doc, email: user?.email }
             })
         } catch (err) {
             reject(err)
@@ -92,7 +92,7 @@ const getAllOrderByAccountId = (page, limit = LIMIT_ORDER, accountId) => {
         }
     })
 }
-const getAllOrder = (page, limit = LIMIT_ORDER) => {
+const getAllOrder = (page = 1, limit = LIMIT_ORDER) => {
     return new Promise(async (resolve, reject) => {
         try {
             var skipNumber = (page - 1) * limit;

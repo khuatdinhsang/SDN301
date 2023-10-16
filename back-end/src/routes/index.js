@@ -9,6 +9,7 @@ const AddressShippingRouter = require('./AddressShippingRouter.js');
 const ShippingRouter = require('./ShippingRouter.js');
 const CompanyRouter = require('./CompanyRouter.js');
 const InvoiceRouter = require('./InvoiceRouter.js');
+const inventoryRouter = require('./InventoryRouter.js');
 const routes = (app) => {
     /**
      * @openapi
@@ -32,5 +33,6 @@ const routes = (app) => {
     app.use('/api/shipping', ShippingRouter)
     app.use('/api/company', CompanyRouter)
     app.use('/api/invoice', InvoiceRouter)
+    app.use('/api/inventory', inventoryRouter)
 }
 module.exports = routes

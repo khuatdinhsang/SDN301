@@ -4,6 +4,7 @@ const inventorySchema = new mongoose.Schema({
     name: {
         type: String,
         require: true,
+        unique: true
     },
     quantity: {
         type: Number,

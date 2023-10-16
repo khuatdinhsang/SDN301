@@ -73,12 +73,13 @@ const getDetailCategory = (categoryId) => {
         }
     })
 }
-const getAllCategory = (page = 1, limit = LIMIT_CATEGORY) => {
+const getAllCategory = (page = 1, limit = LIMIT_CATEGORY, search) => {
     return new Promise(async (resolve, reject) => {
         try {
             var skipNumber = (page - 1) * limit;
-            const totalCategory = await Category.count()
-            const allCategory = await Category.find({})
+            const searchQuery = search ? { name: { $regex: search, $options: 'i' } } : null;
+            const totalCategory = await Category.count(searchQuery)
+            const allCategory = await Category.find(searchQuery)
                 .skip(skipNumber)
                 .limit(limit)
             resolve({

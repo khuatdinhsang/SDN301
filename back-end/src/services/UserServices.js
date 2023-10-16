@@ -125,12 +125,20 @@ const updateUser = (accountId, data) => {
         }
     })
 }
-const getAllUsers = (page = 1, limit = LIMIT_USER) => {
+const getAllUsers = (page = 1, limit = LIMIT_USER, search) => {
     return new Promise(async (resolve, reject) => {
         try {
             var skipNumber = (page - 1) * limit;
-            const totalUser = await User.count()
-            const allUser = await User.find({})
+            const conditions = {
+                $or: [
+                    { email: { $regex: search, $options: 'i' } },
+                    { phone: { $regex: search, $options: 'i' } },
+                    { address: { $regex: search, $options: 'i' } },
+                ]
+            };
+            const searchQuery = search ? conditions : null;
+            const totalUser = await User.count(searchQuery)
+            const allUser = await User.find(searchQuery)
                 .skip(skipNumber)
                 .limit(limit)
                 .populate('accountId')

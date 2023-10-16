@@ -3,7 +3,8 @@ const SubCategory = require("./SubCategoryModel");
 const ProductSchema = new mongoose.Schema({
     name: {
         type: String,
-        require: true
+        require: true,
+        unique: true
     },
     price: {
         type: Number,
@@ -41,6 +42,11 @@ const ProductSchema = new mongoose.Schema({
     },
     categoryId: {
         type: String,
+    },
+    inventory: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Inventory',
+        required: true,
     }
 }, {
     timestamps: true

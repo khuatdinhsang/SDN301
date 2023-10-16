@@ -1,14 +1,21 @@
 const Category = require("../models/CategoryModel")
+const Inventory = require("../models/InventoryModel")
 const Product = require("../models/ProductModel")
 const SubCategory = require("../models/SubCategoryModel")
 const LIMIT_PRODUCT = 10
-const   createProduct = (data) => {
+const createProduct = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
             const { name, price, quantity, image, description,
-                subCategoryId } = data
+                subCategoryId, inventoryId } = data
             const checkSubCategoryExists = await SubCategory.findOne({
                 _id: subCategoryId
+            })
+            const checkInvetoryExist = await Inventory.findOne({
+                _id: inventoryId
+            })
+            const productExists = await Product.findOne({
+                inventory: inventoryId
             })
             if (!checkSubCategoryExists) {
                 resolve({
@@ -16,21 +23,43 @@ const   createProduct = (data) => {
                     message: "SubCategoryId is not defined"
                 })
             }
-            if (checkSubCategoryExists) {
-                const createProduct = await Product.create({
-                    name,
-                    price,
-                    quantity,
-                    image,
-                    description,
-                    subCategoryId,
-                    categoryId: checkSubCategoryExists.categoryId
-                })
+            if (!checkInvetoryExist) {
                 resolve({
-                    status: 'OK',
-                    message: 'Product created successfully',
-                    data: createProduct
+                    status: 'ERR',
+                    message: "InventoryId is not defined"
                 })
+            }
+            if (checkSubCategoryExists && checkInvetoryExist) {
+                if (quantity > checkInvetoryExist.quantity) {
+                    resolve({
+                        status: 'ERR',
+                        message: "Quantity exceeds quantity in Inventory "
+                    })
+                } else {
+                    if (productExists) {
+                        await Product.findByIdAndUpdate(productExists._id, {
+                            quantity: productExists?.quantity + quantity,
+                        }, { new: true })
+                    } else {
+                        await Product.create({
+                            name,
+                            price,
+                            quantity,
+                            image,
+                            description,
+                            subCategoryId,
+                            categoryId: checkSubCategoryExists.categoryId,
+                            inventory: checkInvetoryExist._id
+                        })
+                    }
+                    await Inventory.findByIdAndUpdate(checkInvetoryExist._id, {
+                        quantity: checkInvetoryExist?.quantity - quantity,
+                    }, { new: true })
+                    resolve({
+                        status: 'OK',
+                        message: 'Product created successfully',
+                    })
+                }
             }
         } catch (err) {
             reject(err)
@@ -38,7 +67,7 @@ const   createProduct = (data) => {
     })
 }
 const updateProduct = (id, data) => {
-    const { subCategoryId } = data
+    const { inventoryId, subCategoryId, quantity } = data
     return new Promise(async (resolve, reject) => {
         try {
             const checkProductExists = await Product.findOne({
@@ -59,12 +88,31 @@ const updateProduct = (id, data) => {
                     message: "SubCategory is not defined"
                 })
             }
-            if (checkSubCategoryExists) {
-                await Product.findByIdAndUpdate(id, data, { new: true })
+            const checkInvetoryExist = await Inventory.findOne({
+                _id: inventoryId
+            })
+            if (!checkInvetoryExist) {
+                resolve({
+                    status: 'ERR',
+                    message: "Inventory is not defined"
+                })
+            }
+            const inventoryUpdate = await Inventory.findByIdAndUpdate(checkInvetoryExist._id, {
+                quantity: checkInvetoryExist?.quantity + checkProductExists.quantity
+            }, { new: true })
+            if (quantity > inventoryUpdate.quantity) {
+                resolve({
+                    status: 'ERR',
+                    message: "Quantity exceeds quantity in Inventory "
+                })
+            } else {
+                await Inventory.findByIdAndUpdate(checkInvetoryExist._id, {
+                    quantity: checkInvetoryExist?.quantity + checkProductExists.quantity - quantity,
+                }, { new: true })
+                await Product.findByIdAndUpdate(checkProductExists._id, data, { new: true })
                 resolve({
                     status: 'OK',
                     message: 'SUCCESS',
-                    data
                 })
             }
         } catch (err) {
@@ -101,45 +149,33 @@ const getDetailProduct = (productId) => {
         }
     })
 }
-const getAllProduct = (page = 1, limit = LIMIT_PRODUCT, checkIsPagination) => {
+const getAllProduct = (page = 1, limit = LIMIT_PRODUCT, search) => {
     return new Promise(async (resolve, reject) => {
         try {
             var skipNumber = (page - 1) * limit;
-            const totalProduct = await Product.count()
-            if (checkIsPagination) {
-                const allProduct = await Product.find({})
-                    .skip(skipNumber)
-                    .limit(limit)
-                    .populate('subCategoryId')
-                    .populate({
-                        path: 'subCategoryId',
-                        populate: {
-                            path: 'categoryId',
-                        }
-                    })
-                resolve({
-                    status: 'OK',
-                    data: allProduct,
-                    totalProduct,
-                    currentPage: parseInt(page),
-                    limit: parseInt(limit)
+            const conditions = {
+                $or: [
+                    { name: { $regex: search, $options: 'i' } },
+                    { description: { $regex: search, $options: 'i' } },
+                ]
+            };
+            const searchQuery = search ? conditions : null;
+            const totalProduct = await Product.count(searchQuery)
+            const allProduct = await Product.find(searchQuery)
+                .populate('subCategoryId')
+                .populate({
+                    path: 'subCategoryId',
+                    populate: {
+                        path: 'categoryId',
+                    }
                 })
-            } else {
-                const allProduct = await Product.find({})
-                    .populate('subCategoryId')
-                    .populate({
-                        path: 'subCategoryId',
-                        populate: {
-                            path: 'categoryId',
-                        }
-                    })
-                resolve({
-                    status: 'OK',
-                    data: allProduct,
-                    totalProduct,
-                })
-            }
-
+            resolve({
+                status: 'OK',
+                data: allProduct,
+                totalProduct,
+                currentPage: parseInt(page),
+                limit: parseInt(limit)
+            })
         } catch (err) {
             reject(err)
         }
@@ -148,9 +184,18 @@ const getAllProduct = (page = 1, limit = LIMIT_PRODUCT, checkIsPagination) => {
 const deleteProduct = (productId) => {
     return new Promise(async (resolve, reject) => {
         try {
+            const product = await Product.findOne({
+                _id: productId
+            })
+            const inventory = await Inventory.findOne({
+                _id: product.inventory
+            })
             await Product.findByIdAndDelete({
                 _id: productId
             })
+            await Inventory.findByIdAndUpdate(inventory._id, {
+                quantity: inventory.quantity + product.quantity
+            }, { new: true })
             resolve({
                 status: 'OK',
                 messages: "Delete Successfully"
@@ -160,16 +205,20 @@ const deleteProduct = (productId) => {
         }
     })
 }
-const getAllProductBySubCategoryId = (page = 1, limit = LIMIT_PRODUCT, subCategoryId) => {
+const getAllProductBySubCategoryId = (page = 1, limit = LIMIT_PRODUCT, search, subCategoryId) => {
     return new Promise(async (resolve, reject) => {
         try {
             var skipNumber = (page - 1) * limit;
-            const totalProduct = await Product.count({
-                subCategoryId
-            })
-            const allProductBySubCategoryId = await Product.find({
-                subCategoryId
-            })
+            const conditions = {
+                $or: [
+                    { name: { $regex: search, $options: 'i' } },
+                    { description: { $regex: search, $options: 'i' } },
+                ],
+                subCategoryId: subCategoryId,
+            };
+            const searchQuery = search ? conditions : { subCategoryId: subCategoryId };
+            const totalProduct = await Product.count(searchQuery)
+            const allProductBySubCategoryId = await Product.find(searchQuery)
                 .skip(skipNumber)
                 .limit(limit)
                 .populate({
@@ -190,16 +239,20 @@ const getAllProductBySubCategoryId = (page = 1, limit = LIMIT_PRODUCT, subCatego
         }
     })
 }
-const getAllProductByCategoryId = (page = 1, limit = LIMIT_PRODUCT, categoryId) => {
+const getAllProductByCategoryId = (page = 1, limit = LIMIT_PRODUCT, search, categoryId) => {
     return new Promise(async (resolve, reject) => {
         try {
             var skipNumber = (page - 1) * limit;
-            const totalProduct = await Product.count({
-                categoryId
-            })
-            const allProductByCategoryId = await Product.find({
-                categoryId
-            })
+            const conditions = {
+                $or: [
+                    { name: { $regex: search, $options: 'i' } },
+                    { description: { $regex: search, $options: 'i' } },
+                ],
+                categoryId: categoryId,
+            };
+            const searchQuery = search ? conditions : { categoryId: categoryId };
+            const totalProduct = await Product.count(searchQuery)
+            const allProductByCategoryId = await Product.find(searchQuery)
                 .skip(skipNumber)
                 .limit(limit)
                 .populate({
@@ -220,48 +273,8 @@ const getAllProductByCategoryId = (page = 1, limit = LIMIT_PRODUCT, categoryId) 
         }
     })
 }
-const searchProductByName = (page = 1, limit = LIMIT_PRODUCT, searchProductByName) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            var skipNumber = (page - 1) * limit;
-            const totalProduct = await Product.count({
-                name: { $regex: searchProductByName, $options: 'i' }
-            })
-            const productByName = await Product.find({
-                name: { $regex: searchProductByName, $options: 'i' }
-
-            })
-                .skip(skipNumber)
-                .limit(limit)
-                .populate('subCategoryId')
-                .populate({
-                    path: 'subCategoryId',
-                    populate: {
-                        path: 'categoryId',
-                    }
-                })
-
-
-            if (productByName === null) {
-                resolve({
-                    status: 'ERR',
-                    message: `The product is not defined `
-                })
-            }
-            resolve({
-                status: 'OK',
-                data: productByName,
-                totalProduct,
-                currentPage: parseInt(page),
-                limit: parseInt(limit)
-            })
-        } catch (err) {
-            reject(err)
-        }
-    })
-}
 module.exports = {
     createProduct, updateProduct,
     getDetailProduct, getAllProduct, deleteProduct,
-    getAllProductBySubCategoryId, getAllProductByCategoryId, searchProductByName
+    getAllProductBySubCategoryId, getAllProductByCategoryId
 }

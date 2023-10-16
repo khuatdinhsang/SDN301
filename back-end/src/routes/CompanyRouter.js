@@ -8,3 +8,4 @@ router.get('/getAll', staffMiddleware, CompanyController.getAllCompany)
 router.get('/:id', staffMiddleware, CompanyController.getDetailCompany)
 router.delete('/:id', staffMiddleware, CompanyController.deleteCompany)
 module.exports = router
+
