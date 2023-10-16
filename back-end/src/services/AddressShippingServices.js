@@ -48,7 +48,7 @@ const getDetailAddressShipping = (addressId) => {
         }
     })
 }
-const getAllAddressShipping = (page = 1, limit = LIMIT_ADDRESS_SHIPPING, search) => {
+const getAllAddressShipping = (accountId, page = 1, limit = LIMIT_ADDRESS_SHIPPING, search) => {
     return new Promise(async (resolve, reject) => {
         try {
             var skipNumber = (page - 1) * limit;
@@ -57,7 +57,8 @@ const getAllAddressShipping = (page = 1, limit = LIMIT_ADDRESS_SHIPPING, search)
                     { customerName: { $regex: search, $options: 'i' } },
                     { address: { $regex: search, $options: 'i' } },
                     { phone: { $regex: search, $options: 'i' } },
-                ]
+                ],
+                accountId
             };
             const searchQuery = search ? conditions : null;
             const totalAddressShipping = await AddressShipping.count(searchQuery)

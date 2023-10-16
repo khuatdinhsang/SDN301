@@ -7,7 +7,6 @@ const dotenv = require('dotenv');
 dotenv.config()
 var inlineBase64 = require('nodemailer-plugin-inline-base64');
 const User = require("../models/UserModel");
-const Shipping = require("../models/ShippingModel");
 const startReceiveOrder = (shippingId, data) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -56,8 +55,8 @@ const sendEmailStartShipping = async (data) => {
         text: "Hello ", // plain text body
         html: `<div>Đơn hàng của bạn đang được giao, xin vui lòng đợi
             <p>Xin liên hệ: </p>
-            <div>SDT shipper:${shipper.phone} </div>
-            <div>Email shipper: ${shipper.email}</div>
+            <div>SDT shipper:${shipper?.phone} </div>
+            <div>Email shipper: ${shipper?.email}</div>
         </div>`,
     });
 }
