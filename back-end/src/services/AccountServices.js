@@ -115,12 +115,14 @@ const getDetailAccount = (accountId) => {
         }
     })
 }
-const getAllAccount = (page = 1, limit = LIMIT_ACCOUNT) => {
+const getAllAccount = (page = 1, limit = LIMIT_ACCOUNT, search) => {
     return new Promise(async (resolve, reject) => {
         try {
+            Number.parseInt(limit);
             var skipNumber = (page - 1) * limit;
-            const totalAccount = await Account.count()
-            const allAccount = await Account.find({})
+            const searchQuery = search ? { username: { $regex: search, $options: 'i' } } : null;
+            const totalAccount = await Account.count(searchQuery);
+            const allAccount = await Account.find(searchQuery)
                 .skip(skipNumber)
                 .limit(limit)
                 .populate('role')

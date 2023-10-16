@@ -58,9 +58,9 @@ const getDetailSubCategory = async (req, res) => {
 }
 const getAllSubCategoryByCategoryId = async (req, res) => {
     try {
-        const { page, limit } = req.query;
+        const { page, limit, search } = req.query;
         const { categoryId } = req.body
-        const response = await SubCategoryServices.getAllSubCategoryByCategoryId(page, limit, categoryId)
+        const response = await SubCategoryServices.getAllSubCategoryByCategoryId(page, limit, search, categoryId)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(404).json({
@@ -71,8 +71,8 @@ const getAllSubCategoryByCategoryId = async (req, res) => {
 }
 const getAllSubCategory = async (req, res) => {
     try {
-        const { page, limit } = req.query
-        const response = await SubCategoryServices.getAllSubCategory(page, limit)
+        const { page, limit, search } = req.query
+        const response = await SubCategoryServices.getAllSubCategory(page, limit, search)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(404).json({

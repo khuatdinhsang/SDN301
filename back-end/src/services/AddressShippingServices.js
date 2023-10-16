@@ -1,6 +1,6 @@
 const AddressShipping = require("../models/AddressShippingModel");
 const Category = require("../models/CategoryModel")
-const LIMIT_CATEGORY = 10;
+const LIMIT_ADDRESS_SHIPPING = 5;
 const updateAddressShipping = (addressId, data) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -48,13 +48,28 @@ const getDetailAddressShipping = (addressId) => {
         }
     })
 }
-const getAllAddressShipping = () => {
+const getAllAddressShipping = (page = 1, limit = LIMIT_ADDRESS_SHIPPING, search) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const allAddressShipping = await AddressShipping.find({})
+            var skipNumber = (page - 1) * limit;
+            const conditions = {
+                $or: [
+                    { customerName: { $regex: search, $options: 'i' } },
+                    { address: { $regex: search, $options: 'i' } },
+                    { phone: { $regex: search, $options: 'i' } },
+                ]
+            };
+            const searchQuery = search ? conditions : null;
+            const totalAddressShipping = await AddressShipping.count(searchQuery)
+            const allAddressShipping = await AddressShipping.find(searchQuery)
+                .skip(skipNumber)
+                .limit(limit)
             resolve({
                 status: 'OK',
                 data: allAddressShipping,
+                totalAddressShipping,
+                currentPage: parseInt(page),
+                limit: parseInt(limit)
             })
         } catch (err) {
             reject(err)

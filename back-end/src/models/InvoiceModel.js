@@ -9,12 +9,15 @@ const invoiceSchema = new mongoose.Schema({
         {
             name: {
                 type: String,
+                require: true
             },
             quantity: {
-                type: Number
+                type: Number,
+                require: true
             },
             price: {
-                type: Number
+                type: Number,
+                require: true
             },
         }
     ],

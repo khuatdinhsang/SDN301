@@ -39,7 +39,8 @@ const loginAccount = async (req, res) => {
         const { refreshToken, ...newResponse } = response
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true, // chi lay dc qua http k lay dc qua js
-            secure: false,// khi nao deloy se chuyen thanh true
+            secure: true,// khi nao deloy se chuyen thanh true
+            path: "/",
             sameSite: 'strict'
         })
         return res.status(200).json(newResponse)
@@ -64,8 +65,8 @@ const getDetailAccount = async (req, res) => {
 }
 const getAllAccount = async (req, res) => {
     try {
-        const { page, limit } = req.query
-        const response = await AccountServices.getAllAccount(page, limit)
+        const { page, limit, search } = req.query
+        const response = await AccountServices.getAllAccount(page, limit, search)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(404).json({
@@ -173,8 +174,7 @@ const forgotPassword = async (req, res) => {
 const refreshToken = async (req, res) => {
     try {
         const refreshToken = req.cookies.refreshToken
-        console.log("refreshToken Cookie", refreshToken)
-        if (!token) {
+        if (!refreshToken) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'The token is required'

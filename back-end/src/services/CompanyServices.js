@@ -77,18 +77,27 @@ const getDetailCompany = (companyId) => {
         }
     })
 }
-const getAllCompany = (page = 1, limit = LIMIT_CATEGORY) => {
+const getAllCompany = (page = 1, limit = LIMIT_CATEGORY, search) => {
     return new Promise(async (resolve, reject) => {
         try {
             var skipNumber = (page - 1) * limit;
-            const totalCategory = await Category.count()
-            const allCategory = await Category.find({})
+            const conditions = {
+                $or: [
+                    { name: { $regex: search, $options: 'i' } },
+                    { address: { $regex: search, $options: 'i' } },
+                    { email: { $regex: search, $options: 'i' } },
+                    { website: { $regex: search, $options: 'i' } },
+                ]
+            };
+            const searchQuery = search ? conditions : null;
+            const totalCompany = await Company.count(searchQuery)
+            const allCompany = await Company.find(searchQuery)
                 .skip(skipNumber)
                 .limit(limit)
             resolve({
                 status: 'OK',
-                data: allCategory,
-                totalCategory,
+                data: allCompany,
+                totalCompany,
                 currentPage: parseInt(page),
                 limit: parseInt(limit)
             })

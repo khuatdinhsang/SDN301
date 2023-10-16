@@ -55,8 +55,8 @@ const getDetailCategory = async (req, res) => {
 }
 const getAllCategory = async (req, res) => {
     try {
-        const { page, limit } = req.query;
-        const response = await CategoryServices.getAllCategory(page, limit)
+        const { page, limit, search } = req.query;
+        const response = await CategoryServices.getAllCategory(page, limit, search)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(404).json({
