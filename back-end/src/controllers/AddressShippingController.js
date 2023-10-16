@@ -59,7 +59,8 @@ const setDefaultAddressShipping = async (req, res) => {
 const getAllAddressShipping = async (req, res) => {
     try {
         const { page, limit, search } = req.query
-        const response = await AddressShippingServices.getAllAddressShipping(page, limit, search)
+        const accountId = req.user.id;
+        const response = await AddressShippingServices.getAllAddressShipping(accountId, page, limit, search)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(404).json({
