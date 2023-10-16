@@ -5,7 +5,6 @@ import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { loginAccount, logout } from "../../actions/accountAction";
 import "./Login.scss";
-
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -127,7 +126,6 @@ function Login() {
               Register
             </p>
           </div>
-        
         </div>
       </div>
     </div>
