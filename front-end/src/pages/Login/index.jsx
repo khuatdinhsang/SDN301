@@ -9,6 +9,7 @@ import "./Login.scss";
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState()
   const navigate = useNavigate();
   const dispatch = useDispatch();
   useEffect(() => {
@@ -35,6 +36,7 @@ function Login() {
           .then((res) => {
             // console.log(res.data);
             if (res.data.status === "OK") {
+              setIsLoading(false)
               const user = {
                   username: username,
                   accessToken: res.data.accessToken
@@ -43,6 +45,7 @@ function Login() {
               dispatch(action);
               // console.log(res.data.accessToken);
               toast.success("Login successfully");
+              setIsLoading(true)
               navigate("/");
             } else {
               toast.error("Username or Password is not correct!");
