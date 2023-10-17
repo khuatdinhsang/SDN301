@@ -38,8 +38,8 @@ const getAllOrderByAccountId = async (req, res) => {
 }
 const getAllOrder = async (req, res) => {
     try {
-        const { page, limit } = req.body
-        const response = await OrderServices.getAllOrder(page, limit)
+        const { page, limit, status } = req.query
+        const response = await OrderServices.getAllOrder(page, limit, status)
         return res.status(201).json(response)
     } catch (error) {
         return res.status(404).json({

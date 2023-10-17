@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const Account = require('./AccountModel');
 const addressShippingSchema = new mongoose.Schema({
     customerName: {
         type: String,
@@ -19,7 +19,11 @@ const addressShippingSchema = new mongoose.Schema({
     },
     isOffice: {
         type: Boolean,
-        require: true
+        default: false
+    },
+    accountId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Account',
     }
 }, {
     timestamps: true
