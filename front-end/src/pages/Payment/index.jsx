@@ -1,12 +1,17 @@
 
+import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
+import { toast } from 'react-toastify';
+import { resetItem } from '../../actions/cartAction';
 import './Payment.scss'
 
 function Payment(){
     const navigate = useNavigate()
+    const dispatch = useDispatch()
     const cartList = useSelector(state => state.cart)
+    const account = useSelector(state => state.account)
 
     const [totalPrice, setTotalPrice] = useState(0)
     const [customerName, setCustomerName] = useState('')
@@ -22,7 +27,25 @@ function Payment(){
     },[cartList])
 
     const handlePayment = () => {
-        
+        const paymentDetail = {
+            customerName: customerName,
+            customerPhone: phoneNumber,
+            customerAddress: address
+        }
+
+        axios
+        .post("/api/order/create", paymentDetail,{
+            headers: {
+                Authorization: `Bearer ${account?.accessToken}`
+            }
+        })
+        .then(res => {
+            toast.success("Create Order Successfully!")
+            const action = resetItem();
+            dispatch(action);
+            navigate('/menu')
+        })
+        .catch(err => console.log(err))
     }
 
     return (
@@ -78,9 +101,9 @@ function Payment(){
                 </div>
                 <hr />
                 <div className="paymentPrice">
-                    {cartList.map((cart) => {
+                    {cartList.map((cart, index) => {
                     return (
-                        <div className="detailPrice">
+                        <div className="detailPrice" key={index}>
                         <h5>
                             {cart.name} x {cart.total}
                         </h5>
@@ -106,9 +129,9 @@ function Payment(){
                 </div>
                 <hr />
                 <div className="totalPrice">
-                    <h5>Tổng</h5>
+                    <h5>Total</h5>
                     <span>
-                
+                      {(totalPrice).toLocaleString('vi', {style : 'currency', currency : 'VND'})}
                     </span>
                 </div>
                 <hr />

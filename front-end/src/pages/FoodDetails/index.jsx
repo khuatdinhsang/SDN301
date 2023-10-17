@@ -16,7 +16,6 @@ function FoodDetails(){
 
     const [number, setNumber] = useState(1)
     const [star, setStar] = useState(5)
-    const [foodSize, setFoodSize] = useState('0')
     const [ratingStar, setRatingStar] = useState()
     const [commentContent, setCommentContent] = useState('')
     const [foodDetail, setFoodDetail] = useState()
@@ -32,6 +31,16 @@ function FoodDetails(){
     const [isDelete, setIsDelete] = useState(false)
     const [modalDelete, setModalDelete] = useState(false)
     const [idDelete, setIdDelete] = useState()
+    const [statusEdit, setStatusEdit] = useState('')
+
+    const [starEdit, setStarEdit] = useState()
+    const [contentEdit, setContentEdit] = useState('')
+    const [editImage, setEditImage] = useState('')
+    const [showEditImage, setShowEditImage] = useState()
+    const [commentEdit, setCommentEdit] = useState()
+    const [modalEdit, setModalEdit] = useState(false)
+
+
 
     const account = useSelector(state => state.account)
 
@@ -57,6 +66,24 @@ function FoodDetails(){
     },[slug])
 
     useEffect(() => {
+        setLoadingUpload(false)
+        axios
+        .get(`/api/feedback/${statusEdit}`)
+        .then(res => {
+            const editFeedback = res.data.data
+            setStarEdit(editFeedback?.rate)
+            setContentEdit(editFeedback?.content)
+            setShowEditImage(editFeedback?.image)
+            setCommentEdit(editFeedback)
+            setLoadingUpload(true)
+        })
+        .catch(err => {
+            console.log(err)
+            setLoadingUpload(true)
+        })
+    },[statusEdit])
+
+    useEffect(() => {
         axios
             .get(`/api/feedback/getByProductId/${foodDetail?._id}`)
             .then(res => {
@@ -64,21 +91,24 @@ function FoodDetails(){
                 setLoadingComment(true)
             })
             .catch(err => console.log(err + "Can not get Comment List"))
-        
 
-        const subCategory = {
-            subCategoryId: foodDetail?.subCategoryId._id
-        }
-        axios
-            .put(`/api/product/getBySubcategoryId`,subCategory)
-            .then(res => {
-                const newList = res.data.data.filter(item => {
-                    return item?._id !== foodDetail?._id 
+        if(foodDetail?.subCategoryId !== null){
+            const subCategory = {
+                subCategoryId: foodDetail?.subCategoryId._id
+            }
+            axios
+                .put(`/api/product/getBySubcategoryId`,subCategory)
+                .then(res => {
+                    const newList = res.data.data.filter(item => {
+                        return item?._id !== foodDetail?._id 
+                    })
+                    setSimilarProduct(newList)
+                    setLoadingSimilar(true)
                 })
-                setSimilarProduct(newList)
-                setLoadingSimilar(true)
-            })
-            .catch(err => console.log(err + "Can not get Similar Food"))
+                .catch(err => console.log(err + "Can not get Similar Food"))
+        }else{
+            setLoadingSimilar(true)
+        }
         
     },[foodDetail])
 
@@ -186,10 +216,93 @@ function FoodDetails(){
     }
 
 
+    const handleEditUploadImage = (e) =>{
+        setEditImage(e.target.files[0])
 
-    const handleEditComment = ( ) => {
+        const fileImg = e.target.files[0]
+        fileImg.preview = URL.createObjectURL(fileImg)
+        setShowEditImage(fileImg)
+    }   
 
+    const handleSubmitEdit = () => {
+        setLoadingUpload(false)
+        if(editImage === ''){
+            const updateFeedback = {
+                    accountId: commentEdit.accountId,
+                    productId: commentEdit.productId,
+                    content: contentEdit,
+                    image: showEditImage,
+                    rate: +starEdit
+                }
+                axios
+                .put(`/api/feedback/update/${commentEdit._id}`, updateFeedback, {
+                        headers: {
+                            Authorization: `Bearer ${account?.accessToken}`
+                        }
+                    })
+                    .then((res) => {
+                    setContentEdit('');
+                    setStarEdit(0)
+                    setEditImage()
+                    setShowEditImage()
+                    setIsComment(!isComment)
+                    setLoadingUpload(true)       
+                    setStatusEdit('')            
+                    setModalEdit(false)       
+                    toast.success("Update Comment Successfully!")    
+                    })
+                .catch(err => console.log("Can not Update comment"))
+        }else{
+            const data = new FormData();
+            data.append("file",editImage);
+            data.append("upload_preset", "seafood");
+            data.append("cloud_name", "dggciohw8");  
+
+            fetch("https://api.cloudinary.com/v1_1/dggciohw8/image/upload", {
+                    method: "post",
+                    body: data,
+                })
+                .then((res) => res.json())
+                .then((data) => {
+                    const updateFeedback = {
+                        accountId: commentEdit.accountId,
+                        productId: commentEdit.productId,
+                        content: contentEdit,
+                        image: data.url,
+                        rate: +starEdit
+                    }
+                    axios
+                         .put(`/api/feedback/update/${commentEdit._id}`,updateFeedback, {
+                            headers: {
+                                Authorization: `Bearer ${account?.accessToken}`
+                            }
+                        })
+                        .then((res) => {
+                            setContentEdit('');
+                            setStarEdit(0)
+                            setEditImage()
+                            setShowEditImage()
+                            setIsComment(!isComment)
+                            setLoadingUpload(true)       
+                            setStatusEdit('')       
+                            setModalEdit(false)            
+                            toast.success("Update Comment Successfully!")    
+                        })
+                        .catch(err => console.log(err))
+                })
+                .catch(err => console.log(err + "Can not comment"))
+        }
+          
     }
+
+    const handleEditComment = (id) => {
+        setStatusEdit(id)
+    }
+
+    const confirmEdit = () => {
+        setModalEdit(true)
+    }
+    
 
 
     const handleSimilarProduct = (productId) => {
@@ -209,6 +322,7 @@ function FoodDetails(){
                 price: foodDetail?.price,
                 image: foodDetail?.image,
                 description: foodDetail?.description,
+                quantity: +number,
                 total: +number,
                 totalPrice: foodDetail?.price * +number,
             }
@@ -243,12 +357,9 @@ function FoodDetails(){
                                 disabled='true'
                             />
                         </div>
-                        <select className='foodSize' defaultValue={foodSize} onChange={e => {setFoodSize(e.target.value); }}>
-                            <option value="0">Choose an option</option>
-                            <option value="1">S</option>
-                            <option value="2">M</option>
-                            <option value="3">L</option>
-                        </select>
+                       <p className='detailDes'>
+                           {foodDetail?.description}
+                        </p>
                         <input 
                             type="number"
                             className='numberFood'
@@ -321,45 +432,97 @@ function FoodDetails(){
                 {commentList?.map((comment, index) => {
                     return (
                         <div className="commentUser" key={index}>
-                            <div className="leftCommentUser">
-                                <img src={comment?.image} alt="" />
-                            </div>
-                            <div className="rightCommentUser">
-                                <span className='userComment'>Vuong</span>
-                                <StarsRating
-                                    value={comment?.rate}
-                                    disabled="true"
-                                />
-                                <p className='textComment' >{comment?.content}</p>
-                            </div>
-                            <div className="endCommentUser">
-                                <EditIcon 
-                                    className='editIcon' 
-                                    style={account?.username !== undefined? {"display": "inline-block"}: {"display": "none"}}
-                                    onClick={() => handleEditComment()}    
-                                />
-                                <DeleteForeverIcon
-                                    className='deleteIcon' 
-                                    style={account?.username !== undefined? {"display": "inline-block"}: {"display": "none"}}
-                                    onClick={() => handleDeleteComment(comment?._id)}
-                                />
-                            </div>
+                                {comment?._id === statusEdit ? 
+                                    <div className='editComment'>
+                                       <div className='leftEdit'>
+                                            <StarsRating
+                                        value={starEdit}
+                                        onChange={(value) => setStarEdit(value)}
+                                        />
+                                         <textarea
+                                            className='textComment' 
+                                            rows="6"
+                                            value={contentEdit}
+                                            onChange={(e) => setContentEdit(e.target.value)}   
+                                        ></textarea>
+                                        <div className="uploadImg">
+                                            <input 
+                                                type="file"
+                                                className='inputImg'
+                                                onChange={handleEditUploadImage}/>
+                                        </div>
+                                </div>
+                                <div className='rightEdit'>
+                                        {showEditImage && (
+                                            <img src={showEditImage} alt='' width={"100%"}/>
+                                        )}
+                                        <div className='submitEdit'>
+                                                <button onClick={() => setStatusEdit('')}>
+                                                    Cancel
+                                                </button>
+                                                <button
+                                                    className='submitComment'
+                                                    onClick={() => confirmEdit()}
+                                                >Save</button>
+                                        </div>
+                                    </div>
+                                    </div> : <>
+                                        <div className="leftCommentUser">
+                                            <img src={comment?.image} alt="" />
+                                        </div>
+                                        <div className="rightCommentUser">
+                                            <span className='userComment'>Vuong     {comment?.createdAt}</span>
+                                            <StarsRating
+                                                value={comment?.rate}
+                                                disabled="true"
+                                            />
+                                            <p className='textComment' >{comment?.content}</p>
+                                        </div>
+                                        <div className="endCommentUser">
+                                            <EditIcon 
+                                                className='editIcon' 
+                                                style={account?.username !== undefined? {"display": "inline-block"}: {"display": "none"}}
+                                                onClick={() => handleEditComment(comment?._id)}    
+                                            />
+                                            <DeleteForeverIcon
+                                                className='deleteIcon' 
+                                                style={account?.username !== undefined? {"display": "inline-block"}: {"display": "none"}}
+                                                onClick={() => handleDeleteComment(comment?._id)}
+                                            />
+                                        </div>
+                                </>}
+                                
                         </div>
                     )
                 })}
               
             </div>:<Loading/>}
-            {modalDelete?<section className='popUp'>
+            {modalDelete  ?<section className='popUp'>
                 <span className="overlay"></span>
 
                 <div className="modal-box">
-                    <CheckCircleOutlineIcon className='checkIcon'/>
+                    <CheckCircleOutlineIcon className='checkIcon'/>        
                     <h2>Confirm Delete</h2>
                     <h3>Do you absolutely want to delete your comment?</h3>
-
                     <div className="buttons">
+                        
                         <button className="close-btn" onClick={() => setModalDelete(false)}>No, Thanks</button>
                         <button className="open-btn" onClick={() => submitDelete()}>Confirm</button>
+                    </div>
+                </div>
+            </section>:''}
+
+             {modalEdit  ?<section className='popUp'>
+                <span className="overlay"></span>
+
+                <div className="modal-box">
+                    <CheckCircleOutlineIcon className='checkIcon'/>        
+                    <h2>Confirm Edit</h2>
+                    <h3>Do you absolutely want to change your comment?</h3>
+                    <div className="buttons">
+                        
+                        <button className="close-btn" onClick={() => setModalEdit(false)}>No, Thanks</button>
+                        <button className="open-btn" onClick={() => handleSubmitEdit()}>Confirm</button>
                     </div>
                 </div>
             </section>:''}

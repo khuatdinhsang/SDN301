@@ -15,9 +15,15 @@
     }
     .overallCart{
         width: 100%;
-        text-align: right;
         margin-bottom: 20px;
+        text-align: right;
+        // display: flex;
+        // justify-content: space-between;
+        .cover{
+            width: 40%;
+        }
         span{
+            
             font-weight: 500;
             color: rgba($color: #000000, $alpha: 0.7);
         }

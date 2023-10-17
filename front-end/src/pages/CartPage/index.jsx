@@ -1,18 +1,23 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
-import { decreaseItem, increaseItem, removeItem } from "../../actions/cartAction";
+import { decreaseItem, increaseItem, removeItem, resetItem } from "../../actions/cartAction";
+import Loading from "../Loading";
 import "./CartPage.scss"
 
 function CartPage(){
     // const [voucher, setVoucher] = useState('')
-    const [itemCover, setItemCover] = useState({})
+    const [itemCover, setItemCover] = useState()
+
+    const [total, setTotal] = useState(0)
+    const [loadingAddCart, setLoadingAddCart] = useState(false)
 
     const cartList = useSelector((state) => state.cart)
-    const [total, setTotal] = useState(0)
     const dispatch = useDispatch();
     const navigate = useNavigate()
+    const account = useSelector(state => state.account)
 
     useEffect(()=>{
         window.scrollTo(0,0)
@@ -52,17 +57,42 @@ function CartPage(){
         toast.success(`Delete ${newItem.name} successfully!`)
     }   
 
+    const handleCoverItem = () => {
+        
+    }
+
+    const handlePayment = () => {
+        setLoadingAddCart(true)
+
+        axios
+        .put('/api/account/addCart',cartList,{
+            headers:{
+                Authorization: `Bearer ${account?.accessToken}`
+            }
+        })
+        .then(res => {
+            // const action = resetItem()
+            // dispatch(action)
+            toast.success("Add Cart successfully!")
+            setLoadingAddCart(false)
+            navigate("/payment")
+        })
+        .catch(err => console.log(err))
+
+    }
+
     const price = 50000;
     return(
         <div className="cartPage">
             <h3 className="cartPageTitle">Shopping Cart</h3>
             <div className="overallCart">
-                <span>{cartList?.length} items in the bag</span>    
+                
+               {cartList[0]?.name === undefined ? <span>The bag is blank</span>: <span>{cartList?.length} items in the bag</span>}    
             </div> 
             <div className="listItems">
-                {cartList.map((cart) => {
+                {cartList.map((cart, index) => {
                     return (
-                        <div className="itemBox">
+                        <div className="itemBox" key={index}>
                             <div className="leftBox">
                                 <img 
                                     src={cart?.image} 
@@ -100,7 +130,7 @@ function CartPage(){
                     )
                 } )}
             </div>
-            <div className="bill">
+           {loadingAddCart === false ?  <div className="bill">
                 <div className="voucher">
                     <p className="voucherQuestion">Have A Promo Code?</p>
                     <div className="submitVoucher">
@@ -138,11 +168,11 @@ function CartPage(){
                             <p className="totalPrice">{total.toLocaleString('vi', {style : 'currency', currency : 'VND'})}</p>
                         </div>
                     </div>
-                    <div className="paying">
-                        <button onClick={() => navigate("/payment")}>Paying</button>
-                    </div>
+                   {cartList[0]?.name !== undefined ? <div className="paying">
+                        <button onClick={() => handlePayment()}>Paying</button>
+                    </div>:''}
                 </div>
-            </div>
+            </div>: <Loading/>}
         </div>
     )
 }
