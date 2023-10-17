@@ -15,10 +15,13 @@ function UploadPage(){
     const [img, setImg] = useState('')
     const [showImg, setShowImg] = useState()
     const [typeSubcategory, setTypeSubcategory] = useState('')
+    const [inventories, setInventories] = useState()
     const [quantity, setQuantity] = useState()
     const [category, setCategory] = useState([])
     const [subcategory, setSubcategory] = useState([])
     const [loadingUpload, setLoadingUpload] = useState(true)
+    const [selectInventory, setSelectInventory] = useState('')
+    const [description, setDescription] = useState('')
 
     const account = useSelector(state => state.account)
 
@@ -30,12 +33,17 @@ function UploadPage(){
         })
         .catch(err => console.log(err))
 
-        // axios
-        // .get('/api/subCategory/getAll')
-        // .then((res) =>{
-        //     setSubcategory(res.data.data)
-        // })
-        // .catch(err => console.log(err))
+       
+        axios
+        .get('/api/inventory/getAll',{
+            headers: {
+                Authorization: `Bearer ${account?.accessToken}`
+            }
+        })
+        .then(res => {
+            setInventories(res.data.data)
+        })
+        .catch(err => console.log(err))
     },[])
 
     useEffect(() => {
@@ -90,8 +98,9 @@ function UploadPage(){
                     price: price, 
                     quantity: quantity,
                     image: data.url,
-                    categoryId: type,
-                    subCategoryId: typeSubcategory
+                    description: description,
+                    subCategoryId: typeSubcategory,
+                    inventoryId: selectInventory
                 };
                 
                 axios
@@ -108,7 +117,10 @@ function UploadPage(){
                     setTypeSubcategory('')
                     setImg()
                     setShowImg()
+                    setDescription('')
+                    setSelectInventory()
                     setLoadingUpload(true)
+                    setQuantity()
                 })
                 .catch(err => console.log(err + "Can not upload new product"))
 
@@ -146,12 +158,21 @@ function UploadPage(){
                             onChange={e => setPrice(e.target.value)}/>
                     </div>
                     <div className="inputBox">
+                        <label htmlFor='description'>Description</label>
+                        <textarea 
+                            className='inputPrice' 
+                            id='description' 
+                            placeholder='Enter Description'
+                            value={description}
+                            onChange={e => setDescription(e.target.value)}/>
+                    </div>
+                    <div className="inputBox">
                         <label htmlFor='inputQuantity'>Quantity</label>
                         <input 
                             type="number"  
                             className='inputPrice' 
                             id='inputQuantity' 
-                            placeholder='Enter Food Price'
+                            placeholder='Enter Quantity'
                             value={quantity}
                             onChange={e => setQuantity(e.target.value)}/>
                     </div>
@@ -178,6 +199,19 @@ function UploadPage(){
                             onChange={e => setTypeSubcategory(e.target.value)}>
                             <option value="">Choose a category</option>
                             {subcategory?.map(e => {
+                                return <option value={e?._id} key={e?._id}>{e?.name}</option>
+                            })}
+                        </select>
+                    </div>
+                     <div className="inputBox">
+                        <label htmlFor='inputInven'>Inventory</label>
+                        <select 
+                            className='inputTypeSub' 
+                            id='inputInven' 
+                            value={selectInventory}
+                            onChange={e => setSelectInventory(e.target.value)}>
+                            <option value="">Choose a category</option>
+                            {inventories?.map(e => {
                                 return <option value={e?._id} key={e?._id}>{e?.name}</option>
                             })}
                         </select>

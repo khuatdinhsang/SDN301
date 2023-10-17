@@ -6,10 +6,12 @@ const cartReducer = (state = initState, action) => {
       const newList = [...state];
       const newCartItem = {
         _id: action.payload._id,
+        productId: action.payload._id,
         name: action.payload.name,
         price: action.payload.price,
         image: action.payload.image,
         description: action.payload.description,
+        quantity: 1,
         total: 1,
         totalPrice: action.payload.price,
       };
@@ -18,10 +20,12 @@ const cartReducer = (state = initState, action) => {
         const index = newList.findIndex((e) => e._id === findProduct._id);
         const newItem = {
           _id: findProduct._id,
+          productId: action.payload._id,
           name: findProduct.name,
           price: findProduct.price,
           image: findProduct.image,
           description: action.payload.description,
+          quantity: findProduct.total + 1,
           total: findProduct.total + 1,
           totalPrice: findProduct.price * (findProduct.total + 1),
         };
@@ -42,10 +46,12 @@ const cartReducer = (state = initState, action) => {
         const newTotal = newList[findIndex].total;
         const newCardItem = {
           _id: newItem._id,
+          productId: action.payload._id,
           name: newItem.name,
           price: newItem.price,
           image: newItem.image,
           description: newItem.description,
+          quantity: +newItem.total + +newTotal,
           total: +newItem.total + +newTotal,
           totalPrice: newItem.price * (+newItem.total + +newTotal),
         };
@@ -57,10 +63,12 @@ const cartReducer = (state = initState, action) => {
       const newList = [...state];
       const newCartItem = {
         _id: action.payload._id,
+        productId: action.payload._id,
         name: action.payload.name,
         price: action.payload.price,
         image: action.payload.image,
         description: action.payload.description,
+        quantity: action.payload.total + 1,
         total: action.payload.total + 1,
         totalPrice: action.payload.price * (action.payload.total + 1),
       };
@@ -77,10 +85,12 @@ const cartReducer = (state = initState, action) => {
       } else {
         const newCartItem = {
           _id: action.payload._id,
+          productId: action.payload._id,
           name: action.payload.name,
           price: action.payload.price,
           image: action.payload.image,
           description: action.payload.description,
+          quantity: action.payload.total - 1,
           total: action.payload.total - 1,
           totalPrice: action.payload.price * (action.payload.total - 1),
         };
