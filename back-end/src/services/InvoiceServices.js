@@ -1,7 +1,7 @@
 const Company = require("../models/CompanyModel");
 const Inventory = require("../models/InventoryModel");
 const Invoice = require("../models/InvoiceModel");
-const LIMIT_ORDER_COMPANY = 10;
+const LIMIT_ORDER_COMPANY = 5;
 const orderCompany = (data) => {
     return new Promise(async (resolve, reject) => {
         const { companyId, bills } = data
@@ -15,7 +15,6 @@ const orderCompany = (data) => {
                     message: 'Company is not exists!'
                 })
             }
-            // postman
             var totalPrice = 0;
             for (var i = 0; i < bills.length; i++) {
                 var product = bills[i];
@@ -79,12 +78,19 @@ const getDetailOrderCompany = (invoiceId) => {
         }
     })
 }
-const getAllOrderCompany = (page = 1, limit = LIMIT_ORDER_COMPANY) => {
+const getAllOrderCompany = (page = 1, limit = LIMIT_ORDER_COMPANY, startDate, endDate) => {
     return new Promise(async (resolve, reject) => {
         try {
             var skipNumber = (page - 1) * limit;
-            const totalOrderCompany = await Invoice.count()
-            const allOrderCompany = await Invoice.find({})
+            const conditions = {
+                createdAt: {
+                    $gte: new Date(JSON.stringify(startDate)),
+                    $lte: new Date(JSON.stringify(endDate)) ?? new Date(),
+                },
+            };
+            const searchQuery = (startDate || endDate) ? conditions : null;
+            const totalOrderCompany = await Invoice.count(searchQuery)
+            const allOrderCompany = await Invoice.find(searchQuery)
                 .skip(skipNumber)
                 .limit(limit)
                 .populate('companyId', 'name address image email website')

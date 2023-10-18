@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { addToCart } from "../../actions/cartAction";
@@ -17,6 +17,7 @@ function MenuPage(){
     const [listProducts, setListProducts] = useState([])
     const [loading, setLoading] = useState(false)
 
+    const account = useSelector(state => state.account)
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
@@ -155,11 +156,16 @@ function MenuPage(){
     },[search])
 
     const handleAddtoCart = (item) => {
-        const newItem = item;
-        const action = addToCart(newItem);
-        dispatch(action);
-        toast.success(`Add ${item?.name} successfully`);
-        console.log(item);
+       if(account.username === undefined ){
+            toast.warning("Please login to add to card!")
+       }else if(item?.quantity <= 0){
+            toast.warning(`${item?.name} is sold out!`)
+       }else{
+            const newItem = item;
+            const action = addToCart(newItem);
+            dispatch(action);
+            toast.success(`Add ${item?.name} successfully`);
+       }
         
     }
 

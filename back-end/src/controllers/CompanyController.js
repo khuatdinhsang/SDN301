@@ -60,8 +60,8 @@ const deleteCompany = async (req, res) => {
 }
 const getAllCompany = async (req, res) => {
     try {
-        const { page, limit } = req.query;
-        const response = await CompanyServices.getAllCompany(page, limit)
+        const { page, limit, search } = req.query;
+        const response = await CompanyServices.getAllCompany(page, limit, search)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(404).json({

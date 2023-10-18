@@ -5,10 +5,11 @@ const createRoom = (username) => {
             const room = await Room.findOne({
                     name: username
                 })
+                if(room)
                 resolve({
                     status: 'OK',
                     message: 'Find Room successfully',
-                    data: room
+                    data: room._id
                 })
 
             const createRoom = await Room.create({
@@ -16,8 +17,8 @@ const createRoom = (username) => {
             })
             resolve({
                 status: 'OK',
-                message: 'Room associated successfully',
-                data: createRoom
+                message: 'Room created successfully',
+                data: createRoom._id
             })
         } catch (err) {
             reject(err)

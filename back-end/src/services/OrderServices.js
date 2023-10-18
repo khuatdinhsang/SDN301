@@ -33,6 +33,7 @@ const createOrder = (accountId, data) => {
             }, 0)
             if (!addressShippingId) {
                 var addressShipping = await AddressShipping.create({
+                    accountId: checkAccountExist._id,
                     customerName,
                     phone: customerPhone,
                     address: customerAddress,
@@ -58,7 +59,7 @@ const createOrder = (accountId, data) => {
             resolve({
                 status: 'OK',
                 message: 'Order successfully',
-                data: { ...newOrder._doc, email: user.email }
+                data: { ...newOrder._doc, email: user?.email }
             })
         } catch (err) {
             reject(err)
@@ -67,7 +68,7 @@ const createOrder = (accountId, data) => {
 }
 
 
-const getAllOrderByAccountId = (page, limit = LIMIT_ORDER, accountId) => {
+const getAllOrderByAccountId = (page = 1, limit = LIMIT_ORDER, accountId) => {
     return new Promise(async (resolve, reject) => {
         try {
             var skipNumber = (page - 1) * limit;
@@ -92,12 +93,33 @@ const getAllOrderByAccountId = (page, limit = LIMIT_ORDER, accountId) => {
         }
     })
 }
-const getAllOrder = (page, limit = LIMIT_ORDER) => {
+const getAllOrder = (page = 1, limit = LIMIT_ORDER, status) => {
     return new Promise(async (resolve, reject) => {
         try {
-            var skipNumber = (page - 1) * limit;
-            const totalOrder = await Order.count()
-            const allOrder = await Order.find()
+            var skipNumber = (page - 1) * limit
+            console.log("staus", status)
+            var query = {}
+            if (status === 'success') {
+                query = {
+                    isDeliverySuccess: true
+                }
+            } else if (status === 'delivery') {
+                query = {
+                    isDelivery: true
+                }
+            } else if (status === 'cancel') {
+                query = {
+                    isCancel: true
+                }
+            } else if (status === 'start') {
+                query = {
+                    status: true,
+                    isDelivery: false,
+                    isDeliverySuccess: false,
+                }
+            }
+            const totalOrder = await Order.count(query)
+            const allOrder = await Order.find(query)
                 .populate('addressShippingId')
                 .skip(skipNumber)
                 .limit(limit)

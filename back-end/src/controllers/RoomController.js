@@ -1,9 +1,11 @@
 const RoomServices = require('../services/RoomServices');
-const createRoom = async (username, socket, callback) => {
+const createRoom = async (data, socket, callback) => {
     try {
+        const{username, isNotlogin} = data;
         const response = await RoomServices.createRoom(username);
-        socket.join(response.data._id.toString());
-        callback(response.data)
+        if(!isNotlogin) socket.username = username;
+        socket.join(response.data.toString());
+        callback(response.data);
     } catch (error) {
         console.log(error);
         return;

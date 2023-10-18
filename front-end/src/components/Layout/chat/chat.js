@@ -3,6 +3,7 @@ import icons from "../../../services/IconService";
 import { emit, on } from "../../../services/SocketService";
 import { useSelector } from 'react-redux';
 import { SOCKET } from '../../../const';
+const { v4: uuidv4 } = require('uuid');
 
 const Chat = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -14,9 +15,9 @@ const Chat = () => {
 
   useEffect(() => {
     console.log("hello");
-    if(!account?.username) return;
-    setUsername(account?.username);
-    joinRoom(account?.username);
+    const payload = !account?.username ? {username:`anonymous-${uuidv4()}`, isNotLogin: true}: {username: account?.username};
+    setUsername(payload.username);
+    joinRoom(payload);
     // socket.emit('getChatHistory',  account?.username );
   
     // socket.on('chatHistory', (chatHistory) => {
@@ -31,17 +32,17 @@ const Chat = () => {
     setIsChatOpen(!isChatOpen);
   };
 
-  const joinRoom = (username = account?.username) => {
-    emit(SOCKET.createRoom, username, (createRoom) => {
+  const joinRoom = (payload) => {
+    emit(SOCKET.joinRoom, payload, (createRoom) => {
       console.log(createRoom);
       setRoom(createRoom);
     });
   };
 
   const sendMessage = () => {
-    console.log(message,room,username);
+    console.log(message, room, username);
     if (message && room && username) {
-      emit(SOCKET.chatMessage, {roomId: room._id, sender: username, message: message});
+      emit(SOCKET.chatMessage, {roomId: room, sender: username, message: message});
       setMessage('');
     }
   };
@@ -81,10 +82,10 @@ const Chat = () => {
           <div className="chat-box">
             {
             messages.map((msg, index) => (
-              <>
-              <span> {account?.username}</span>
-              <div key={index}>{msg}</div>
-            </>
+              <div key={index}>
+              <span> {username}</span>
+              <div>{msg}</div>
+            </div>
             ))}
           </div>
           <div className="message-input-container">

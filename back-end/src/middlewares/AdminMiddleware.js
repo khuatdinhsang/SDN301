@@ -98,7 +98,6 @@ const auth = (req, res, next) => {
             })
         }
         jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
-
             if (err) {
                 console.log("err", err.message);
                 return res.status(400).json({
@@ -124,8 +123,8 @@ const checkTokenExpired = (req, res, next) => {
             })
         }
         jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
+            console.log("vao day")
             if (err.message === 'jwt expired') {
-                console.log("ok")
                 next();
             }
         });

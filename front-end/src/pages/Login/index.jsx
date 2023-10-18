@@ -8,6 +8,7 @@ import "./Login.scss";
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState()
   const navigate = useNavigate();
   const dispatch = useDispatch();
   useEffect(() => {
@@ -21,30 +22,35 @@ function Login() {
       .catch((err) => console.log(err));
   }, []);
 
-  const handleLogin = () => {
+  
+
+  const handleLogin = (e) => {
     const userLogin = {
-            username: username,
-            password: password
+            username: username.trim(),
+            password: password.trim()
           }
-    axios
-      .post("/api/account/login", userLogin)
-      .then((res) => {
-        // console.log(res.data);
-        if (res.data.status === "OK") {
-          const user = {
-              username: username,
-              accessToken: res.data.accessToken
-          }
-          const action = loginAccount(user);
-          dispatch(action);
-          // console.log(res.data.accessToken);
-          toast.success("Login successfully");
-          navigate("/");
-        } else {
-          toast.error("Username or Password is not correct!");
-        }
-      })
-      .catch((err) => toast(err));
+    
+        axios
+          .post("/api/account/login", userLogin)
+          .then((res) => {
+            // console.log(res.data);
+            if (res.data.status === "OK") {
+              setIsLoading(false)
+              const user = {
+                  username: username,
+                  accessToken: res.data.accessToken
+              }
+              const action = loginAccount(user);
+              dispatch(action);
+              // console.log(res.data.accessToken);
+              toast.success("Login successfully");
+              setIsLoading(true)
+              navigate("/");
+            } else {
+              toast.error("Username or Password is not correct!");
+            }
+          })
+          .catch((err) => toast(err));
   };
 
   return (

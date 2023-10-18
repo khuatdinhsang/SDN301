@@ -74,12 +74,8 @@ const getDetailProduct = async (req, res) => {
 }
 const getAllProduct = async (req, res) => {
     try {
-        let checkIsPagination = false
-        const { page, limit } = req.query;
-        if (page && limit) {
-            checkIsPagination = true
-        }
-        const response = await ProductServices.getAllProduct(page, limit, checkIsPagination)
+        const { page, limit, search } = req.query;
+        const response = await ProductServices.getAllProduct(page, limit, search)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(404).json({
@@ -102,9 +98,9 @@ const deleteProduct = async (req, res) => {
 }
 const getAllProductBySubCategoryId = async (req, res) => {
     try {
-        const { page, limit } = req.query;
+        const { page, limit, search } = req.query;
         const { subCategoryId } = req.body
-        const response = await ProductServices.getAllProductBySubCategoryId(page, limit, subCategoryId)
+        const response = await ProductServices.getAllProductBySubCategoryId(page, limit, search, subCategoryId)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(404).json({
@@ -115,9 +111,9 @@ const getAllProductBySubCategoryId = async (req, res) => {
 }
 const getAllProductByCategoryId = async (req, res) => {
     try {
-        const { page, limit } = req.query;
+        const { page, limit, search } = req.query;
         const { categoryId } = req.body
-        const response = await ProductServices.getAllProductByCategoryId(page, limit, categoryId)
+        const response = await ProductServices.getAllProductByCategoryId(page, limit, search, categoryId)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(404).json({
@@ -126,23 +122,10 @@ const getAllProductByCategoryId = async (req, res) => {
         })
     }
 }
-const searchProductByName = async (req, res) => {
-    try {
-        const { page, limit, name } = req.query;
-        const response = await ProductServices.searchProductByName(page, limit, name)
-        return res.status(200).json(response)
-    } catch (error) {
-        return res.status(404).json({
-            message: error
-        })
-    }
-}
-
 
 module.exports = {
     createProduct, updateProduct,
     getDetailProduct, getAllProduct,
     deleteProduct, getAllProductBySubCategoryId,
     getAllProductByCategoryId, createRandomProduct,
-    searchProductByName
 }

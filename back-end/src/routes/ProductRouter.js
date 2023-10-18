@@ -9,7 +9,5 @@ router.get('/getAll', ProductController.getAllProduct);
 router.delete('/delete/:id', staffMiddleware, ProductController.deleteProduct);
 router.put('/getBySubcategoryId', ProductController.getAllProductBySubCategoryId)
 router.put('/getByCategoryId', ProductController.getAllProductByCategoryId)
-router.get('/search', ProductController.searchProductByName)
-// router.get('/random', ProductController.createRandomProduct)
 router.get('/:id', ProductController.getDetailProduct);
 module.exports = router

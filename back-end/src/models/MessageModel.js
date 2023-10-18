@@ -15,7 +15,9 @@ const messageSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Room', 
         required: true }, 
-  });
+  }, {
+    timestamps: true
+})
 
 const Message = mongoose.model('Message', messageSchema);
 

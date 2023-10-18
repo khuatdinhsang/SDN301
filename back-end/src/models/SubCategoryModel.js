@@ -4,7 +4,8 @@ const Category = require("./CategoryModel");
 const subCategorySchema = new mongoose.Schema({
     name: {
         type: String,
-        require: true
+        require: true,
+        unique: true,
     },
     image: {
         type: String,

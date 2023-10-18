@@ -1,4 +1,5 @@
 const Feedback = require("../models/FeedbackModel")
+const Inventory = require("../models/InventoryModel")
 const Invoice = require("../models/InvoiceModel")
 const Product = require("../models/ProductModel")
 const User = require("../models/UserModel")
