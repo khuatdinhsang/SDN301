@@ -1,6 +1,24 @@
 import "../OrderManager/Order.scss";
-
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import axios from 'axios';
 function OrderManager() {
+    const [orderManage, setOrderManage] = useState([]);
+    const account = useSelector(state => state.account);
+    useEffect(() => {
+        axios
+            .get(`/api/order/getAll`, {
+                headers: {
+                    Authorization: `Bearer ${account?.accessToken}`
+                }
+            })
+            .then((res) => {
+                setOrderManage(res.data.data);
+                console.log(res.data.data);
+            })
+            .catch(err => console.log(err));
+
+    }, []);
     return (
         <div className='categoryManager'>
             <div className="listCate">
@@ -10,7 +28,6 @@ function OrderManager() {
                         className="inputSearchCate"
                         placeholder="Search Order"
                     />
-                    {/* <button >Add A Category</button> */}
                 </div>
                 <div className="tableCate">
                     <div className="tableHeader">
@@ -29,60 +46,8 @@ function OrderManager() {
                         <div className="quantityHeader">
                             <span>Quantity</span>
                         </div>
-                        <div className="createdAt">
-                            <span>Time</span>
-                        </div>
-
-                    </div>
-                    <div className="tableBody">
-                        <div className="rowBody">
-                            <div className="nameBody">
-                                <span>Vuong</span>
-                            </div>
-                            <div className="phoneBody">
-                                <span>012345678</span>
-                            </div>
-                            <div className="addressBody">
-                                <span>Ha Noi</span>
-                            </div>
-                            <div className="productBody">
-                                <img src="https://cdn.tgdd.vn/2021/05/CookRecipe/Avatar/banh-mi-thit-bo-nuong-thumbnail-1.jpg" alt="" />
-                            </div>
-                            <div className="quantityBody">
-                                <span>2</span>
-                            </div>
-                            <div className="createAtBody">
-                                <span>2023</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className="listSubCate">
-                <div className="listSubCateHeader">
-                    <input
-                        type="text"
-                        className="inputSearchSubCate"
-                        placeholder="Search SubCategory"
-                    />
-                    <button >Add A Subcategory</button>
-                </div>
-                <div className="tableSubCate">
-                    <div className="tableHeader">
-                        <div className="nameHeader">
-                            <span>Name</span>
-                        </div>
-                        <div className="phoneHeader">
-                            <span>Phone</span>
-                        </div>
-                        <div className="addressHeader">
-                            <span>Address</span>
-                        </div>
-                        <div className="productHeader">
-                            <span>Product</span>
-                        </div>
                         <div className="quantityHeader">
-                            <span>Quantity</span>
+                            <span>TotalPrice</span>
                         </div>
                         <div className="createdAt">
                             <span>Time</span>
@@ -90,26 +55,32 @@ function OrderManager() {
 
                     </div>
                     <div className="tableBody">
-                        <div className="rowBody">
-                            <div className="nameBody">
-                                <span>Dong</span>
+                        {orderManage.map((o, index) => (
+                            <div className="rowBody" key={index}>
+                                <div className="nameBody">
+                                    <span>{o.addressShippingId.customerName}</span>
+                                </div>
+                                <div className="phoneBody">
+                                    <span>{o.addressShippingId.phone}</span>
+                                </div>
+                                <div className="addressBody">
+                                    <span>{o.addressShippingId.address}</span>
+                                </div>
+                                <div className="productBody">
+                                    <img src={o.cart[0]?.image} alt="" />
+                                </div>
+                                <div className="quantityBody">
+                                    <span>{o.cart.reduce((acc, item) => acc + item.quantity, 0)}</span>
+                                </div>
+                                <div className="quantityBody">
+                                    <span>{o.totalPrice.toLocaleString('en-US')} vnd</span>
+                                </div>
+                                <div className="createAtBody">
+                                    <span>{new Date(o.createdAt).toLocaleString()}</span>
+                                </div>
                             </div>
-                            <div className="phoneBody">
-                                <span>012345678</span>
-                            </div>
-                            <div className="addressBody">
-                                <span>Ha Noi</span>
-                            </div>
-                            <div className="productBody">
-                                <img src="https://cdn.tgdd.vn/2021/05/CookRecipe/Avatar/banh-mi-thit-bo-nuong-thumbnail-1.jpg" alt="" />
-                            </div>
-                            <div className="quantityBody">
-                                <span>2</span>
-                            </div>
-                            <div className="createAtBody">
-                                <span>2023</span>
-                            </div>
-                        </div>
+                        ))}
+
                     </div>
                 </div>
             </div>
