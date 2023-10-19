@@ -219,26 +219,48 @@ const sendEmailCreateOrder = async (email, orderItems) => {
     const address = await AddressShipping.findOne({
         _id: orderItems.addressShippingId
     })
-    let listItem = '';
+    let listItem = `
+        <div>
+              <label>Họ và tên: ${address.customerName}</label><br/>
+              <label>Số điện thoại: ${address.phone}</label><br/>
+              <label>Địa chỉ: ${address.address}</label><br/>
+              <label>Email: ${email}</label><br/>
+          </div><br/>
+        <table cellpadding="2" cellspacing="2" style="border:1px solid black; text-align: center; border-collapse:collapse;">
+            <tr style="border:1px solid black;">
+                <th  style="border:1px solid black;">STT</th>
+                <th style="width: 20%; border:1px solid black;">Hình Ảnh</th>
+                <th style="border:1px solid black;">Tên Sản Phẩm</th>
+                <th style="border:1px solid black;">Đơn Giá</th>
+                <th style="border:1px solid black;">Số Lượng</th>
+                <th style="border:1px solid black;">Thành tiền</th>
+            </tr>`;
     const attachImage = []
-    orderItems?.cart?.forEach((order) => {
-        listItem += `<div>
-      <div>
-        Bạn đã đặt sản phẩm <b>${order.name}</b> với số lượng: <b>${order.quantity}</b> và giá là: <b>${order.price} VND</b></div>
-        <div>Bên dưới là hình ảnh của sản phẩm</div>
-      </div>`
+    orderItems?.cart?.forEach((order, index) => {
+        listItem += `
+        <tr class="tabdata" style="border:1px solid black;">
+                <td style="border:1px solid black;">${index+1}</td>
+                <td style="border:1px solid black;"><img alt='' src=${order.image} style="width: 80%"/></td>
+                <td style="border:1px solid black;">${order.name}</td>
+                <td style="border:1px solid black;">${order.price?.toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "VND",
+                })}</td>
+                <td style="border:1px solid black;">${order.quantity}</td>
+                <td style="border:1px solid black;">${(order.price * order.quantity)?.toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "VND",
+                })}</td>
+            </tr>`
         attachImage.push({ path: order.image })
     })
-    listItem += ` 
-          <div>
-                Tổng tiền hàng: <b>${orderItems.totalPrice}</b> 
-          </div>
-          <div>
-              Nguời nhận : <b>${address.customerName}</b>
-              SDT : <b>${address.phone}</b>
-              Địa chỉ : <b>${address.address}</b>
-          </div>
-          `
+    listItem += `<tr class="tabdata" style="border:1px solid black;">
+                <td colspan="5"  style="border:1px solid black; ">Tổng tiền</td>
+                <td style="border:1px solid black;">${(orderItems.totalPrice)?.toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "VND",
+                })}</td>
+            </tr>`
     // send mail with defined transport object
     await transporter.sendMail({
         from: process.env.MAIL_ACCOUNT, // sender address
