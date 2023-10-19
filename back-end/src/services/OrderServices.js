@@ -28,8 +28,9 @@ const createOrder = (accountId, data) => {
                 })
             }
             const { _id, cart } = checkAccountExist;
+           
             const totalPrice = cart.reduce((accumulator, currentValue) => {
-                return accumulator + currentValue.price * currentValue.quantity * (100 - currentValue?.numberDiscount) / 100;
+                return accumulator + currentValue?.price * currentValue?.quantity * (100 - (currentValue?.numberDiscount|| 0)) / 100;
             }, 0)
             if (!addressShippingId) {
                 var addressShipping = await AddressShipping.create({
@@ -42,7 +43,7 @@ const createOrder = (accountId, data) => {
             const newOrder = await Order.create({
                 accountId: _id,
                 addressShippingId: addressShippingId || addressShipping._id,
-                totalPrice: totalPrice,
+                totalPrice: parseInt(totalPrice),
                 cart
             })
             const user = await User.findOne({
