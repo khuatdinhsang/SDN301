@@ -80,10 +80,12 @@
 
             img{
                 width: 80%;
+                height: 180px;
                 padding-bottom: 16px;
                 border-radius: 5px;
                 height: 90%;
                 transition: .5s;
+                object-fit: cover;
 
                 &:hover{
                     filter: grayscale(1);
