@@ -471,7 +471,7 @@ function FoodDetails(){
                                             <img src={comment?.image} alt="" />
                                         </div>
                                         <div className="rightCommentUser">
-                                            <span className='userComment'>Vuong     {comment?.createdAt}</span>
+                                            <span className='userComment'>Vuong {comment?.createdAt.split('T')[0]}</span>
                                             <StarsRating
                                                 value={comment?.rate}
                                                 disabled="true"
