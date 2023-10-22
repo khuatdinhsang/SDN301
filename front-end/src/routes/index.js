@@ -14,6 +14,7 @@ import Payment from "../pages/Payment";
 import SignUp from "../pages/SignUp";
 import OrderManager from "../pages/admin/OrderManager";
 import UpdateProduct from "../pages/admin/ProductManager/UpdateProduct";
+import ChatStaff from "../pages/admin/Chat";
 
 const publicRoutes = [
     {path: "/", component: HomePage},
@@ -23,7 +24,7 @@ const publicRoutes = [
     {path: "/menu/foodDetail/:slug", component: FoodDetails},
     {path: "/cart", component: CartPage},
     {path: "/payment", component: Payment},
-    {path: "/admin/chat", component:UploadPage, layout: Dashboard},
+    {path: "/admin/chat", component: ChatStaff, layout: Dashboard},
     {path: "/admin/upload", component:UploadPage, layout: Dashboard},
     {path: "/admin/productsManager", component: ProductManager, layout: Dashboard},
     {path: "/admin/general", component: General, layout: Dashboard},

@@ -10,15 +10,22 @@ const socket = {
        RoomController.createRoom(data, socket, callback);
     });
     socket.on(SOCKET.getChatHistory, (data, callback) => {
-      MessageController.getMessageHistory(data, socket, callback);
+      MessageController.getMessageHistory(data, callback);
     })
     socket.on(SOCKET.chatMessage, (data) => {
        MessageController.createMessage(data, io, socket);
     });
-    socket.on('disconnect', () => {
-      if(!socket.username) console.log("hello");
-      console.log(`User disconnected`);
-    });
+    // io.use(socketAuthMiddleware);
+    socket.on(SOCKET.getRoomList, (data, callback) => {
+      RoomController.getRoomsSortedByLatestMessage(callback);
+    })
+    socket.on(SOCKET.staffJoinRoom, (data) => {
+      socket.join(data);
+   });
+    // socket.on('disconnect', () => {
+    //   if(!socket.username) console.log("hello");
+    //   console.log(`User disconnected`);
+    // });
   },
 };
 

@@ -10,7 +10,7 @@ const createMessage = async (data, io, socket) => {
         return;
     }
 }
-const getMessageHistory = async (data, socket, callback) => {
+const getMessageHistory = async (data, callback) => {
     try {
         const response = await MessageService.getMessageHistory(data);
         callback(response.data);

@@ -1,4 +1,5 @@
 const RoomServices = require('../services/RoomServices');
+
 const createRoom = async (data, socket, callback) => {
     try {
         const response = await RoomServices.createRoom(data);
@@ -9,4 +10,14 @@ const createRoom = async (data, socket, callback) => {
         return;
     }
 }
-module.exports = {createRoom};
+
+const getRoomsSortedByLatestMessage = async (callback) => {
+    try {
+        const response = await RoomServices.getRoomsSortedByLatestMessage();
+        callback(response.data);
+    } catch (error) {
+        console.log(error);
+        return;
+    }
+}
+module.exports = {createRoom, getRoomsSortedByLatestMessage};

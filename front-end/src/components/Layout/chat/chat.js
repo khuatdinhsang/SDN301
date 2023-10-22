@@ -4,7 +4,7 @@ import { emit, on } from "../../../services/SocketService";
 import { useDispatch, useSelector } from 'react-redux';
 import { SOCKET } from '../../../const';
 import { Link } from 'react-router-dom';
-import { formatTimestamp } from '../../../helper';
+import { formatTimestamp, scrollToBottom } from '../../../helper';
 
 const Chat = () => {
   const chatBoxRef = useRef(null);
@@ -25,7 +25,6 @@ const Chat = () => {
   useEffect(() => {
     emit(SOCKET.getChatHistory, room, (messages) =>{
       setMessages(messages);
-      scrollToBottom();
     });
   }, [room]);
 
@@ -33,10 +32,10 @@ const Chat = () => {
     setIsChatOpen(!isChatOpen);
   };
 
-  const scrollToBottom = () => {
-    if(chatBoxRef.current)
-    chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
-  };
+  useEffect(() => {
+    scrollToBottom(chatBoxRef);
+  }, [room, messages, isChatOpen]);
+
 
   const joinRoom = (username) => {
     emit(SOCKET.joinRoom, username, (createRoom) => {
@@ -58,7 +57,6 @@ const Chat = () => {
       console.log(msg);
       setMessages([...messages, msg]);
     });
-    scrollToBottom();
   }, [messages]);
 
   return (
