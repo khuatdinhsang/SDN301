@@ -1,0 +1,114 @@
+.categoryManager{
+    padding: 30px;
+
+    
+    .listCate, .listSubCate{
+        // box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+        background-color: rgba($color: #fff, $alpha: 0.8);
+        margin-bottom: 30px;
+
+        
+        .listCateHeader, .listSubCateHeader{
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            .inputSearchCate, .inputSearchSubCate{
+                padding: 8px 20px 8px 4px;
+                outline: none;
+                border: 1px solid transparent;
+                border-bottom: 2px solid #ccc;
+                transition: .4s;
+
+                &:focus{
+                    border-bottom: 2px solid var(--primary);
+                }
+            }
+
+            button{
+                outline: none;
+                border: 1px solid transparent;
+                padding: 4px 12px;
+                background-color: var(--primary);
+                color: #fff;
+                cursor: pointer;
+                font-weight: 600;
+            }
+        }
+
+        .tableCate, .tableSubCate{
+
+            .tableHeader{
+                display: flex;
+                padding: 20px;
+                justify-content: space-between;
+                background-color: rgba($color: #ccc, $alpha: 0.7);
+                color: rgba($color: #000, $alpha: 0.7);
+                font-weight: 600;
+                text-transform: uppercase;
+                margin-bottom: 20px;
+                
+                .nameHeader{
+                    width: 28%;
+                }
+
+                .createAtHeader, .imageHeader, .handleBox{
+                    width: 18%;
+                }
+            }
+
+            .tableBody{
+                // padding: 20px;
+                display: flex;
+                flex-direction: column;
+
+
+                .rowBody{
+                    display: flex;
+                    justify-content: space-between;
+                    padding: 20px;
+                    margin-bottom: 20px;
+                    border-bottom: 1.5px solid #ccc;
+                    align-items: center;
+                    
+                    .nameBody{
+                        width: 28%;
+                        font-weight: 600;
+                        display: flex;
+                        
+                    }
+
+                    .createAtBody{
+                        width: 18%;
+                    }
+                    .imageBody{
+                        width: 18%;
+
+                        img{
+                            width: 70%;
+                        }
+                    }
+
+                    .handleBoxBody{
+                        width: 18%;
+
+                        button{
+                            padding: 6px 20px;
+                            outline: none;
+                            border: 1px solid transparent;
+                            cursor: pointer;
+                            background-color: var(--primary);
+                            font-weight: 600;
+                            color: #fff;
+                            border-radius: 5px;
+                            transition: .4s;
+                            
+                            &:hover{
+                                transform: scale(1.05);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

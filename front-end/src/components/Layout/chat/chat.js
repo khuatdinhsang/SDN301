@@ -1,39 +1,45 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import icons from "../../../services/IconService";
 import { emit, on } from "../../../services/SocketService";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { SOCKET } from '../../../const';
-const { v4: uuidv4 } = require('uuid');
+import { Link } from 'react-router-dom';
+import { formatTimestamp } from '../../../helper';
 
 const Chat = () => {
+  const chatBoxRef = useRef(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [room, setRoom] = useState(null);
   const [username, setUsername] = useState(null);
   const account = useSelector(state => state.account);
+  
+  useEffect(() => {
+    if (!account.username) return;
+    // console.log(socket.user);
+    setUsername(account?.username);
+    joinRoom(account?.username);
+  }, []);
 
   useEffect(() => {
-    console.log("hello");
-    const payload = !account?.username ? {username:`anonymous-${uuidv4()}`, isNotLogin: true}: {username: account?.username};
-    setUsername(payload.username);
-    joinRoom(payload);
-    // socket.emit('getChatHistory',  account?.username );
-  
-    // socket.on('chatHistory', (chatHistory) => {
-    //   // Xử lý lịch sử tin nhắn ở đây
-    //   // ...
-    // });
-  
-    
-  }, []);
+    emit(SOCKET.getChatHistory, room, (messages) =>{
+      setMessages(messages);
+      scrollToBottom();
+    });
+  }, [room]);
 
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
   };
 
-  const joinRoom = (payload) => {
-    emit(SOCKET.joinRoom, payload, (createRoom) => {
+  const scrollToBottom = () => {
+    if(chatBoxRef.current)
+    chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+  };
+
+  const joinRoom = (username) => {
+    emit(SOCKET.joinRoom, username, (createRoom) => {
       console.log(createRoom);
       setRoom(createRoom);
     });
@@ -42,19 +48,18 @@ const Chat = () => {
   const sendMessage = () => {
     console.log(message, room, username);
     if (message && room && username) {
-      emit(SOCKET.chatMessage, {roomId: room, sender: username, message: message});
+      emit(SOCKET.chatMessage, { roomId: room, username: username, message: message });
       setMessage('');
     }
   };
-
+  
   useEffect(() => {
-      on(SOCKET.chatMessage, (msg) => {
-        console.log(message);
-        setMessages([...messages, msg]);
-      });
+    on(SOCKET.chatMessage, (msg) => {
+      console.log(msg);
+      setMessages([...messages, msg]);
+    });
+    scrollToBottom();
   }, [messages]);
-
- 
 
   return (
     <div className="chat">
@@ -79,27 +84,50 @@ const Chat = () => {
               &times;
             </button>
           </div>
-          <div className="chat-box">
-            {
-            messages.map((msg, index) => (
-              <div key={index}>
-              <span> {username}</span>
-              <div>{msg}</div>
+          <div className="chat-box" ref={chatBoxRef}>
+            {Object.keys(account).length === 0 ? (
+              <div className="chat-login-form">
+                <p>Nếu bạn muốn chat với nhân viên, vui lòng đăng nhập hoặc đăng ký</p>
+                <Link to="/login">
+                  <button>Đăng nhập</button>
+                </Link>
+                <Link to="/signUp">
+                  <button>Đăng ký</button>
+                </Link>
+              </div>
+            ) : (
+              messages.map((msg, index) => (
+                <div
+                  key={index}
+                  className={`message ${ msg.sender === username ? "user-message" : "staff-message"  }`}
+                >
+                  {msg.content}
+                  <div className="timestamp">{formatTimestamp(msg.timestamp)}</div>
+                </div>
+              ))
+            )}
+          </div>
+          {Object.keys(account).length !== 0 && (
+            <div className="message-input-container">
+              <input
+                type="text"
+                className="message-input"
+                placeholder="Nhập tin nhắn..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault(); // Ngăn chặn việc xuống dòng trong input
+                    sendMessage();
+                  }
+                }}
+              />
+              <button className="send-button" onClick={sendMessage}>
+                Gửi
+              </button>
             </div>
-            ))}
-          </div>
-          <div className="message-input-container">
-            <input
-              type="text"
-              className="message-input"
-              placeholder="Nhập tin nhắn..."
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            />
-            <button className="send-button" onClick={sendMessage}>
-              Gửi
-            </button>
-          </div>
+          )}
+
         </div>
       )}
     </div>

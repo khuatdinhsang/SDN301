@@ -4,14 +4,9 @@ const createMessage = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
             const {roomId, sender, message} = data;
-            const account = await Account.findOne({username: sender});
-            if(!account)  resolve({
-                status: 'ERR',
-                message: 'Account not exist',
-            })
             const createMessage = await Message.create({
                 text: message,
-                sender: account._id,
+                sender: sender,
                 room: roomId
             })
             resolve({
@@ -24,4 +19,30 @@ const createMessage = (data) => {
         }
     })
 }
-module.exports = {createMessage};
+const getMessageHistory = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const messages = await Message.find({
+                room: data
+            }).populate({
+                path: 'sender',
+                select: 'username' 
+            });
+            
+            const formattedMessages = messages.map((message) => ({
+                content: message.text,
+                timestamp: message.createdAt,
+                sender: message.sender.username
+            }));
+
+            resolve({
+                status: 'OK',
+                message: 'get messages successfully',
+                data: formattedMessages
+            })
+        } catch (err) {
+            reject(err)
+        }
+    })
+}
+module.exports = {createMessage, getMessageHistory};

@@ -133,7 +133,23 @@ const checkTokenExpired = (req, res, next) => {
     }
 };
 
+const socketAuthMiddleware = (socket, next) => {
+    const token = socket.handshake.auth.token;
+    if (!token) {
+      return next(new Error('Token is required'));
+    }
+  
+    jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
+      if (err) {
+        return next(new Error('Invalid Authentication'));
+      }
+  
+      socket.user = user;
+      next();
+    });
+  };
+
 
 module.exports = {
-    adminMiddleware, auth, staffMiddleware, shipperMiddleware, checkTokenExpired
+    adminMiddleware, auth, staffMiddleware, shipperMiddleware, checkTokenExpired, socketAuthMiddleware
 }
