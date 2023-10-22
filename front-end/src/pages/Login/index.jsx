@@ -4,12 +4,13 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { loginAccount, logout } from "../../actions/accountAction";
+import Loading from "../Loading";
 import "./Login.scss";
 import { connectToSocket, setAccessToken } from "../../services/SocketService";
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState()
+  const [isLoading, setIsLoading] = useState(true)
   const navigate = useNavigate();
   const dispatch = useDispatch();
   useEffect(() => {
@@ -26,6 +27,7 @@ function Login() {
   
 
   const handleLogin = (e) => {
+    setIsLoading(false)
     const userLogin = {
             username: username.trim(),
             password: password.trim()
@@ -57,7 +59,7 @@ function Login() {
   };
 
   return (
-    <div className="container">
+    isLoading?<div className="container">
       <div className="loginContent">
         <div className="leftContent">
           <h1>Sign In</h1>
@@ -127,7 +129,7 @@ function Login() {
           </div>
         </div>
       </div>
-    </div>
+    </div>:<Loading/>
   );
 }
 

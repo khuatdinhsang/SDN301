@@ -6,6 +6,9 @@ import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 import { resetItem } from '../../actions/cartAction';
 import './Payment.scss'
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import Loading from '../Loading';
+
 
 function Payment(){
     const navigate = useNavigate()
@@ -17,6 +20,8 @@ function Payment(){
     const [customerName, setCustomerName] = useState('')
     const [address, setAddress] = useState('')
     const [phoneNumber, setPhoneNumber] = useState()
+    const [loadingConfirm, setLoadingConfirm] = useState(true)
+    const [showModal, setShowModal] = useState(false)
     
     useEffect(() => {
         let total = 0;
@@ -26,10 +31,11 @@ function Payment(){
         setTotalPrice(total)
     },[cartList])
 
-    const handlePayment = () => {
+    const confirmOrder = () => {
+        setLoadingConfirm(false)
         const paymentDetail = {
             customerName: customerName,
-            customerPhone: phoneNumber,
+            customerPhone: +phoneNumber,
             customerAddress: address
         }
 
@@ -43,9 +49,19 @@ function Payment(){
             toast.success("Create Order Successfully!")
             const action = resetItem();
             dispatch(action);
+            setShowModal(false)
+            setLoadingConfirm(true)
             navigate('/menu')
         })
         .catch(err => console.log(err))
+    }
+
+    const handlePayment = () => {
+        if(!customerName || !address || !phoneNumber){
+            toast.warning("Have information blank!")
+        }else{
+            setShowModal(true)
+        }
     }
 
     return (
@@ -94,7 +110,7 @@ function Payment(){
 
         <div className="rightPayment">
             <h2 style={{"color": "#ff511c"}}>YOUR ORDER</h2>
-            <div className="paymentDetail">
+            {loadingConfirm === true?<div className="paymentDetail">
                 <div className="titleDetail">
                     <label>PRODUCT</label>
                     <label>PRICE</label>
@@ -139,8 +155,22 @@ function Payment(){
                 <div className="confirmPayment">
                     <button onClick={() => handlePayment()}>ĐẶT HÀNG</button>
                 </div>
-                </div>
+                </div>:<Loading/>}
             </div>
+            {showModal ? <section className='popUp'>
+                <span className="overlay"></span>
+
+                <div className="modal-box">
+                    <CheckCircleOutlineIcon className='checkIcon'/>        
+                    <h2>Confirm Order</h2>
+                    <h3>Are you sure to create order?</h3>
+                    <div className="buttons">
+                        
+                        <button className="close-btn" onClick={() => setShowModal(false)}>Later</button>
+                        <button className="open-btn" onClick={() => confirmOrder()}>Confirm</button>
+                    </div>
+                </div>
+            </section>:''}
         </div>
     )
     

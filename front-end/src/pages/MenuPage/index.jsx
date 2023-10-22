@@ -5,7 +5,6 @@ import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { addToCart } from "../../actions/cartAction";
 import Loading from "../Loading";
-import SwiperHome from "../Swiper";
 import "./MenuPage.scss"
 
 function MenuPage(){
@@ -210,11 +209,11 @@ function MenuPage(){
             <div className="cardList">
                 {loading ? listProducts?.map(e => {
                     return (
-                    <div className="card" key={e?._id}>
+                    <div className="card" key={e?._id} >
                         <img src={e?.image} alt="" onClick={() => {navigate(`/menu/foodDetail/${e?._id}`)}}/>
                         <span className="foodName">{e?.name}</span>
                         <p className="foodPrice">{e?.price.toLocaleString('vi', {style : 'currency', currency : 'VND'})}</p>
-                        <button className="addBtn" onClick={() => handleAddtoCart(e)}>Add</button>
+                       {e?.quantity<=0? <button className="addBtn" style={{backgroundColor: "red", pointerEvents: "none", borderRadius: 0}}>Sold Out</button>: <button className="addBtn" onClick={() => handleAddtoCart(e)}>Add</button>}
                     </div>)
                 }): <Loading/>}
 
