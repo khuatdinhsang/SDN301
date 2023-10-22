@@ -1,51 +1,51 @@
+import axios from "axios"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router"
+import Loading from "../../Loading"
 import "./ProductManager.scss"
 
 
 function ProductManager(){
     const navigate = useNavigate()
-    const price = 50000
+
+    const [listProduct, setListProduct] = useState([])
+    const [loadProduct, setLoadProduct] = useState(false)
+
+
+    useEffect(() =>{
+        axios
+        .get('/api/product/getAll')
+        .then(res => {
+            setListProduct(res.data.data)
+            setLoadProduct(true)
+        })
+    },[])
+
+    const handleUpdate = (id) => {
+        navigate(`/admin/updateProduct/${id}`)
+    }
 
     return (
         <div className="productsManager">
             <h3 className="productsManagerTitle">Products Manager</h3>
-            <div className="listProducts">
+            {loadProduct ?  <div className="listProducts">
                 <div className="addProduct" onClick={() => navigate("/admin/upload")}>
                     <img className="defaultImg" src="https://phutungnhapkhauchinhhang.com/wp-content/uploads/2020/06/default-thumbnail.jpg" alt="" />
                     <span>Add Product</span>
                 </div>
-                <div className="cardProduct">
-                    <img className="productImg" src="https://i.pinimg.com/736x/30/da/50/30da50228346d0976ff6f87e7eb5db29--dwarf-planet-royalty-free-image.jpg" alt="" />
-                    <span >Pizza Mozzarella</span>
-                    <p className="productPrice">{price.toLocaleString('vi', {style : 'currency', currency : 'VND'})}</p>
-                </div>
-                <div className="cardProduct">
-                    <img className="productImg" src="https://i.pinimg.com/736x/30/da/50/30da50228346d0976ff6f87e7eb5db29--dwarf-planet-royalty-free-image.jpg" alt="" />
-                    <span >Pizza Mozzarella</span>
-                    <p className="productPrice">{price.toLocaleString('vi', {style : 'currency', currency : 'VND'})}</p>
-                </div>
-                <div className="cardProduct">
-                    <img className="productImg" src="https://i.pinimg.com/736x/30/da/50/30da50228346d0976ff6f87e7eb5db29--dwarf-planet-royalty-free-image.jpg" alt="" />
-                    <span >Pizza Mozzarella</span>
-                    <p className="productPrice">{price.toLocaleString('vi', {style : 'currency', currency : 'VND'})}</p>
-                </div>
-                <div className="cardProduct">
-                    <img className="productImg" src="https://i.pinimg.com/736x/30/da/50/30da50228346d0976ff6f87e7eb5db29--dwarf-planet-royalty-free-image.jpg" alt="" />
-                    <span >Pizza Mozzarella</span>
-                    <p className="productPrice">{price.toLocaleString('vi', {style : 'currency', currency : 'VND'})}</p>
-                </div>
-                <div className="cardProduct">
-                    <img className="productImg" src="https://i.pinimg.com/736x/30/da/50/30da50228346d0976ff6f87e7eb5db29--dwarf-planet-royalty-free-image.jpg" alt="" />
-                    <span >Pizza Mozzarella</span>
-                    <p className="productPrice">{price.toLocaleString('vi', {style : 'currency', currency : 'VND'})}</p>
-                </div>
-                <div className="cardProduct">
-                    <img className="productImg" src="https://i.pinimg.com/736x/30/da/50/30da50228346d0976ff6f87e7eb5db29--dwarf-planet-royalty-free-image.jpg" alt="" />
-                    <span >Pizza Mozzarella</span>
-                    <p className="productPrice">{price.toLocaleString('vi', {style : 'currency', currency : 'VND'})}</p>
-                </div>
+                {listProduct?.map(product => {
+                    return (
+                        <div className="cardProduct" onClick={() => handleUpdate(product?._id)}>
+                            <img className="productImg" src={product?.image} alt="" />
+                            <span >{product?.name}</span>
+                            <p className="productPrice">{product?.price.toLocaleString('vi', {style : 'currency', currency : 'VND'})}</p>
+                        </div>
+                    )
+                })}
+               
+               
                 
-            </div>
+            </div>:<Loading/>}
         </div>
     )
 }

@@ -2,7 +2,13 @@ const Account = require("../models/AccountModel")
 const bcrypt = require("bcrypt")
 const { generalAccessToken, generalRefreshToken } = require("./JwtServices");
 const Product = require("../models/ProductModel");
+const User = require("../models/UserModel");
 const LIMIT_ACCOUNT = 10;
+const nodemailer = require('nodemailer')
+const dotenv = require('dotenv');
+dotenv.config()
+var inlineBase64 = require('nodemailer-plugin-inline-base64');
+const { generateRandomString } = require("../utils");
 const registerAccount = (newUser) => {
     return new Promise(async (resolve, reject) => {
         const { username, password, confirmPassword } = newUser
@@ -109,12 +115,14 @@ const getDetailAccount = (accountId) => {
         }
     })
 }
-const getAllAccount = (page = 1, limit = LIMIT_ACCOUNT) => {
+const getAllAccount = (page = 1, limit = LIMIT_ACCOUNT, search) => {
     return new Promise(async (resolve, reject) => {
         try {
+            Number.parseInt(limit);
             var skipNumber = (page - 1) * limit;
-            const totalAccount = await Account.count()
-            const allAccount = await Account.find({})
+            const searchQuery = search ? { username: { $regex: search, $options: 'i' } } : null;
+            const totalAccount = await Account.count(searchQuery);
+            const allAccount = await Account.find(searchQuery)
                 .skip(skipNumber)
                 .limit(limit)
                 .populate('role')
@@ -203,7 +211,7 @@ const inActiveAccount = (userId) => {
         }
     })
 }
-const changePassword = (accountId, newPassword) => {
+const changePassword = (accountId, newPassword, currentPassword) => {
     return new Promise(async (resolve, reject) => {
         try {
             const user = await Account.findOne({
@@ -216,20 +224,57 @@ const changePassword = (accountId, newPassword) => {
                     message: `The user is not defined `
                 })
             }
+            const comparePassword = bcrypt.compareSync(currentPassword, user.password)
+            if (!comparePassword) {
+                resolve({
+                    status: 'ERR',
+                    message: 'The password  is incorrect',
+                })
+            }
+            if (comparePassword) {
+                const hash = bcrypt.hashSync(newPassword, 10)
+                const userChangePass = {
+                    ...user._doc,
+                    password: hash
+                }
+                const userChangePassword = await Account.findByIdAndUpdate(user._id, userChangePass, { new: true })
+                const newUserChangePassword = {
+                    ...userChangePassword._doc,
+                    password: '******'
+                }
+                resolve({
+                    status: 'OK',
+                    message: 'SUCCESS',
+                    data: newUserChangePassword
+                })
+            }
+        } catch (err) {
+            reject(err)
+        }
+    })
+}
+const forgotPassword = (email) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const user = await User.findOne({
+                email
+            })
+            if (user === null) {
+                resolve({
+                    status: 'ERR',
+                    message: `The email is not register `
+                })
+            }
+            const newPassword = await sendEmailForgotPassword(email)
             const hash = bcrypt.hashSync(newPassword, 10)
-            const userChangePass = {
-                ...user._doc,
+
+            await Account.findByIdAndUpdate(user.accountId, {
                 password: hash
-            }
-            const userChangePassword = await Account.findByIdAndUpdate(user._id, userChangePass, { new: true })
-            const newUserChangePassword = {
-                ...userChangePassword._doc,
-                password: '******'
-            }
+            }, { new: true })
+
             resolve({
                 status: 'OK',
                 message: 'SUCCESS',
-                data: newUserChangePassword
             })
         } catch (err) {
             reject(err)
@@ -277,9 +322,32 @@ const addCart = (accountId, data) => {
         }
     })
 }
+
+const sendEmailForgotPassword = async (email) => {
+    let transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true, // true for 465, false for other ports
+        auth: {
+            user: process.env.MAIL_ACCOUNT, // generated ethereal user
+            pass: process.env.MAIL_PASSWORD, // generated ethereal password
+        },
+    });
+    transporter.use('compile', inlineBase64({ cidPrefix: 'somePrefix_' }));
+    // send mail with defined transport object
+    const newPassword = generateRandomString(6)
+    await transporter.sendMail({
+        from: process.env.MAIL_ACCOUNT, // sender address
+        to: email, // list of receivers
+        subject: "Quên mật khẩu", // Subject line
+        text: "Hello ", // plain text body
+        html: `<div>Mật khẩu mới của bạn là: <b>${newPassword}</b></div>`,
+    });
+    return newPassword
+}
 module.exports = {
     registerAccount, getDetailAccount,
     loginAccount, deActiveAccount,
     inActiveAccount, changePassword, getAllAccount,
-    addCart
+    addCart, forgotPassword, sendEmailForgotPassword
 }

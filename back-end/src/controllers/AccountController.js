@@ -39,8 +39,9 @@ const loginAccount = async (req, res) => {
         const { refreshToken, ...newResponse } = response
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true, // chi lay dc qua http k lay dc qua js
-            secure: false,// khi nao deloy se chuyen thanh true
-            samesite: 'strict'
+            secure: true,// khi nao deloy se chuyen thanh true
+            path: "/",
+            sameSite: 'strict'
         })
         return res.status(200).json(newResponse)
     } catch (error) {
@@ -64,8 +65,8 @@ const getDetailAccount = async (req, res) => {
 }
 const getAllAccount = async (req, res) => {
     try {
-        const { page, limit } = req.query
-        const response = await AccountServices.getAllAccount(page, limit)
+        const { page, limit, search } = req.query
+        const response = await AccountServices.getAllAccount(page, limit, search)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(404).json({
@@ -128,7 +129,7 @@ const inActiveAccount = async (req, res) => {
     }
 }
 const changePassword = async (req, res) => {
-    const { newPassword, confirmPassword } = req.body;
+    const { currentPassword, newPassword, confirmPassword } = req.body;
     const accountId = req.user.id
     try {
         const errors = validationResult(req);
@@ -143,7 +144,25 @@ const changePassword = async (req, res) => {
                 message: 'Password is not match confirm Password'
             })
         }
-        const response = await AccountServices.changePassword(accountId, newPassword)
+        const response = await AccountServices.changePassword(accountId, newPassword, currentPassword)
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(404).json({
+            status: 'ERR',
+            message: error.message
+        })
+    }
+}
+const forgotPassword = async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                errors: errors.array()
+            })
+        }
+        const { email } = req.body;
+        const response = await AccountServices.forgotPassword(email)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(404).json({
@@ -154,18 +173,19 @@ const changePassword = async (req, res) => {
 }
 const refreshToken = async (req, res) => {
     try {
-        const token = req.cookies.refreshToken
-        if (!token) {
+        const refreshToken = req.cookies.refreshToken
+        if (!refreshToken) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'The token is required'
             })
         }
-        const response = await JwtServices.refreshTokenServices(token)
+        const response = await JwtServices.refreshTokenServices(refreshToken)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(404).json({
-            message: e
+            status: 'ERR',
+            message: error
         })
     }
 }
@@ -181,11 +201,12 @@ const addCart = async (req, res) => {
         })
     }
 }
+
+
 module.exports = {
     registerAccount, getDetailAccount,
     loginAccount, logout, deActiveAccount,
     inActiveAccount, changePassword,
     getAllAccount, refreshToken,
-    addCart
-
+    addCart, forgotPassword
 }

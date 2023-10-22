@@ -3,8 +3,14 @@ const dotenv = require('dotenv');
 dotenv.config()
 // admin
 const adminMiddleware = (req, res, next) => {
-    const Authorization = req.header('Authorization');
-    const token = Authorization.replace('Bearer ', '');
+    const Authorization = req?.header('Authorization');
+    const token = Authorization?.replace('Bearer ', '');
+    if (!token) {
+        return res.status(404).json({
+            status: 'ERR',
+            message: 'Token is required'
+        })
+    }
     jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
         if (err) {
             return res.status(404).json({
@@ -26,8 +32,14 @@ const adminMiddleware = (req, res, next) => {
 
 // staff
 const staffMiddleware = (req, res, next) => {
-    const Authorization = req.header('Authorization');
-    const token = Authorization.replace('Bearer ', '');
+    const Authorization = req?.header('Authorization');
+    const token = Authorization?.replace('Bearer ', '');
+    if (!token) {
+        return res.status(404).json({
+            status: 'ERR',
+            message: 'Token is required'
+        })
+    }
     jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
         if (err) {
             return res.status(404).json({
@@ -48,8 +60,14 @@ const staffMiddleware = (req, res, next) => {
 }
 // shipper
 const shipperMiddleware = (req, res, next) => {
-    const Authorization = req.header('Authorization');
-    const token = Authorization.replace('Bearer ', '');
+    const Authorization = req?.header('Authorization');
+    const token = Authorization?.replace('Bearer ', '');
+    if (!token) {
+        return res.status(404).json({
+            status: 'ERR',
+            message: 'Token is required'
+        })
+    }
     jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
         if (err) {
             return res.status(404).json({
@@ -71,24 +89,51 @@ const shipperMiddleware = (req, res, next) => {
 
 const auth = (req, res, next) => {
     try {
-        const Authorization = req.header('Authorization');
-        const token = Authorization.replace('Bearer ', '');
-        if (!token)
-            return res.status(400).json({ msg: 'Token is required' });
-
+        const Authorization = req?.header('Authorization');
+        const token = Authorization?.replace('Bearer ', '');
+        if (!token) {
+            return res.status(404).json({
+                status: 'ERR',
+                message: 'Token is required'
+            })
+        }
         jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
             if (err) {
-                console.log(err);
-                return res.status(400).json({ msg: 'Invalid Authentication' });
+                console.log("err", err.message);
+                return res.status(400).json({
+                    status: 'ERR',
+                    message: 'Invalid Authentication'
+                });
             }
             req.user = user;
             next();
         });
     } catch (error) {
-        return res.status(500).json({ msg: err.message });
+        return res.status(500).json({ status: 'ERR', message: error });
+    }
+};
+const checkTokenExpired = (req, res, next) => {
+    try {
+        const Authorization = req?.header('Authorization');
+        const token = Authorization?.replace('Bearer ', '');
+        if (!token) {
+            return res.status(404).json({
+                status: 'ERR',
+                message: 'Token is required'
+            })
+        }
+        jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
+            console.log("vao day")
+            if (err.message === 'jwt expired') {
+                next();
+            }
+        });
+    } catch (error) {
+        return res.status(500).json({ status: 'ERR', message: error });
     }
 };
 
+
 module.exports = {
-    adminMiddleware, auth, staffMiddleware, shipperMiddleware
+    adminMiddleware, auth, staffMiddleware, shipperMiddleware, checkTokenExpired
 }

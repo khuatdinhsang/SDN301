@@ -2,6 +2,11 @@ const Account = require("../models/AccountModel");
 const Order = require("../models/OrderModel");
 const { reSold } = require("../utils");
 const LIMIT_ORDER = 10
+const nodemailer = require('nodemailer')
+const dotenv = require('dotenv');
+dotenv.config()
+var inlineBase64 = require('nodemailer-plugin-inline-base64');
+const User = require("../models/UserModel");
 const startReceiveOrder = (shippingId, data) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -17,13 +22,43 @@ const startReceiveOrder = (shippingId, data) => {
                 resolve({
                     status: 'OK',
                     message: 'Start shipping',
-                    newOrder: newOrder
+                    data: newOrder
                 })
             }
         } catch (err) {
             reject(err)
         }
     })
+}
+const sendEmailStartShipping = async (data) => {
+    const user = await User.findOne({
+        accountId: data.accountId
+    })
+    const shipper = await User.findOne({
+        accountId: data.shippingId
+    })
+    let transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true, // true for 465, false for other ports
+        auth: {
+            user: process.env.MAIL_ACCOUNT, // generated ethereal user
+            pass: process.env.MAIL_PASSWORD, // generated ethereal password
+        },
+    });
+    transporter.use('compile', inlineBase64({ cidPrefix: 'somePrefix_' }));
+    // send mail with defined transport object
+    await transporter.sendMail({
+        from: process.env.MAIL_ACCOUNT, // sender address
+        to: user.email, // list of receivers
+        subject: "Tình trạng đơn hàng", // Subject line
+        text: "Hello ", // plain text body
+        html: `<div>Đơn hàng của bạn đang được giao, xin vui lòng đợi
+            <p>Xin liên hệ: </p>
+            <div>SDT shipper:${shipper?.phone} </div>
+            <div>Email shipper: ${shipper?.email}</div>
+        </div>`,
+    });
 }
 const successDeliveryOrder = (shippingId, data) => {
     return new Promise(async (resolve, reject) => {
@@ -66,7 +101,7 @@ const failedDeliveryOrder = (shippingId, data) => {
                 resolve({
                     status: 'OK',
                     message: 'Shipping failed',
-                    newOrder: newOrder
+                    data: newOrder
                 })
             }
 
@@ -74,6 +109,37 @@ const failedDeliveryOrder = (shippingId, data) => {
             reject(err)
         }
     })
+}
+const sendEmailFailedShipping = async (data) => {
+    const user = await User.findOne({
+        accountId: data.accountId
+    })
+    const shipper = await User.findOne({
+        accountId: data.shippingId
+    })
+    let transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true, // true for 465, false for other ports
+        auth: {
+            user: process.env.MAIL_ACCOUNT, // generated ethereal user
+            pass: process.env.MAIL_PASSWORD, // generated ethereal password
+        },
+    });
+    transporter.use('compile', inlineBase64({ cidPrefix: 'somePrefix_' }));
+    // send mail with defined transport object
+    await transporter.sendMail({
+        from: process.env.MAIL_ACCOUNT, // sender address
+        to: user.email, // list of receivers
+        subject: "Tình trạng đơn hàng", // Subject line
+        text: "Hello ", // plain text body
+        html: `<div>Đơn hàng của bạn <span style="color:red">giao không thành công!</span>
+            <p>Lí do: ${data?.reasonCancel}</p>
+            <p>Xin liên hệ</p>
+            <div>SDT shipper:${shipper?.phone} </div>
+            <div>Email: ${shipper?.email}</div>
+        </div>`,
+    });
 }
 const returnOrder = (shippingId, orderId, message) => {
     return new Promise(async (resolve, reject) => {
@@ -165,5 +231,6 @@ const getAllOrderSuccessByShipping = (shippingId) => {
 
 module.exports = {
     startReceiveOrder, successDeliveryOrder, failedDeliveryOrder,
-    getAllOrder, getDetailOrder, returnOrder, getAllOrderSuccessByShipping
+    getAllOrder, getDetailOrder, returnOrder, getAllOrderSuccessByShipping,
+    sendEmailStartShipping, sendEmailFailedShipping
 }

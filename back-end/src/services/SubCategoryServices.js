@@ -89,12 +89,19 @@ const getDetailSubCategory = (subCategoryId) => {
         }
     })
 }
-const getAllSubCategory = (page = 1, limit = LIMIT_SUBCATEGORY) => {
+const getAllSubCategory = (page = 1, limit = LIMIT_SUBCATEGORY, search) => {
     return new Promise(async (resolve, reject) => {
         try {
             var skipNumber = (page - 1) * limit;
-            const totalSubCategory = await SubCategory.count()
-            const allSubCategory = await SubCategory.find({})
+            const conditions = {
+                $or: [
+                    { name: { $regex: search, $options: 'i' } },
+                    { description: { $regex: search, $options: 'i' } },
+                ]
+            };
+            const searchQuery = search ? conditions : null;
+            const totalSubCategory = await SubCategory.count(searchQuery)
+            const allSubCategory = await SubCategory.find(searchQuery)
                 .skip(skipNumber)
                 .limit(limit)
             resolve({
@@ -109,16 +116,20 @@ const getAllSubCategory = (page = 1, limit = LIMIT_SUBCATEGORY) => {
         }
     })
 }
-const getAllSubCategoryByCategoryId = (page = 1, limit = LIMIT_SUBCATEGORY, categoryId) => {
+const getAllSubCategoryByCategoryId = (page = 1, limit = LIMIT_SUBCATEGORY, search, categoryId) => {
     return new Promise(async (resolve, reject) => {
         try {
             var skipNumber = (page - 1) * limit;
-            const totalSubCategory = await SubCategory.count({
-                categoryId
-            })
-            const allSubCategory = await SubCategory.find({
-                categoryId
-            })
+            const conditions = {
+                $or: [
+                    { name: { $regex: search, $options: 'i' } },
+                    { description: { $regex: search, $options: 'i' } },
+                ],
+                categoryId: categoryId,
+            };
+            const searchQuery = search ? conditions : { categoryId: categoryId };
+            const totalSubCategory = await SubCategory.count(searchQuery)
+            const allSubCategory = await SubCategory.find(searchQuery)
                 .skip(skipNumber)
                 .limit(limit)
             resolve({

@@ -1,5 +1,8 @@
 const Feedback = require("../models/FeedbackModel")
+const Inventory = require("../models/InventoryModel")
+const Invoice = require("../models/InvoiceModel")
 const Product = require("../models/ProductModel")
+const User = require("../models/UserModel")
 
 const getAverageRateByProduct = async (productId) => {
     const numberRate = await Feedback.count({
@@ -18,7 +21,6 @@ const getAverageRateByProduct = async (productId) => {
             },
         },
     ])
-    console.log(averageRate)
     return Number((averageRate[0]?.total / numberRate).toFixed(1))
 }
 
@@ -67,8 +69,37 @@ const reSold = async (id, quantity) => {
     return prod;
 };
 
+const generateRandomString = (length) => {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
 
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        result += characters.charAt(randomIndex);
+    }
+
+    return result;
+}
+const totalExpenditure = async () => {
+    const allInvoices = await Invoice.find({});
+    let totalInvoices = 0;
+    for (let i = 0; i < allInvoices.length; i++) {
+        totalInvoices += allInvoices[i]?.totalPrice
+    }
+    return totalInvoices
+}
+const totalSalaryEmployees = async () => {
+    const allEmployee = await User.find({});
+    console.log("a", allEmployee)
+    let totalSalaryEmployee = 0;
+    for (let i = 0; i < allEmployee.length; i++) {
+        totalSalaryEmployee += allEmployee[i]?.salary ?? 0
+    }
+    return totalSalaryEmployee
+}
 module.exports = {
     getAverageRateByProduct,
-    getAverageRateByAccount, sold, reSold
+    getAverageRateByAccount, sold, reSold,
+    totalExpenditure,
+    generateRandomString, totalSalaryEmployees
 }

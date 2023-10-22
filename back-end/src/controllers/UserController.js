@@ -63,8 +63,20 @@ const updateUser = async (req, res) => {
 }
 const getAllUsers = async (req, res) => {
     try {
-        const { page, limit } = req.query
-        const response = await UserServices.getAllUsers(page, limit)
+        const { page, limit, search } = req.query
+        const response = await UserServices.getAllUsers(page, limit, search)
+        return res.status(200).json(response)
+    } catch (error) {
+        return res.status(404).json({
+            status: 'ERR',
+            message: error.message
+        })
+    }
+}
+const getDetailUserByAccountId = async (req, res) => {
+    try {
+        const accountId = req.params.id
+        const response = await UserServices.getDetailUserByAccountId(accountId)
         return res.status(200).json(response)
     } catch (error) {
         return res.status(404).json({
@@ -74,5 +86,5 @@ const getAllUsers = async (req, res) => {
     }
 }
 module.exports = {
-    registerUser, getDetailUser, updateUser, getAllUsers
+    registerUser, getDetailUser, updateUser, getAllUsers, getDetailUserByAccountId
 }
