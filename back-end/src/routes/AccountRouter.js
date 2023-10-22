@@ -3,7 +3,7 @@ const router = express.Router()
 const AccountController = require('../controllers/AccountController')
 const { validateRegisterAccount, checkChangePassword, checkForgotPassword } = require('../validation/UserValidation');
 const { checkIsEmpty, checkMinLength } = require('../validation');
-const { adminMiddleware, auth, checkTokenExpired } = require('../middlewares/AdminMiddleware');
+const { adminMiddleware, auth, checkTokenExpired, staffMiddleware } = require('../middlewares/AdminMiddleware');
 
 router.post('/register', validateRegisterAccount, AccountController.registerAccount);
 router.post('/login', AccountController.loginAccount);
