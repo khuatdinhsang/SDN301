@@ -36,6 +36,9 @@ function SideBar(){
                     <span>Add Product</span>
                     {containPath(location.pathname, 'upload')}
                 </div>
+                <div className="chatStaff" onClick={() => navigate("/admin/chat")} >
+                    <span>Chat</span>
+                </div>
             </div>
             <div className="backHome">
                 <span className="back" onClick={() => navigate('/')}>Back to home</span>
