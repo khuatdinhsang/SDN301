@@ -1,184 +1,340 @@
-import React, { useEffect, useState } from "react";
-import '../UserDetail/UserDetail.scss';
-import { useSelector, useDispatch } from "react-redux";
-import EditIcon from '@mui/icons-material/Edit';
-import axios from "axios";
-
-function UserDetail() {
-    const [getDetailUser, setGetDetailUser] = useState();
+import React, { useEffect, useState } from 'react';
+import "./UserDetail.scss"
+import axios from 'axios';
+import AddIcon from '@mui/icons-material/Add';
+import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+const UserDetail = () => {
+    const [userDetail, setUserDetail] = useState()
+    const [email, setEmail] = useState('')
+    const [phone, setPhone] = useState('')
+    const [dob, setDob] = useState('')
+    const [gender, setGender] = useState('')
+    const [imageURL, setImageURL] = useState('');
+    const [newEmail, setNewEmail] = useState('');
+    const [newPhone, setNewPhone] = useState('');
+    const [newDob, setNewDob] = useState('');
+    const [newGender, setNewGender] = useState(true);
+    const [newImageURL, setNewImageURL] = useState('');
+    const [newData, setNewData] = useState({})
+    const [isEditing, setIsEditing] = useState(false)
     const [openModal, setOpenModal] = useState(false);
-    const [updatedUser, setUpdatedUser] = useState({
-        email: "",
-        phone: "",
-        dateOfBirth: "",
-        gender: "male",
-        image: null,
-    });
-    const account = useSelector(state => state.account);
-    const dispatch = useDispatch();
-
-    const updateUserDetails = () => {
-        const formData = new FormData();
-        formData.append("email", updatedUser.email);
-        formData.append("phone", updatedUser.phone);
-        formData.append("dateOfBirth", updatedUser.dateOfBirth);
-        formData.append("gender", updatedUser.gender);
-        formData.append("image", updatedUser.image);
-        axios
-            .put(`/api/user/update`, updatedUser, {
-                headers: {
-                    Authorization: `Bearer ${account?.accessToken}`
-                },
-                withCredentials: true,
-            })
-            .then((res) => {
-                console.log("User details updated successfully");
-                setOpenModal(false);
-            })
-            .catch(err => {
-                console.error("Error updating user details:", err);
-            });
-    }
-
-    const fetchUserDetails = () => {
-        axios
-            .get(`/api/user/getDetail`, {
-                headers: {
-                    Authorization: `Bearer ${account?.accessToken}`
-                }
-            })
-            .then((res) => {
-                setGetDetailUser(res.data.data);
-                console.log(res.data.data);
-            })
-            .catch(err => console.log(err));
-    };
+    const account = useSelector(state => state.account)
 
     useEffect(() => {
-        if (account) {
-            fetchUserDetails();
+        if (!userDetail) {
+            axios
+                .get(`api/user/getDetail`, {
+                    headers: {
+                        Authorization: `Bearer ${account?.accessToken}`
+                    }
+                })
+                .then(res => {
+                    setUserDetail(res.data.data);
+                    console.log(res.data.data);
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        }
+    }, [userDetail, account]);
+
+    console.log(userDetail);
+
+    const handleSaveChanges = () => {
+        const data = {
+            email: email,
+            phone: phone,
+            dateOfBirth: dob,
+            gender: gender,
+            image: imageURL,
+        };
+
+
+        if (userDetail) {
+            axios
+                .put(`/api/user/update/`, newData, {
+                    headers: {
+                        Authorization: `Bearer ${account?.accessToken}`
+                    }
+                })
+                .then(res => {
+                    setUserDetail({ ...userDetail, ...newData });
+                    setIsEditing(false);
+                    toast.success('Saved changes successfully!!!!!!!');
+                })
+                .catch(error => {
+                    console.error(error);
+                });
         } else {
-            setGetDetailUser(null);
+            console.log('tạo thông tin người dùng đi');
         }
-    }, [account]);
-    const formatDate = (dateString) => {
-        if (!dateString) {
-            return "N/A";
-        }
+    }
 
-        const date = new Date(dateString);
-
-        if (isNaN(date.getTime())) {
-            return "Invalid Date";
+    const convertISODateToYYYYMMDD = (isoDate) => {
+        if (!isoDate) {
+            return '';
         }
 
-        const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-        return date.toLocaleDateString(undefined, options);
+        const dateParts = isoDate.split('T')[0].split('-');
+        if (dateParts.length === 3) {
+            return dateParts[0] + '-' + dateParts[1] + '-' + dateParts[2];
+        } else {
+            return '';
+        }
+    }
+
+    const handleImageChange = (e) => {
+        const newImageURL = e.target.value;
+        setNewData({ ...newData, image: newImageURL });
+        setImageURL(newImageURL);
     };
 
+    const formatISODate = (isoDate) => {
+        if (!isoDate) {
+            return '';
+        }
+
+        const date = new Date(isoDate);
+        const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+
+        return date.toLocaleString('en-US', options);
+    }
     return (
-        <div className="user-detail">
-            <div className="left-column">
-                <div className="user-avatar">
-                    <img src={getDetailUser?.image} alt="User Avatar" />
-                </div>
-                <button className="change-image-button" onClick={() => {
-                    const fileInput = document.createElement("input");
-                    fileInput.type = "file";
-                    fileInput.accept = "image/*";
+        <div>
+            <div>
+                <div className="userDetail">
+                    <div className="row">
+                        <div className="column1">
+                            <div className="card">
+                                <h2>Avatar</h2>
+                                <hr className='line1' />
+                                <div className="userImage">
+                                    <img src={userDetail ? userDetail.image : ''} alt="" />
+                                </div>
+                                <h4>{userDetail && userDetail.createdAt ? formatISODate(userDetail.createdAt) : ''}</h4>
+                            </div>
 
-                    fileInput.addEventListener("change", (event) => {
-                        const selectedFile = event.target.files[0];
+                        </div>
+                        <div className="column2">
+                            <div className="card">
+                                <div className='head'>
+                                    <h2>Information</h2>
+                                    {(!userDetail || !userDetail.email) && (
+                                        <button onClick={() => { setOpenModal(true) }}>
+                                            <AddIcon className='icon' />
+                                        </button>
+                                    )}
+                                </div>
 
-                        if (selectedFile) {
+                                <hr className='line2' />
+                                {openModal && (
+                                    <div className="modalBackground">
+                                        <div className={`modalContainer${openModal ? " show" : ""}`}>
+                                            <div className="titleCloseBtn">
+                                                <button
+                                                    onClick={() => {
+                                                        setOpenModal(false);
+                                                    }}
+                                                >
+                                                    X
+                                                </button>
+                                            </div>
+                                            <div className="title">
+                                                <h1>Create Infomation</h1>
+                                            </div>
+                                            <div className="body">
+                                                <div>
+                                                    <input
+                                                        type="text"
+                                                        className='registerEmail'
+                                                        placeholder='Email'
+                                                        value={newEmail}
+                                                        onChange={(e) => setNewEmail(e.target.value)}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <input
+                                                        type="text"
+                                                        className='registerEmail'
+                                                        placeholder='Phone'
+                                                        value={newPhone}
+                                                        onChange={(e) => setNewPhone(e.target.value)}
+                                                    />
+                                                </div>
+                                                <input
+                                                    className="date"
+                                                    type="date"
+                                                    value={newDob}
+                                                    onChange={(e) => setNewDob(e.target.value)}
+                                                />
+                                                <div className='registerGender'>
+                                                    <div className='male'>
+                                                        <input
+                                                            type="radio"
+                                                            name="gender"
+                                                            value="true"
+                                                            checked={newGender}
+                                                            onChange={() => setNewGender(true)}
+                                                        />
+                                                        Male
+                                                    </div>
+                                                    <div className='female'>
+                                                        <input
+                                                            type="radio"
+                                                            name="gender"
+                                                            value="false"
+                                                            checked={!newGender}
+                                                            onChange={() => setNewGender(false)}
+                                                        />
+                                                        Female
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <input
+                                                        type="text"
+                                                        className='registerEmail'
+                                                        placeholder='URL Image'
+                                                        value={newImageURL}
+                                                        onChange={(e) => setNewImageURL(e.target.value)}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="footer">
+                                                <button
 
-                            setUpdatedUser({ ...updatedUser, image: selectedFile });
-                        }
-                    });
-                    fileInput.click();
-                }}>
-                    Change Image
-                </button>
-            </div>
-            <div className="right-column">
-                <div className="title">
-                    <h2>Account Detail</h2>
-                    <EditIcon className="edit" onClick={() => { setOpenModal(true) }} />
-                </div>
-                <hr />
-                <div className="user-info">
-                    <div className="info-column">
-                        <p>Email <span>{getDetailUser?.email}</span></p>
-                        <p>Phone <span>{getDetailUser?.phone}</span></p>
-                        <p>Date of Birth <span>{formatDate(getDetailUser?.dateOfBirth)}</span></p>
-                        <p>Gender <span>{getDetailUser?.gender ? (getDetailUser.gender ? "Male" : "Female") : "N/A"}</span></p>
-                        <p>Address <span>{getDetailUser?.address}</span></p>
+                                                >
+                                                    Cancel
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        // Tạo đối tượng dữ liệu mới từ các giá trị nhập trong modal
+                                                        const data = {
+                                                            email: newEmail,
+                                                            phone: newPhone,
+                                                            dateOfBirth: newDob,
+                                                            gender: newGender,
+                                                            image: newImageURL,
+                                                        };
+
+                                                        // Gọi API để tạo thông tin người dùng
+                                                        axios
+                                                            .post('/api/user/register', data, {
+                                                                headers: {
+                                                                    Authorization: `Bearer ${account?.accessToken}`
+                                                                }
+                                                            })
+                                                            .then(res => {
+                                                                setUserDetail(res.data.data);
+                                                                console.log('User created successfully:', res.data);
+                                                                toast.success('Created infomation success!!!');
+                                                                setOpenModal(false);
+                                                            })
+                                                            .catch(error => {
+                                                                console.error(error);
+                                                            });
+                                                    }}
+                                                >
+                                                    Create
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                <div className='create'>
+                                    <div className='emailDetail'>
+                                        <label>Email: </label>
+                                        {isEditing ? (
+                                            <input
+                                                type="text"
+                                                value={newData.email || (userDetail ? userDetail.email : '')}
+                                                onChange={e => setNewData({ ...newData, email: e.target.value })}
+                                            />
+                                        ) : (
+                                            <span>{userDetail ? userDetail.email : ''}</span>
+                                        )}
+                                    </div>
+                                    <div className='phoneDetail'>
+                                        <label>Phone: </label>
+                                        {isEditing ? (
+                                            <input
+                                                type="text"
+                                                value={newData.phone || (userDetail ? userDetail.phone : '')}
+                                                onChange={e => setNewData({ ...newData, phone: e.target.value })}
+                                            />
+                                        ) : (
+                                            <span>{userDetail ? userDetail.phone : ''}</span>
+                                        )}
+                                    </div>
+                                    <div className='dobDetail'>
+                                        <label>Date of Birth: </label>
+                                        {isEditing ? (
+                                            <input
+                                                type="date"
+                                                value={newData.dateOfBirth || (userDetail ? userDetail.dateOfBirth : '')}
+                                                onChange={e => setNewData({ ...newData, dateOfBirth: e.target.value })}
+                                            />
+                                        ) : (
+                                            <span>{userDetail ? convertISODateToYYYYMMDD(userDetail.dateOfBirth) : ''}</span>
+                                        )}
+                                    </div>
+                                    <div className='genderDetail'>
+                                        <label>Gender: </label>
+                                        {isEditing ? (
+                                            <div>
+                                                <label>
+                                                    <input
+                                                        id='male'
+                                                        type="checkbox"
+                                                        checked={newData.gender}
+                                                        onChange={() => setNewData({ ...newData, gender: true })}
+                                                    />
+                                                    Male
+                                                </label>
+                                                <label>
+                                                    <input
+                                                        id='female'
+                                                        type="checkbox"
+                                                        checked={!newData.gender}
+                                                        onChange={() => setNewData({ ...newData, gender: false })}
+                                                    />
+                                                    Female
+                                                </label>
+                                            </div>
+                                        ) : (
+                                            <span>{userDetail ? (userDetail.gender ? 'Male' : 'Female') : 'Male'}</span>
+                                        )}
+                                    </div>
+
+                                    <div className='avatarUser'>
+                                        {isEditing && (
+                                            <>
+                                                <label>Image URL:</label>
+                                                <input
+                                                    type="text"
+                                                    value={imageURL}
+                                                    onChange={handleImageChange}
+                                                />
+                                            </>
+                                        )}
+                                    </div>
+                                    {userDetail ? (
+                                        isEditing ? (
+                                            <button onClick={handleSaveChanges}>Save Change</button>
+                                        ) : (
+                                            <button onClick={() => setIsEditing(true)}>Edit</button>
+                                        )
+                                    ) : (
+                                        <></>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            {openModal && (
-                <div className="modalUserDetail">
-                    <div className={`modalContainerDetail${openModal ? " show" : ""}`}>
-                        <div className="titleCloseBtn">
-                            <button
-                                onClick={() => {
-                                    setOpenModal(false);
-                                }}
-                            >
-                                X
-                            </button>
-                        </div>
-                        <div className="titleEdit">
-                            <h1>Edit Information</h1>
-                        </div>
-                        <div className="bodyEdit">
-                            <input
-                                className="email"
-                                type="text"
-                                placeholder="Your email.."
-                                value={updatedUser.email}
-                                onChange={(e) => setUpdatedUser({ ...updatedUser, email: e.target.value })}
-                            />
-                            <input
-                                className="phone"
-                                type="text"
-                                placeholder="Your phone.."
-                                value={updatedUser.phone}
-                                onChange={(e) => setUpdatedUser({ ...updatedUser, phone: e.target.value })}
-                            />
-                            <input
-                                className="date"
-                                type="date"
-                                value={updatedUser.dateOfBirth}
-                                onChange={(e) => setUpdatedUser({ ...updatedUser, dateOfBirth: e.target.value })}
-                            />
-                            <select
-                                className="status"
-                                id="status"
-                                value={updatedUser.gender}
-                                onChange={(e) => setUpdatedUser({ ...updatedUser, gender: e.target.value })}
-                            >
-                                <option value="male">Male</option>
-                                <option value="female">Female</option>
-                            </select>
-
-                        </div>
-                        <div className="footerEdit">
-                            <button onClick={() => { setOpenModal(false) }}>
-                                Cancel
-                            </button>
-                            <button
-                                onClick={updateUserDetails}
-
-                            >
-                                Change
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
-}
+};
 
 export default UserDetail;

@@ -35,15 +35,21 @@ const Header = () => {
       .catch(err => console.log(err))
 
   }
-
+  console.log(account);
   const handleAdmin = () => {
     navigate('/admin/general')
   }
 
+  const handleProductClick = () => {
+    if (account?.username) {
+      // Kiểm tra xem `account.username` đã được định nghĩa (đã đăng nhập)
+      navigate(`/UserDetail/${account.username}`);
+    }
+  };
+
   useEffect(() => {
     setClassActive(location.pathname)
   }, [location.pathname])
-
   return (<React.Fragment>
     <div className="contain">
       <div className="nav">
@@ -64,7 +70,7 @@ const Header = () => {
                 <span className="dot">{cartList?.length}</span>
 
               </span>
-              <span className="usernameHeader" onClick={() => navigate('/UserDetail')}>Hello, {account?.username}</span>
+              <span className="usernameHeader" onClick={handleProductClick}>Hello, {account?.username}</span>
               <button className="signIn" onClick={() => {
                 handleAdmin();
               }}>Dashboard</button>

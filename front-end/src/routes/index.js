@@ -31,7 +31,7 @@ const publicRoutes = [
     { path: "/admin/categoriesManager", component: CategoryManager, layout: Dashboard },
     { path: "/admin/OrderManager", component: OrderManager, layout: Dashboard },
     { path: "/admin/updateProduct/:slug", component: UpdateProduct, layout: Dashboard },
-    { path: "/UserDetail", component: UserDetail, layout: HeaderOnly }
+    { path: "/UserDetail/:username", component: UserDetail, layout: HeaderOnly }
 ]
 
 const privateRoutes = [
