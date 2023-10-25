@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { loginAccount, logout } from "../../actions/accountAction";
 import Loading from "../Loading";
 import "./Login.scss";
+import { connectToSocket, setAccessToken } from "../../services/SocketService";
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -40,12 +41,14 @@ function Login() {
           setIsLoading(false)
           const user = {
             username: username,
-            accessToken: res.data.accessToken,
+            accessToken: res.data.accessToken
           }
           const action = loginAccount(user);
           dispatch(action);
           // console.log(res.data.accessToken);
           toast.success("Login successfully");
+          // setAccessToken(`Bearer ${res.data.accessToken}`);
+          connectToSocket();
           setIsLoading(true)
           navigate("/");
         } else {
