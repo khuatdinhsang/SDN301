@@ -24,42 +24,42 @@ function Login() {
       .catch((err) => console.log(err));
   }, []);
 
-  
+  console.log();
 
   const handleLogin = (e) => {
     setIsLoading(false)
     const userLogin = {
-            username: username.trim(),
-            password: password.trim()
+      username: username.trim(),
+      password: password.trim()
+    }
+
+    axios
+      .post("/api/account/login", userLogin)
+      .then((res) => {
+        // console.log(res.data);
+        if (res.data.status === "OK") {
+          setIsLoading(false)
+          const user = {
+            username: username,
+            accessToken: res.data.accessToken
           }
-    
-        axios
-          .post("/api/account/login", userLogin)
-          .then((res) => {
-            // console.log(res.data);
-            if (res.data.status === "OK") {
-              setIsLoading(false)
-              const user = {
-                  username: username,
-                  accessToken: res.data.accessToken
-              }
-              const action = loginAccount(user);
-              dispatch(action);
-              // console.log(res.data.accessToken);
-              toast.success("Login successfully");
-              // setAccessToken(`Bearer ${res.data.accessToken}`);
-              connectToSocket();
-              setIsLoading(true)
-              navigate("/");
-            } else {
-              toast.error("Username or Password is not correct!");
-            }
-          })
-          .catch((err) => toast(err));
+          const action = loginAccount(user);
+          dispatch(action);
+          // console.log(res.data.accessToken);
+          toast.success("Login successfully");
+          // setAccessToken(`Bearer ${res.data.accessToken}`);
+          connectToSocket();
+          setIsLoading(true)
+          navigate("/");
+        } else {
+          toast.error("Username or Password is not correct!");
+        }
+      })
+      .catch((err) => toast(err));
   };
 
   return (
-    isLoading?<div className="container">
+    isLoading ? <div className="container">
       <div className="loginContent">
         <div className="leftContent">
           <h1>Sign In</h1>
@@ -129,7 +129,7 @@ function Login() {
           </div>
         </div>
       </div>
-    </div>:<Loading/>
+    </div> : <Loading />
   );
 }
 
