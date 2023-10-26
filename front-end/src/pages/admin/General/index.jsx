@@ -79,13 +79,67 @@ function General(){
             }
         })
         .then(res => {
-            setChartMonths(res.data)
+            setChartMonths(res.data.incomes)
         })
         .catch(err => console.log(err))
 
        
        
     },[])
+
+    const chartMonth = {
+        chart: {
+            type: 'areaspline'
+        },
+        title: {
+            text: 'HOLA FOOD IN ' + today.getFullYear(),
+            align: 'center'
+        },
+        subtitle: {
+            text: 'Source: HOLA FOOD',
+            align: 'left'
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'left',
+            verticalAlign: 'top',
+            x: 120,
+            y: 70,
+            floating: true,
+            borderWidth: 1,
+            backgroundColor: "#FFFFFF"
+        },
+        xAxis: {
+            plotBands: [{ // Highlight the two last years
+                from: today.getMonth(),
+                to: today.getMonth()+1,
+                color: 'rgba(68, 170, 213, .2)'
+            }]
+        },
+        yAxis: {
+            title: {
+                text: 'INCOME OF HOLA FOOD IN ' + today.getFullYear() + " (VNĐ)"
+            }
+        },
+        tooltip: {
+            shared: true,
+            headerFormat: '<b>Income of HOLA FOOD in month {point.x}</b><br>'
+        },
+        credits: {
+            enabled: false
+        },
+        plotOptions: {
+            series: {
+                pointStart: 1
+            },
+            areaspline: {
+                fillOpacity: 0.5
+            }
+        },series: [{
+            name: 'Incomes',
+            data: chartMonths
+        }]
+    }
 
     
     const chartYear = {
@@ -201,8 +255,8 @@ function General(){
                 
             </div>
 
-            <div className="detailInfor">
-                <div className="activity">
+            <div className="detailInfor" style={{display: "none"}}>
+                <div className="activity" >
                     <div className="activityHeader">
                         <i>logo</i>
                         <span className="activityTitle">
@@ -267,21 +321,31 @@ function General(){
                             <p>{price}</p>
                         </div>
                     </div>
-                </div>
+                </div> 
 
-                {/* <div className="orderDetail">
+                <div className="orderDetail">
 
                 </div>
 
                 <div className="detailProduct">
 
-                </div> */}
+                </div>
             </div>
 
-             <HighchartsReact
-                highcharts={Highcharts}
-                options={chartYear}
-            />
+             <div className="chartDiv">
+                 <div className="chartYear">
+                     <HighchartsReact
+                        highcharts={Highcharts}
+                        options={chartYear}
+                    />
+                 </div>
+                 <div className="chartMonth">
+                     <HighchartsReact
+                        highcharts={Highcharts}
+                        options={chartMonth}
+                    />
+                 </div>
+             </div>
         </div>
     )
 }

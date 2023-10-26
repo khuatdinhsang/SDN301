@@ -125,6 +125,8 @@
                 }
             }
         }
+        
+        
 
         .orderDetail{
 
@@ -132,6 +134,19 @@
 
         .detailProduct{
 
+        }
+    }
+    .chartDiv{
+        display: flex;
+
+        .chartYear{
+            width: 50%;
+            margin-right: 10px;
+        }
+
+        .chartMonth{
+            width: 50%;
+            margin-left: 10px;
         }
     }
 }
