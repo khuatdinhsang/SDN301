@@ -27,10 +27,9 @@ function Login() {
       .catch((err) => console.log(err));
   }, []);
 
-  console.log();
 
   const handleLogin = (e) => {
-    setIsLoading(false)
+     setIsLoading(false)
     const userLogin = {
       username: username.trim(),
       password: password.trim()
@@ -46,12 +45,11 @@ function Login() {
             username: username,
             accessToken: res.data.accessToken
           }
-<<<<<<< HEAD
+        }
     
         axios
           .post("/api/account/login", userLogin)
           .then((res) => {
-            // console.log(res.data);
             if (res.data.status === "OK") {
               setIsLoading(false)
               const user = {
@@ -72,29 +70,12 @@ function Login() {
             }
           })
           .catch((err) => toast(err));
+        })
+          
   };
 
   return (
     (isLoading && loadingPage)?<div className="container">
-=======
-          const action = loginAccount(user);
-          dispatch(action);
-          // console.log(res.data.accessToken);
-          toast.success("Login successfully");
-          // setAccessToken(`Bearer ${res.data.accessToken}`);
-          connectToSocket();
-          setIsLoading(true)
-          navigate("/");
-        } else {
-          toast.error("Username or Password is not correct!");
-        }
-      })
-      .catch((err) => toast(err));
-  };
-
-  return (
-    isLoading ? <div className="container">
->>>>>>> 43306ea65ae7e7b1010bd7a394ac90b594953922
       <div className="loginContent">
         <div className="leftContent">
           <h1>Sign In</h1>
@@ -170,4 +151,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default Login
