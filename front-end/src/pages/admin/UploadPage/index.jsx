@@ -44,6 +44,20 @@ function UploadPage(){
             setInventories(res.data.data)
         })
         .catch(err => console.log(err))
+
+        axios
+        .get("/api/inventory/getAll",{
+             headers: {
+                Authorization: `Bearer ${account?.accessToken}`
+            }
+        })
+        .then( res =>{
+            setSelectInventory(res.data)
+            console.log(res.data)
+        })
+        .catch(err => console.log(err))
+
+       
     },[])
 
     useEffect(() => {
@@ -114,7 +128,7 @@ function UploadPage(){
                     setName('')
                     setPrice()
                     setType('')
-                    setTypeSubcategory('')
+                    setTypeSubcategory()
                     setImg()
                     setShowImg()
                     setDescription('')
