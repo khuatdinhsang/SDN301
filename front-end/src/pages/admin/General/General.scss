@@ -12,19 +12,45 @@
         margin-bottom: 40px;
 
         .boxInfor1,.boxInfor2,.boxInfor3,.boxInfor4{
-            width: 22%;
-            padding: 20px;
+            width: 30%;
             display: flex;
-            justify-content: space-around;
+            // justify-content: space-around;
+            flex-direction: column;
 
-            .leftBoxInfor{
-                color: #fff;
+            .boxTitle{
+                padding: 10px 20px;
+
+                h4{
+                    text-transform: uppercase;
+                    letter-spacing: 1.5px;
+                    color: white;
+                    font-weight: bold;
+                    font-size: 20px;
+                }
+
+                hr{
+                    width: calc(100% + 40px);
+                    margin-left: -20px;
+                }
             }
 
-            .rightBoxInfor{
-                color: #fff;
-                font-weight: 600;
-                
+            .boxContent{
+                padding: 20px;
+                display: flex;
+
+                .leftBoxContent{
+                    width: 50%;
+
+                }
+
+                .rightBoxContent{
+                    width: 50%;
+                }
+
+                h5{
+                    font-weight: 600;
+                    font-size: 16px;
+                }
             }
         }
 

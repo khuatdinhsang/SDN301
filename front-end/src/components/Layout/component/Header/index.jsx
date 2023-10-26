@@ -8,6 +8,7 @@ import { logout } from "../../../../actions/accountAction";
 import LoginIcon from '@mui/icons-material/Login';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import './style.scss'
+import Loading from "../../../../pages/Loading";
 
 
 const Header = () => {
@@ -16,10 +17,12 @@ const Header = () => {
   const account = useSelector(state => state.account)
   const cartList = useSelector((state) => state.cart)
   const [classActive, setClassActive] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
 
   const dispatch = useDispatch()
  
   const handleLogout = () =>{
+    setIsLoading(false)
     const action = logout();
     dispatch(action);
     axios
@@ -28,8 +31,10 @@ const Header = () => {
       if(res.data.status === 'OK'){
         navigate("/")
         toast.success("Logout successfully!")
+        setIsLoading(true)
       }else{
         toast.error("Somethings Wrong!")
+        setIsLoading(true)
       } 
     })
     .catch(err => console.log(err))
@@ -45,7 +50,7 @@ const Header = () => {
   },[location.pathname])
 
   return (<React.Fragment>
-    <div className="contain">
+    {isLoading ? <div className="contain">
         <div className="nav">
             <div className="logo">
               <h1 onClick={() => navigate("/")}>Hola<b>Food</b></h1>
@@ -81,7 +86,7 @@ const Header = () => {
             </div>
         </div>
         
-      </div>
+      </div>:<Loading/>}
   </React.Fragment>);
 };
 
