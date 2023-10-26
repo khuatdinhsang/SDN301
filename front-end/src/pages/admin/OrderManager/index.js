@@ -1,9 +1,12 @@
 import "../OrderManager/Order.scss";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import AddIcon from '@mui/icons-material/Add';
 import axios from 'axios';
 function OrderManager() {
     const [orderManage, setOrderManage] = useState([]);
+    const [openModal, setOpenModal] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
     const account = useSelector(state => state.account);
     useEffect(() => {
         axios
@@ -14,11 +17,17 @@ function OrderManager() {
             })
             .then((res) => {
                 setOrderManage(res.data.data);
-                console.log(res.data.data);
             })
             .catch(err => console.log(err));
 
     }, []);
+
+    const openProductModal = (products) => {
+        setSelectedProduct(products);
+        setOpenModal(true);
+    };
+
+    console.log(selectedProduct);
     return (
         <div className='categoryManager'>
             <div className="listCate">
@@ -67,7 +76,14 @@ function OrderManager() {
                                     <span>{o.addressShippingId.address}</span>
                                 </div>
                                 <div className="productBody">
-                                    <img src={o.cart[0]?.image} alt="" />
+                                    <div className="representativeImage">
+                                        <img src={o.cart[0].image} alt="" />
+                                        <div className="middle">
+                                            <div className="text" onClick={() => openProductModal(o.cart)}>
+                                                View
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className="quantityBody">
                                     <span>{o.cart.reduce((acc, item) => acc + item.quantity, 0)}</span>
@@ -80,8 +96,68 @@ function OrderManager() {
                                 </div>
                             </div>
                         ))}
-
                     </div>
+                    {selectedProduct && (
+                        <div className="modalBackground">
+                            <div className={`modalContainer${openModal ? " show" : ""}`}>
+                                <div className="titleCloseBtn">
+                                    <button
+                                        onClick={() => {
+                                            setOpenModal(false);
+                                            setSelectedProduct(null);
+                                        }}
+                                    >
+                                        X
+                                    </button>
+                                </div>
+                                <div className="title">
+                                    <h1>Detail</h1>
+                                </div>
+                                <div className="body">
+                                    <div className="tableProduct">
+                                        <div className="tableProductHeader">
+                                            <div className="IdProduct">
+                                                <span>STT</span>
+                                            </div>
+                                            <div className="imgProduct">
+                                                <span>Image</span>
+                                            </div>
+                                            <div className="nameProduct">
+                                                <span>Name</span>
+                                            </div>
+                                            <div className="quantityProduct">
+                                                <span>Quantity</span>
+                                            </div>
+                                            <div className="priceProduct">
+                                                <span>Price</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="tableBodyProduct">
+                                        {selectedProduct.map((product, index) => (
+                                            <div className="rowBodyProduct" key={index}>
+                                                <div className="productId">
+                                                    <span>{index + 1}</span>
+                                                </div>
+                                                <div className="productImg">
+                                                    <img src={product.image} alt={product.name} />
+                                                </div>
+                                                <div className="productName">
+                                                    <span>{product.name}</span>
+                                                </div>
+                                                <div className="productQuantity">
+                                                    <span>{product.quantity}</span>
+                                                </div>
+                                                <div className="productPrice">
+                                                    <span>{product.totalPrice.toLocaleString('en-US')} vnd</span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

@@ -71,29 +71,28 @@
       border-bottom: 1px solid rgba(0, 0, 0, 0.22);
       outline: none;
 
-      &:focus{
+      &:focus {
         border-bottom: 2px solid #f9004d;
       }
     }
   }
 
-  .googleIcon{
+  .googleIcon {
     color: blue;
-    transition: .4s;
+    transition: 0.4s;
     background-color: #fff;
-    
   }
-  
-  .buttonGoogle{
+
+  .buttonGoogle {
     padding: 8px 14px;
     border: 1px solid transparent;
     background-color: #f9004d;
     color: #fff;
     border-radius: 5px;
     cursor: pointer;
-    transition: .4s;
+    transition: 0.4s;
 
-    &:hover{
+    &:hover {
       transform: scale(1.05);
     }
   }
@@ -129,9 +128,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    
   }
-  p:hover{
+  p:hover {
     color: black;
   }
 }
