@@ -52,6 +52,9 @@
   box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px,
     rgba(0, 0, 0, 0.22) 0px 15px 12px;
   padding-right: 40px;
+  form{
+    width: 80%;
+  }
   .input {
     width: 80%;
     display: flex;
@@ -96,8 +99,10 @@
   .handle {
     display: flex;
     flex-direction: column;
+    align-items: center;
     button {
       margin: 8px 0;
+      width: 40%;
       border-radius: 4px;
       background-color: #f9004d;
       color: white;

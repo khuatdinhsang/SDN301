@@ -8,6 +8,7 @@ import { logout } from "../../../../actions/accountAction";
 import LoginIcon from '@mui/icons-material/Login';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import './style.scss'
+import Loading from "../../../../pages/Loading";
 
 
 const Header = () => {
@@ -16,8 +17,31 @@ const Header = () => {
   const account = useSelector(state => state.account)
   const cartList = useSelector((state) => state.cart)
   const [classActive, setClassActive] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
 
   const dispatch = useDispatch()
+<<<<<<< HEAD
+ 
+  const handleLogout = () =>{
+    setIsLoading(false)
+    const action = logout();
+    dispatch(action);
+    axios
+    .post("/api/account/logout")
+    .then((res) => {
+      if(res.data.status === 'OK'){
+        navigate("/")
+        toast.success("Logout successfully!")
+        setIsLoading(true)
+      }else{
+        toast.error("Somethings Wrong!")
+        setIsLoading(true)
+      } 
+    })
+    .catch(err => console.log(err))
+    
+  }
+=======
 
   const handleLogout = () => {
     const action = logout();
@@ -33,6 +57,7 @@ const Header = () => {
         }
       })
       .catch(err => console.log(err))
+>>>>>>> 43306ea65ae7e7b1010bd7a394ac90b594953922
 
   }
   console.log(account);
@@ -51,6 +76,24 @@ const Header = () => {
     setClassActive(location.pathname)
   }, [location.pathname])
   return (<React.Fragment>
+<<<<<<< HEAD
+    {isLoading ? <div className="contain">
+        <div className="nav">
+            <div className="logo">
+              <h1 onClick={() => navigate("/")}>Hola<b>Food</b></h1>
+            </div>
+            <ul>
+              <li className={classActive === '/' ? "active home" : "home"} onClick={() => navigate("/")}><span>Home</span></li>
+              <li className={classActive.includes('menu') ? "active menu" : "menu"} onClick={() => navigate("/menu")}><span>Menu</span></li>
+              <li className="services"><span>Service</span></li>
+              <li className="about"><span>About Us</span></li>
+              <li className="gallery"><span>Gallery</span></li>
+            </ul>
+            <div className="action">
+              {account?.username !== undefined?
+              <>
+                <span className="cartIcon" onClick={() => navigate('/cart')}><ShoppingCartIcon className="shoppingCart"/>
+=======
     <div className="contain">
       <div className="nav">
         <div className="logo">
@@ -67,6 +110,7 @@ const Header = () => {
           {account?.username !== undefined ?
             <>
               <span className="cartIcon" onClick={() => navigate('/cart')}><ShoppingCartIcon className="shoppingCart" />
+>>>>>>> 43306ea65ae7e7b1010bd7a394ac90b594953922
                 <span className="dot">{cartList?.length}</span>
 
               </span>
@@ -85,9 +129,14 @@ const Header = () => {
             </>}
 
         </div>
+<<<<<<< HEAD
+        
+      </div>:<Loading/>}
+=======
       </div>
 
     </div>
+>>>>>>> 43306ea65ae7e7b1010bd7a394ac90b594953922
   </React.Fragment>);
 };
 

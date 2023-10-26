@@ -84,7 +84,7 @@ const totalOrder = (time, number) => {
                 }
             }
             const totalOrder = await Order.count(query);
-            // const allOrder = await Order.find(query);
+            const allOrder = await Order.find(query);
             var totalMoney = 0;
             if (allOrder) {
                 for (const item of allOrder) {
@@ -105,6 +105,124 @@ const totalOrder = (time, number) => {
         }
     })
 }
+
+const numberOrder = () => {
+     return new Promise(async (resolve, reject) => {
+        try{
+            var query = {}
+            var listNumberOrder = []
+            var listIncome = []
+            var listDay = []
+            var today = new Date()
+            var year = today.getFullYear();  // Lấy năm hiện tại
+            var month = today.getMonth() + 1;  // Lấy tháng hiện tại (lưu ý: tháng bắt đầu từ 0 nên phải cộng thêm 1)
+            var day = today.getDate();
+            var currentTime = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+
+
+            for(var number=1; number<= day; number++){
+                var nextTime = new Date(`${year}-${month}-${number}`)
+                nextTime.setDate(nextTime.getDate() + 1);
+                nday = nextTime.getDate()
+                nmonth = nextTime.getMonth() + 1
+                nyear = nextTime.getFullYear()
+                currentTime = `${year}-${month.toString().padStart(2, '0')}-${number.toString().padStart(2, '0')}`;
+                nextTime = `${nyear}-${nmonth.toString().padStart(2, '0')}-${nday.toString().padStart(2, '0')}`;
+                query = {
+                            createdAt: {
+                                $gte: (currentTime),
+                                $lt: nextTime
+                                // $gte: ('2023-10-10'),
+                                // $lt: ('2023-10-11')
+                            },
+                            isDeliverySuccess: true
+                        }
+                const totalOrder = await Order.count(query);
+                const allOrder = await Order.find(query);
+                var totalMoney = 0;
+                if (allOrder) {
+                    for (const item of allOrder) {
+                        totalMoney += item.totalPrice;
+                    }
+                }
+                listNumberOrder.push(totalOrder)
+                listIncome.push(totalMoney)
+                listDay.push('Day: ' + number)
+            }
+
+             resolve({
+                status: 'OK',
+                orders: listNumberOrder,
+                incomes: listIncome,
+                days: listDay
+            })
+        }catch(err){
+            reject(err)
+        }
+        
+
+     })
+}
+
+const dataMonth = () => {
+    return new Promise(async (resolve, reject) => {
+        try{
+            var query = {}
+            var listNumberOrder = []
+            var listIncome = []
+            var listMonths = []
+            var today = new Date()
+            var year = today.getFullYear();  // Lấy năm hiện tại
+            var month = today.getMonth() + 1;  // Lấy tháng hiện tại (lưu ý: tháng bắt đầu từ 0 nên phải cộng thêm 1)
+            var day = today.getDate();
+            var currentTime = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+
+
+            for(var number=1; number<= month; number++){
+               listMonths.push("Month: " + number);
+
+               var nextTime = new Date()
+                nextTime = new Date(nextTime.getFullYear(), number, 1);
+                currentTime = new Date(year, number - 1, 1);
+                nextTime = JSON.stringify(nextTime).split("T")[0].split("\"")[1];
+                currentTime = JSON.stringify(currentTime).split("T")[0].split("\"")[1];
+                query = {
+                    createdAt: {
+                        $gte: (currentTime),
+                        $lt: (nextTime)
+                        // $gte: ('2023-10-10'),
+                        // $lt: ('2023-10-11')
+                    },
+                    isDeliverySuccess: true
+                }
+                const totalOrder = await Order.count(query);
+                const allOrder = await Order.find(query);
+                var totalMoney = 0;
+                if (allOrder) {
+                    for (const item of allOrder) {
+                        totalMoney += item.totalPrice;
+                    }
+                }
+                listNumberOrder.push(totalOrder)
+                listIncome.push(totalMoney)
+            }
+
+             resolve({
+                status: 'OK',
+                orders: listNumberOrder,
+                incomes: listIncome,
+                days: listMonths
+            })
+        }catch(err){
+            reject(err)
+        }
+        
+
+     })
+}
+
 module.exports = {
-    totalOrder
+    totalOrder, 
+    numberOrder,
+    dataMonth
 }
