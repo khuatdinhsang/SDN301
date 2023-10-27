@@ -45,7 +45,7 @@ const Header = () => {
   
   console.log(account);
   const handleAdmin = () => {
-    navigate('/admin/general')
+    account.role == 1 ? navigate('/admin/general') : navigate('/admin/productsManager')
   }
 
   const handleProductClick = () => {
@@ -81,9 +81,9 @@ const Header = () => {
 
                       </span>
                       <span className="usernameHeader" onClick={handleProductClick}>Hello, {account?.username}</span>
-                      <button className="signIn" onClick={() => {
+                     {(account?.role !== 4 && account?.role !== 3) ? <button className="signIn" onClick={() => {
                         handleAdmin();
-                      }}>Dashboard</button>
+                      }}>Dashboard</button>:"" }
                       <button className="signUp" onClick={() => {
                         handleLogout();
                       }}>Logout</button>

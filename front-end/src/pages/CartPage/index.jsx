@@ -10,7 +10,7 @@ import "./CartPage.scss"
 function CartPage(){
     // const [voucher, setVoucher] = useState('')
     const [itemCover, setItemCover] = useState()
-
+    const [quantityRemain, setQuantityRemain] = useState()
     const [total, setTotal] = useState(0)
     const [loadingAddCart, setLoadingAddCart] = useState(false)
 
@@ -33,9 +33,18 @@ function CartPage(){
 
     const handleIncrease = (item) => {
         const newItem = item;
-        const action = increaseItem(newItem);
-        dispatch(action);
-        toast.success(`${item?.name} is increase 1 product!`)
+        axios
+        .get(`/api/product/${item?._id}`)
+        .then(res => {
+            setQuantityRemain(res.data.data.quantity);
+        }).catch(err => console.log(err))
+        if(item?.quantity < quantityRemain){
+            const action = increaseItem(newItem);
+            dispatch(action);
+            toast.success(`${item?.name} is increase 1 product!`)
+        }else{
+            toast.warning("Can not increase product!")
+        }
     }
 
     const handleDecrease = (item) => {
@@ -131,7 +140,7 @@ function CartPage(){
                 } )}
             </div>
            {loadingAddCart === false ?  <div className="bill">
-                <div className="voucher">
+                {/* <div className="voucher">
                     <p className="voucherQuestion">Have A Promo Code?</p>
                     <div className="submitVoucher">
                         <input 
@@ -142,7 +151,7 @@ function CartPage(){
                         />
                         <button className="sendVoucher">Submit</button>
                     </div>
-                </div>
+                </div> */}
                 <div className="totalPrice">
                     <div className="subtotal">
                         <div className="leftSub">
