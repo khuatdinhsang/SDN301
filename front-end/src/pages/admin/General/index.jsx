@@ -4,6 +4,8 @@ import "./General.scss"
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import * as XLSX from 'xlsx';
 
 
 function General(){
@@ -86,6 +88,59 @@ function General(){
        
        
     },[])
+    
+    const handleExportExcelChartYear = ( ) => {
+        const newChartOrders = ["Total Order"]
+        const newChartIncome = ["Total Income"]
+        const newChartDays = ['']
+        for(var order of chartOrders){
+            newChartOrders.push(order)
+        }
+        for(var income of chartIncome){
+            newChartIncome.push(income?.toLocaleString('vi', {style : 'currency', currency : 'VND'}) + "VNĐ")
+        }
+        for(var day of chartDays){
+            newChartDays.push(day)
+        }
+        newChartDays.push("Total")
+        newChartOrders.push(chartPerMonth?.totalOrder)
+        newChartIncome.push(chartPerMonth?.totalMoney?.toLocaleString('vi', {style : 'currency', currency : 'VND'}))
+        const data = [
+            newChartDays,
+            newChartOrders,
+            newChartIncome
+        ]
+         const ws = XLSX.utils.aoa_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+
+        XLSX.writeFile(wb, `StatisticOfMonth${today.getMonth()+1}.xlsx`);
+    }
+
+    const handleExportExcelChartMonth = () =>{
+        const months = ['']
+        const newChartMonth = ["Income"]
+
+        for(var i =1; i<= today.getMonth()+1; i++){
+            months.push("Month " + i)
+        }
+        for(var month of chartMonths){
+            newChartMonth.push(month?.toLocaleString('vi', {style : 'currency', currency : 'VND'}) + "VNĐ")
+        }
+        months.push("Total")
+        newChartMonth.push(chartPerYear?.totalMoney?.toLocaleString('vi', {style : 'currency', currency : 'VND'}) + "VNĐ")
+         const data = [
+            months,
+            newChartMonth
+        ]
+         const ws = XLSX.utils.aoa_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+
+        XLSX.writeFile(wb, `StatisticOfYear${today.getFullYear()}.xlsx`);
+
+    }
+
 
     const chartMonth = {
         chart: {
@@ -338,12 +393,14 @@ function General(){
                         highcharts={Highcharts}
                         options={chartYear}
                     />
+                   {account?.username !== undefined ? <button className="buttonExport" onClick={() => handleExportExcelChartYear()}><FileDownloadIcon className="iconBtn"/> Export</button>:""}
                  </div>
                  <div className="chartMonth">
                      <HighchartsReact
                         highcharts={Highcharts}
                         options={chartMonth}
                     />
+                    {account?.username !== undefined?<button className="buttonExport"  onClick={() => handleExportExcelChartMonth()}><FileDownloadIcon className="iconBtn"/> Export</button>:""}
                  </div>
              </div>
         </div>
