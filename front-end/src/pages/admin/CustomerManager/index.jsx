@@ -16,6 +16,8 @@ function CustomerManager() {
   const [newUsersCount, setNewUsersCount] = useState(0);
   const account = useSelector(state => state.account);
 
+  console.log(account?.accessToken);
+
   useEffect(() => {
     axios
       .get('/api/account/getAll', {
@@ -24,15 +26,25 @@ function CustomerManager() {
         }
       })
       .then((res) => {
-        setAccountManage(res.data.data);
         const totalAccounts = res.data.totalAccount;
         setTotalAccount(totalAccounts);
-        const activeUsers = accountManage.filter((user) => user.isActive);
-        setActiveUsersCount(activeUsers.length);
+        setAccountManage(res.data.data);
       })
-      .catch(err => console.log(err));
+      .catch((error) => {
+        if (error.response) {
+          // The server responded with a non-2xx status
+          console.error("Server responded with an error:", error.response);
+        } else if (error.request) {
+          // The request was made, but no response was received
+          console.error("No response received:", error.request);
+        } else {
+          // Something happened in setting up the request
+          console.error("Request setup error:", error.message);
+        }
+        console.error("Error config:", error.config);
+      });
 
-  }, [accountManage]);
+  }, [account?.accessToken]);
 
   useEffect(() => {
     const currentDate = new Date();
@@ -47,9 +59,10 @@ function CustomerManager() {
     setNewUsersCount(newUsers.length);
   }, [accountManage]);
 
-  const filteredAccounts = accountManage.filter((a) =>
-    a.username.toLowerCase().includes(userSearch.toLowerCase())
-  );
+  useEffect(() => {
+    const activeUsers = accountManage.filter((user) => user.isActive);
+    setActiveUsersCount(activeUsers.length);
+  }, [accountManage]);
 
   const resetFields = () => {
     setSelectedStatus("active");
@@ -57,6 +70,59 @@ function CustomerManager() {
     setSelectedReason("");
     setSelectedDate("");
   };
+
+  const handleChangeStatus = (accountId, newStatus) => {
+    axios
+      .put(`/api/account/${newStatus ? 'deActive' : 'inActive'}/${accountId}`, {
+        deActiveReason: selectedReason,
+        deActiveAt: selectedDate,
+      }, {
+        headers: {
+          Authorization: `Bearer ${account?.accessToken}`
+        },
+      })
+      .then((res) => {
+        // Tìm tài khoản cần cập nhật trong accountManage
+        const updatedData = accountManage.map((account) => {
+          if (account._id === accountId) {
+            return { ...account, isActive: !newStatus };
+          }
+          return account;
+        });
+        setAccountManage(updatedData);
+        setOpenModal(false);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    resetFields();
+  };
+
+  const handleStatusChange = () => {
+    if (selectedAccount && selectedAccount._id) {
+      if (selectedStatus === "active") {
+        handleChangeStatus(selectedAccount._id, false);
+      } else if (selectedStatus === "deactive") {
+        handleChangeStatus(selectedAccount._id, true);
+      }
+    }
+  };
+
+  const formattedAccounts = accountManage.map((a) => {
+    const formattedDate = new Date(a.createdAt).toLocaleString();
+    const formattedDeActiveAt = a.deActiveAt ? new Date(a.deActiveAt).toLocaleDateString() : "N/A";
+    return {
+      ...a,
+      formattedDate,
+      formattedDeActiveAt,
+    };
+  });
+
+  const filteredAccounts = formattedAccounts.filter((a) =>
+    a.username.toLowerCase().includes(userSearch.toLowerCase())
+  );
+
   return (
     <div className="customerManager">
       <div className="portfolio">
@@ -126,35 +192,39 @@ function CustomerManager() {
           </div>
           <div className={`overlay${openModal ? " show" : ""}`}></div>
           <div className="tableBody">
-            {filteredAccounts.map((a, index) => {
-              const formattedDate = new Date(a.createdAt).toLocaleString();
-              const formattedDeActiveAt = a.deActiveAt ? new Date(a.deActiveAt).toLocaleDateString() : "N/A";
-              return (
-                <div className="rowBody" key={index}>
-                  <div className="nameBody">
-                    <span>{a.username}</span>
-                  </div>
-                  <div className="statusBody">
-                    <span>{a.isActive ? "active" : "deactive"}</span>
-                  </div>
-                  <div className="roleBody">
-                    <span>{a.role.roleName}</span>
-                  </div>
-                  <div className="addressBody">
-                    <span>{formattedDate}</span>
-                  </div>
-                  <div className="addressBody">
-                    <span>{formattedDeActiveAt}</span>
-                  </div>
-                  <div className="addressBody">
-                    <span>{a.deActiveReason}</span>
-                  </div>
-                  <div className="handleBoxBody">
-                    <button onClick={() => { setSelectedAccount(a); setOpenModal(true) }}>Change</button>
-                  </div>
+            {filteredAccounts.map((a) => (
+              <div className="rowBody" key={a._id}>
+                <div className="nameBody">
+                  <span>{a.username}</span>
                 </div>
-              )
-            })}
+                <div className="statusBody">
+                  <span>{a.isActive ? "active" : "deactive"}</span>
+                </div>
+                <div className="roleBody">
+                  <span>{a.role.roleName}</span>
+                </div>
+                <div className="addressBody">
+                  <span>{a.formattedDate}</span>
+                </div>
+                <div className="addressBody">
+                  <span>{a.formattedDeActiveAt}</span>
+                </div>
+                <div className="addressBody">
+                  <span>{a.deActiveReason}</span>
+                </div>
+                <div className="handleBoxBody">
+                  <button
+                    onClick={() => {
+                      setSelectedAccount(a);
+                      setSelectedStatus(a.isActive ? "deactive" : "active");
+                      setOpenModal(true);
+                    }}
+                  >
+                    Change
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
           {openModal && (
             <div className="modalBackground">
@@ -205,43 +275,7 @@ function CustomerManager() {
                     Cancel
                   </button>
                   <button
-                    onClick={() => {
-                      if (selectedStatus === "active") {
-                        axios
-                          .put(`/api/account/inActive/${selectedAccount._id}`, null, {
-                            headers: {
-                              Authorization: `Bearer ${account?.accessToken}`
-                            },
-                            withCredentials: true,
-                          })
-                          .then((res) => {
-                            setOpenModal(false);
-                            console.log(res);
-                            console.log(selectedAccount._id);
-                          })
-                          .catch((err) => {
-                            console.log(err);
-                          });
-                      } else if (selectedStatus === "deactive") {
-                        axios.put(`/api/account/deActive/${selectedAccount._id}`, {
-                          deActiveReason: selectedReason,
-                          deActiveAt: selectedDate,
-                        }, {
-                          headers: {
-                            Authorization: `Bearer ${account?.accessToken}`
-                          },
-                          withCredentials: true,
-                        })
-                          .then((res) => {
-                            setOpenModal(false);
-                          })
-                          .catch((err) => {
-                            console.log(err);
-                          });
-                      }
-                      resetFields();
-                    }}
-
+                    onClick={handleStatusChange}
                   >
                     Change
                   </button>
