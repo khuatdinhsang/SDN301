@@ -1,10 +1,12 @@
 
+import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router"
 import "./SideBar.scss"
 
 function SideBar(){
     const location = useLocation();
     const navigate = useNavigate();
+    const account = useSelector(state => state.account)
 
     const containPath = (url, path) =>{
         let result = url.includes(path)
@@ -17,12 +19,14 @@ function SideBar(){
                 <h1>Hola<b>Food</b></h1>
             </div>
             <div className="listAction ">
-                <div className="generalDashboard" onClick={() => {navigate("/admin/general")}}>
+                {account?.role === 1 &&
+                 <div className="generalDashboard" onClick={() => {navigate("/admin/general")}}>
                     <span>General</span>
-                </div>
-                <div className="customerManager"  onClick={() => {navigate("/admin/customerManager")}}>
+                </div>}
+                {account?.role === 1 &&
+                 <div className="customerManager"  onClick={() => {navigate("/admin/customerManager")}}>
                     <span>Customers</span>
-                </div>
+                </div>}
                 <div className="orderManager" onClick={() => { navigate("/admin/OrderManager") }}>
                     <span>Orders</span>
                 </div>
