@@ -37,35 +37,36 @@ function Login() {
     }
 
 
-    axios
-      .post("/api/account/login", userLogin)
-      .then((res) => {
-        if (res.data.status === "OK") {
-          setIsLoading(false)
-          const account = jwt_decode(res.data.accessToken)
+        axios
+          .post("/api/account/login", userLogin)
+          .then((res) => {
+            if (res.data.status === "OK") {
+              setIsLoading(false)
+              const account = jwt_decode(res.data.accessToken)
 
-          const user = {
-            username: username,
-            accessToken: res.data.accessToken,
-            role: account.roleId
-          }
-          // console.log(roleId + "acc")
-          // console.log(roleId?.roleId + "role");
-          const action = loginAccount(user);
-          dispatch(action);
-          // console.log(res.data.accessToken);
-          toast.success("Login successfully");
-          // setAccessToken(`Bearer ${res.data.accessToken}`);
-          connectToSocket();
-          setIsLoading(true)
-          navigate("/");
-        } else {
-          toast.error("Username or Password is not correct!");
-          setIsLoading(true)
-        }
-      })
-      .catch((err) => toast(err));
-
+              const user = {
+                  username: username,
+                  accessToken: res.data.accessToken,
+                  role: account.roleId
+              }
+              // console.log(roleId + "acc")
+              // console.log(roleId?.roleId + "role");
+              const action = loginAccount(user);
+              dispatch(action);
+              // console.log(res.data.accessToken);
+              toast.success("Login successfully");
+              // setAccessToken(`Bearer ${res.data.accessToken}`);
+              connectToSocket();
+              setIsLoading(true)
+              navigate("/");
+            } else {
+              toast.error("Username or Password is not correct!");
+              setIsLoading(true)
+            }
+          })
+          .catch((err) => toast(err));
+          
+          
   };
 
   return (
