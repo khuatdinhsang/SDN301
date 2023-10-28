@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { loginAccount, logout } from "../../actions/accountAction";
 import Loading from "../Loading";
 import "./Login.scss";
+import jwt_decode from "jwt-decode";
 import { connectToSocket, setAccessToken } from "../../services/SocketService";
 function Login() {
   const [username, setUsername] = useState("");
@@ -29,53 +30,46 @@ function Login() {
 
 
   const handleLogin = (e) => {
-     setIsLoading(false)
+    setIsLoading(false)
     const userLogin = {
       username: username.trim(),
       password: password.trim()
     }
 
+
     axios
       .post("/api/account/login", userLogin)
       .then((res) => {
-        // console.log(res.data);
         if (res.data.status === "OK") {
           setIsLoading(false)
+          const account = jwt_decode(res.data.accessToken)
+
           const user = {
             username: username,
-            accessToken: res.data.accessToken
+            accessToken: res.data.accessToken,
+            role: account.roleId
           }
+          // console.log(roleId + "acc")
+          // console.log(roleId?.roleId + "role");
+          const action = loginAccount(user);
+          dispatch(action);
+          // console.log(res.data.accessToken);
+          toast.success("Login successfully");
+          // setAccessToken(`Bearer ${res.data.accessToken}`);
+          connectToSocket();
+          setIsLoading(true)
+          navigate("/");
+        } else {
+          toast.error("Username or Password is not correct!");
+          setIsLoading(true)
         }
-    
-        axios
-          .post("/api/account/login", userLogin)
-          .then((res) => {
-            if (res.data.status === "OK") {
-              setIsLoading(false)
-              const user = {
-                  username: username,
-                  accessToken: res.data.accessToken
-              }
-              const action = loginAccount(user);
-              dispatch(action);
-              // console.log(res.data.accessToken);
-              toast.success("Login successfully");
-              // setAccessToken(`Bearer ${res.data.accessToken}`);
-              connectToSocket();
-              setIsLoading(true)
-              navigate("/");
-            } else {
-              toast.error("Username or Password is not correct!");
-              setIsLoading(true)
-            }
-          })
-          .catch((err) => toast(err));
-        })
-          
+      })
+      .catch((err) => toast(err));
+
   };
 
   return (
-    (isLoading && loadingPage)?<div className="container">
+    (isLoading && loadingPage) ? <div className="container">
       <div className="loginContent">
         <div className="leftContent">
           <h1>Sign In</h1>
@@ -127,7 +121,7 @@ function Login() {
               Account is Blocked
             </p>
             <div className="handle">
-              <button onClick={() => handleLogin() } >Login</button>
+              <button className="signUpBtn" onClick={() => handleLogin()} >Login</button>
               <i className="remember" style={{ textAlign: "center" }}>
                 Change Password
               </i>
