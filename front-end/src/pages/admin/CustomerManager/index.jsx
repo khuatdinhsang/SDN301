@@ -4,20 +4,17 @@ import { useSelector } from "react-redux";
 import axios from 'axios';
 
 function CustomerManager() {
-  const [userSearch, setUserSearch] = useState("");
-  const [accountManage, setAccountManage] = useState([]);
+  const [userSearch, setUserSearch] = useState("")
+  const [accountManage, setAccountManage] = useState([])
   const [totalAccount, setTotalAccount] = useState(0);
-  const [activeUsersCount, setActiveUsersCount] = useState(0);
-  const [openModal, setOpenModal] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState("active");
-  const [selectedAccount, setSelectedAccount] = useState();
-  const [selectedReason, setSelectedReason] = useState("");
-  const [selectedDate, setSelectedDate] = useState("");
-  const [newUsersCount, setNewUsersCount] = useState(0);
-  const account = useSelector(state => state.account);
-
-  console.log(account?.accessToken);
-
+  const [activeUsersCount, setActiveUsersCount] = useState(0)
+  const [openModal, setOpenModal] = useState(false)
+  const [selectedStatus, setSelectedStatus] = useState("active")
+  const [selectedAccount, setSelectedAccount] = useState()
+  const [selectedReason, setSelectedReason] = useState("")
+  const [selectedDate, setSelectedDate] = useState("")
+  const [newUsersCount, setNewUsersCount] = useState(0)
+  const account = useSelector(state => state.account)
   useEffect(() => {
     axios
       .get('/api/account/getAll', {
@@ -26,50 +23,47 @@ function CustomerManager() {
         }
       })
       .then((res) => {
-        const totalAccounts = res.data.totalAccount;
-        setTotalAccount(totalAccounts);
-        setAccountManage(res.data.data);
+        const totalAccounts = res.data.totalAccount
+        setTotalAccount(totalAccounts)
+        setAccountManage(res.data.data)
       })
       .catch((error) => {
         if (error.response) {
-          // The server responded with a non-2xx status
-          console.error("Server responded with an error:", error.response);
+          console.error("Server responded with an error:", error.response)
         } else if (error.request) {
-          // The request was made, but no response was received
-          console.error("No response received:", error.request);
+          console.error("No response received:", error.request)
         } else {
-          // Something happened in setting up the request
-          console.error("Request setup error:", error.message);
+          console.error("Request setup error:", error.message)
         }
-        console.error("Error config:", error.config);
+        console.error("Error config:", error.config)
       });
 
-  }, [account?.accessToken]);
+  }, [accountManage]);
 
   useEffect(() => {
-    const currentDate = new Date();
-    const twoDaysAgo = new Date();
-    twoDaysAgo.setDate(currentDate.getDate() - 2);
+    const currentDate = new Date()
+    const twoDaysAgo = new Date()
+    twoDaysAgo.setDate(currentDate.getDate() - 2)
 
     const newUsers = accountManage.filter((user) => {
-      const userCreatedAt = new Date(user.createdAt);
-      return userCreatedAt >= twoDaysAgo && userCreatedAt <= currentDate;
-    });
+      const userCreatedAt = new Date(user.createdAt)
+      return userCreatedAt >= twoDaysAgo && userCreatedAt <= currentDate
+    })
 
-    setNewUsersCount(newUsers.length);
-  }, [accountManage]);
+    setNewUsersCount(newUsers.length)
+  }, [accountManage])
 
   useEffect(() => {
-    const activeUsers = accountManage.filter((user) => user.isActive);
-    setActiveUsersCount(activeUsers.length);
-  }, [accountManage]);
+    const activeUsers = accountManage.filter((user) => user.isActive)
+    setActiveUsersCount(activeUsers.length)
+  }, [accountManage])
 
   const resetFields = () => {
-    setSelectedStatus("active");
-    setSelectedAccount(null);
-    setSelectedReason("");
-    setSelectedDate("");
-  };
+    setSelectedStatus("active")
+    setSelectedAccount(null)
+    setSelectedReason("")
+    setSelectedDate("")
+  }
 
   const handleChangeStatus = (accountId, newStatus) => {
     axios
@@ -82,22 +76,21 @@ function CustomerManager() {
         },
       })
       .then((res) => {
-        // Tìm tài khoản cần cập nhật trong accountManage
         const updatedData = accountManage.map((account) => {
           if (account._id === accountId) {
-            return { ...account, isActive: !newStatus };
+            return { ...account, isActive: !newStatus, role: account.role }
           }
-          return account;
+          return account
         });
-        setAccountManage(updatedData);
-        setOpenModal(false);
+        setAccountManage([...updatedData]);
+        setOpenModal(false)
       })
       .catch((err) => {
-        console.log(err);
+        console.log(err)
       });
 
-    resetFields();
-  };
+    resetFields()
+  }
 
   const handleStatusChange = () => {
     if (selectedAccount && selectedAccount._id) {
@@ -107,21 +100,21 @@ function CustomerManager() {
         handleChangeStatus(selectedAccount._id, true);
       }
     }
-  };
+  }
 
   const formattedAccounts = accountManage.map((a) => {
-    const formattedDate = new Date(a.createdAt).toLocaleString();
-    const formattedDeActiveAt = a.deActiveAt ? new Date(a.deActiveAt).toLocaleDateString() : "N/A";
+    const formattedDate = new Date(a.createdAt).toLocaleString()
+    const formattedDeActiveAt = a.deActiveAt ? new Date(a.deActiveAt).toLocaleDateString() : "N/A"
     return {
       ...a,
       formattedDate,
       formattedDeActiveAt,
     };
-  });
+  })
 
   const filteredAccounts = formattedAccounts.filter((a) =>
     a.username.toLowerCase().includes(userSearch.toLowerCase())
-  );
+  )
 
   return (
     <div className="customerManager">

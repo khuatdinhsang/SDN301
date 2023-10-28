@@ -10,15 +10,15 @@ const UserDetail = () => {
     const [phone, setPhone] = useState('')
     const [dob, setDob] = useState('')
     const [gender, setGender] = useState('')
-    const [image, setImage] = useState();
-    const [newEmail, setNewEmail] = useState('');
-    const [newPhone, setNewPhone] = useState('');
-    const [newDob, setNewDob] = useState('');
-    const [newGender, setNewGender] = useState(true);
-    const [editImage, setEditImage] = useState();
+    const [image, setImage] = useState()
+    const [newEmail, setNewEmail] = useState('')
+    const [newPhone, setNewPhone] = useState('')
+    const [newDob, setNewDob] = useState('')
+    const [newGender, setNewGender] = useState(true)
+    const [editImage, setEditImage] = useState()
     const [updateData, setUpdateData] = useState({})
     const [isEditing, setIsEditing] = useState(false)
-    const [openModalDetail, setOpenModalDetail] = useState(false);
+    const [openModalDetail, setOpenModalDetail] = useState(false)
     const account = useSelector(state => state.account)
     useEffect(() => {
         if (!userDetail) {
@@ -29,18 +29,15 @@ const UserDetail = () => {
                     }
                 })
                 .then(res => {
-                    const userData = res.data.data;
-                    setUserDetail(userData);
-                    console.log(res.data.data);
+                    const userData = res.data.data
+                    setUserDetail(userData)
+                    console.log(res.data.data)
                 })
                 .catch(error => {
-                    console.error(error);
+                    console.error(error)
                 });
         }
-    }, [userDetail, account]);
-
-    console.log(userDetail);
-
+    }, [userDetail, account])
 
     const handleFileUpload = (e) => {
         setImage(e.target.files[0])
@@ -54,35 +51,21 @@ const UserDetail = () => {
     const handleEditFileUpload = (e) => {
         setEditImage(e.target.files[0])
 
-        const fileImg = e.target.files[0];
+        const fileImg = e.target.files[0]
 
         fileImg.preview = URL.createObjectURL(fileImg)
-        setUpdateData({ ...updateData, image: e.target.files[0] });
+        setUpdateData({ ...updateData, image: e.target.files[0] })
     }
 
 
     const handleSaveChanges = () => {
-        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            displayError('Please enter a valid email address.');
-            return;
-        }
-
-        if (!phone || !/^\d{10}$/.test(phone)) {
-            displayError('Please enter a 10-digit phone number.');
-            return;
-        }
-
-        if (!newDob) {
-            displayError('Please enter a valid date of birth.');
-            return;
-        }
         const user = {
             email: email,
             phone: phone,
             dateOfBirth: dob,
             gender: gender,
         }
-        if (editImage === '') {
+        if (!editImage) {
             axios
                 .put(`/api/user/update/`, updateData, {
                     headers: {
@@ -90,18 +73,18 @@ const UserDetail = () => {
                     }
                 })
                 .then(res => {
-                    setUserDetail({ ...userDetail, ...updateData });
-                    setIsEditing(false);
-                    toast.success('Saved changes successfully!!!!!!!');
+                    setUserDetail({ ...userDetail, ...updateData })
+                    setIsEditing(false)
+                    toast.success('Saved changes successfully!!!!!!!')
                 })
                 .catch(error => {
-                    console.error(error);
+                    console.error(error)
                 });
         } else {
-            const data = new FormData();
-            data.append("file", editImage);
-            data.append("upload_preset", "seafood");
-            data.append("cloud_name", "dggciohw8");
+            const data = new FormData()
+            data.append("file", editImage)
+            data.append("upload_preset", "seafood")
+            data.append("cloud_name", "dggciohw8")
 
             fetch("https://api.cloudinary.com/v1_1/dggciohw8/image/upload", {
                 method: "post",
@@ -111,7 +94,6 @@ const UserDetail = () => {
                 .then((cloudinaryData) => {
 
                     updateData.image = cloudinaryData.url;
-                    setUpdateData({ ...updateData });
                     axios
                         .put(`/api/user/update/`, updateData, {
                             headers: {
@@ -119,12 +101,12 @@ const UserDetail = () => {
                             }
                         })
                         .then(res => {
-                            setUserDetail({ ...userDetail, ...updateData });
-                            setIsEditing(false);
-                            toast.success('Saved changes successfully!!!!!!!');
+                            setUserDetail({ ...userDetail, ...updateData })
+                            setIsEditing(false)
+                            toast.success('Saved changes successfully!!!!!!!')
                         })
                         .catch(error => {
-                            console.error(error);
+                            console.error(error)
                         });
                 })
         }
@@ -136,9 +118,9 @@ const UserDetail = () => {
             return '';
         }
 
-        const dateParts = isoDate.split('T')[0].split('-');
+        const dateParts = isoDate.split('T')[0].split('-')
         if (dateParts.length === 3) {
-            return dateParts[0] + '-' + dateParts[1] + '-' + dateParts[2];
+            return dateParts[0] + '-' + dateParts[1] + '-' + dateParts[2]
         } else {
             return '';
         }
@@ -150,9 +132,9 @@ const UserDetail = () => {
         }
 
         const date = new Date(isoDate);
-        const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+        const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }
 
-        return date.toLocaleString('en-US', options);
+        return date.toLocaleString('en-US', options)
     }
 
     const displayError = (message) => {
