@@ -16,7 +16,7 @@ import OrderManager from "../pages/admin/OrderManager";
 import UpdateProduct from "../pages/admin/ProductManager/UpdateProduct";
 import UserDetail from "../pages/UserDetail";
 import ChatStaff from "../pages/admin/Chat";
-
+import ShipperTable from "../pages/Shipper";
 const publicRoutes = [
     { path: "/", component: HomePage },
     { path: "/login", component: Login, layout: HeaderOnly },
@@ -25,10 +25,6 @@ const publicRoutes = [
     { path: "/menu/foodDetail/:slug", component: FoodDetails },
     { path: "/cart", component: CartPage },
     { path: "/payment", component: Payment },
-    { path: "/UserDetail/:username", component: UserDetail, layout: HeaderOnly }
-]
-
-const staffRoutes = [
     { path: "/admin/chat", component: ChatStaff, layout: Dashboard },
     { path: "/admin/productsManager", component: ProductManager, layout: Dashboard },
     { path: "/admin/categoriesManager", component: CategoryManager, layout: Dashboard },
@@ -42,4 +38,4 @@ const adminRoutes = [
     { path: "/admin/general", component: General, layout: Dashboard },
 ]
 
-export { publicRoutes, staffRoutes, adminRoutes }
+export { publicRoutes, privateRoutes }
