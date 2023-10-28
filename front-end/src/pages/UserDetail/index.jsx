@@ -10,17 +10,16 @@ const UserDetail = () => {
     const [phone, setPhone] = useState('')
     const [dob, setDob] = useState('')
     const [gender, setGender] = useState('')
-    const [imageURL, setImageURL] = useState('');
-    const [newEmail, setNewEmail] = useState('');
-    const [newPhone, setNewPhone] = useState('');
-    const [newDob, setNewDob] = useState('');
-    const [newGender, setNewGender] = useState(true);
-    const [newImageURL, setNewImageURL] = useState('');
-    const [newData, setNewData] = useState({})
+    const [image, setImage] = useState()
+    const [newEmail, setNewEmail] = useState('')
+    const [newPhone, setNewPhone] = useState('')
+    const [newDob, setNewDob] = useState('')
+    const [newGender, setNewGender] = useState(true)
+    const [editImage, setEditImage] = useState()
+    const [updateData, setUpdateData] = useState({})
     const [isEditing, setIsEditing] = useState(false)
-    const [openModal, setOpenModal] = useState(false);
+    const [openModalDetail, setOpenModalDetail] = useState(false)
     const account = useSelector(state => state.account)
-
     useEffect(() => {
         if (!userDetail) {
             axios
@@ -30,65 +29,102 @@ const UserDetail = () => {
                     }
                 })
                 .then(res => {
-                    setUserDetail(res.data.data);
-                    console.log(res.data.data);
+                    const userData = res.data.data
+                    setUserDetail(userData)
+                    console.log(res.data.data)
                 })
                 .catch(error => {
-                    console.error(error);
+                    console.error(error)
                 });
         }
-    }, [userDetail, account]);
+    }, [userDetail, account])
 
-    console.log(userDetail);
+    const handleFileUpload = (e) => {
+        setImage(e.target.files[0])
+
+        const fileImg = e.target.files[0];
+
+        fileImg.preview = URL.createObjectURL(fileImg)
+
+    }
+
+    const handleEditFileUpload = (e) => {
+        setEditImage(e.target.files[0])
+
+        const fileImg = e.target.files[0]
+
+        fileImg.preview = URL.createObjectURL(fileImg)
+        setUpdateData({ ...updateData, image: e.target.files[0] })
+    }
+
 
     const handleSaveChanges = () => {
-        const data = {
+        const user = {
             email: email,
             phone: phone,
             dateOfBirth: dob,
             gender: gender,
-            image: imageURL,
-        };
-
-
-        if (userDetail) {
+        }
+        if (!editImage) {
             axios
-                .put(`/api/user/update/`, newData, {
+                .put(`/api/user/update/`, updateData, {
                     headers: {
                         Authorization: `Bearer ${account?.accessToken}`
                     }
                 })
                 .then(res => {
-                    setUserDetail({ ...userDetail, ...newData });
-                    setIsEditing(false);
-                    toast.success('Saved changes successfully!!!!!!!');
+                    setUserDetail({ ...userDetail, ...updateData })
+                    setIsEditing(false)
+                    toast.success('Saved changes successfully!!!!!!!')
                 })
                 .catch(error => {
-                    console.error(error);
+                    console.error(error)
                 });
         } else {
-            console.log('tạo thông tin người dùng đi');
+            const data = new FormData()
+            data.append("file", editImage)
+            data.append("upload_preset", "seafood")
+            data.append("cloud_name", "dggciohw8")
+
+            fetch("https://api.cloudinary.com/v1_1/dggciohw8/image/upload", {
+                method: "post",
+                body: data,
+            })
+                .then((res) => res.json())
+                .then((cloudinaryData) => {
+
+                    updateData.image = cloudinaryData.url;
+                    axios
+                        .put(`/api/user/update/`, updateData, {
+                            headers: {
+                                Authorization: `Bearer ${account?.accessToken}`
+                            }
+                        })
+                        .then(res => {
+                            setUserDetail({ ...userDetail, ...updateData })
+                            setIsEditing(false)
+                            toast.success('Saved changes successfully!!!!!!!')
+                        })
+                        .catch(error => {
+                            console.error(error)
+                        });
+                })
         }
     }
+
 
     const convertISODateToYYYYMMDD = (isoDate) => {
         if (!isoDate) {
             return '';
         }
 
-        const dateParts = isoDate.split('T')[0].split('-');
+        const dateParts = isoDate.split('T')[0].split('-')
         if (dateParts.length === 3) {
-            return dateParts[0] + '-' + dateParts[1] + '-' + dateParts[2];
+            return dateParts[0] + '-' + dateParts[1] + '-' + dateParts[2]
         } else {
             return '';
         }
     }
-
-    const handleImageChange = (e) => {
-        const newImageURL = e.target.value;
-        setNewData({ ...newData, image: newImageURL });
-        setImageURL(newImageURL);
-    };
 
     const formatISODate = (isoDate) => {
         if (!isoDate) {
@@ -96,10 +132,19 @@ const UserDetail = () => {
         }
 
         const date = new Date(isoDate);
-        const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+        const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }
 
-        return date.toLocaleString('en-US', options);
+        return date.toLocaleString('en-US', options)
     }
+
+    const displayError = (message) => {
+        toast.error(message, {
+            position: "top-right",
+            autoClose: 3000,
+        });
+    };
+
+    console.log(updateData);
     return (
         <div>
             <div>
@@ -113,6 +158,7 @@ const UserDetail = () => {
                                     <img src={userDetail ? userDetail.image : ''} alt="" />
                                 </div>
                                 <h4>{userDetail && userDetail.createdAt ? formatISODate(userDetail.createdAt) : ''}</h4>
+                                <h2>{account.username}</h2>
                             </div>
 
                         </div>
@@ -121,20 +167,20 @@ const UserDetail = () => {
                                 <div className='head'>
                                     <h2>Information</h2>
                                     {(!userDetail || !userDetail.email) && (
-                                        <button onClick={() => { setOpenModal(true) }}>
+                                        <button onClick={() => { setOpenModalDetail(true) }}>
                                             <AddIcon className='icon' />
                                         </button>
                                     )}
                                 </div>
 
                                 <hr className='line2' />
-                                {openModal && (
+                                {openModalDetail && (
                                     <div className="modalBackground">
-                                        <div className={`modalContainer${openModal ? " show" : ""}`}>
+                                        <div className={`modalContainer${openModalDetail ? " show" : ""}`}>
                                             <div className="titleCloseBtn">
                                                 <button
                                                     onClick={() => {
-                                                        setOpenModal(false);
+                                                        setOpenModalDetail(false);
                                                     }}
                                                 >
                                                     X
@@ -192,47 +238,72 @@ const UserDetail = () => {
                                                 </div>
                                                 <div>
                                                     <input
-                                                        type="text"
-                                                        className='registerEmail'
-                                                        placeholder='URL Image'
-                                                        value={newImageURL}
-                                                        onChange={(e) => setNewImageURL(e.target.value)}
+                                                        type="file"
+                                                        onChange={handleFileUpload}
                                                     />
                                                 </div>
                                             </div>
                                             <div className="footer">
                                                 <button
-
+                                                    onClick={() => { setOpenModalDetail(false) }}
                                                 >
                                                     Cancel
                                                 </button>
                                                 <button
                                                     onClick={() => {
-                                                        // Tạo đối tượng dữ liệu mới từ các giá trị nhập trong modal
-                                                        const data = {
-                                                            email: newEmail,
-                                                            phone: newPhone,
-                                                            dateOfBirth: newDob,
-                                                            gender: newGender,
-                                                            image: newImageURL,
-                                                        };
+                                                        if (!newEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
+                                                            displayError('Please enter a valid email address.');
+                                                            return;
+                                                        }
 
-                                                        // Gọi API để tạo thông tin người dùng
-                                                        axios
-                                                            .post('/api/user/register', data, {
-                                                                headers: {
-                                                                    Authorization: `Bearer ${account?.accessToken}`
-                                                                }
+                                                        if (!newPhone || !/^\d{10}$/.test(newPhone)) {
+                                                            displayError('Please enter a 10-digit phone number.');
+                                                            return;
+                                                        }
+
+                                                        if (!newDob) {
+                                                            displayError('Please enter a valid date of birth.');
+                                                            return;
+                                                        }
+                                                        const data = new FormData();
+                                                        data.append("file", image);
+                                                        data.append("upload_preset", "seafood");
+                                                        data.append("cloud_name", "dggciohw8");
+
+                                                        fetch("https://api.cloudinary.com/v1_1/dggciohw8/image/upload", {
+                                                            method: "post",
+                                                            body: data,
+                                                        })
+                                                            .then((res) => res.json())
+                                                            .then((cloudinaryData) => {
+                                                                const newDetail = {
+                                                                    email: newEmail,
+                                                                    phone: newPhone,
+                                                                    dateOfBirth: newDob,
+                                                                    gender: newGender,
+                                                                    image: cloudinaryData.url,
+                                                                };
+
+                                                                // Update the newData state with the new image URL
+                                                                setUpdateData({ ...updateData, image: cloudinaryData.url });
+
+                                                                axios
+                                                                    .post('/api/user/register', newDetail, {
+                                                                        headers: {
+                                                                            Authorization: `Bearer ${account?.accessToken}`
+                                                                        }
+                                                                    })
+                                                                    .then(res => {
+                                                                        setImage()
+                                                                        setUserDetail(res.data.data);
+                                                                        console.log('User created successfully:', res.data);
+                                                                        toast.success('Created information successfully!!!');
+                                                                        setOpenModalDetail(false);
+                                                                    })
+                                                                    .catch(error => {
+                                                                        console.error(error);
+                                                                    });
                                                             })
-                                                            .then(res => {
-                                                                setUserDetail(res.data.data);
-                                                                console.log('User created successfully:', res.data);
-                                                                toast.success('Created infomation success!!!');
-                                                                setOpenModal(false);
-                                                            })
-                                                            .catch(error => {
-                                                                console.error(error);
-                                                            });
                                                     }}
                                                 >
                                                     Create
@@ -247,8 +318,8 @@ const UserDetail = () => {
                                         {isEditing ? (
                                             <input
                                                 type="text"
-                                                value={newData.email || (userDetail ? userDetail.email : '')}
-                                                onChange={e => setNewData({ ...newData, email: e.target.value })}
+                                                value={updateData.email || (userDetail ? userDetail.email : '')}
+                                                onChange={e => setUpdateData({ ...updateData, email: e.target.value })}
                                             />
                                         ) : (
                                             <span>{userDetail ? userDetail.email : ''}</span>
@@ -259,8 +330,8 @@ const UserDetail = () => {
                                         {isEditing ? (
                                             <input
                                                 type="text"
-                                                value={newData.phone || (userDetail ? userDetail.phone : '')}
-                                                onChange={e => setNewData({ ...newData, phone: e.target.value })}
+                                                value={updateData.phone || (userDetail ? userDetail.phone : '')}
+                                                onChange={e => setUpdateData({ ...updateData, phone: e.target.value })}
                                             />
                                         ) : (
                                             <span>{userDetail ? userDetail.phone : ''}</span>
@@ -271,8 +342,8 @@ const UserDetail = () => {
                                         {isEditing ? (
                                             <input
                                                 type="date"
-                                                value={newData.dateOfBirth || (userDetail ? userDetail.dateOfBirth : '')}
-                                                onChange={e => setNewData({ ...newData, dateOfBirth: e.target.value })}
+                                                value={updateData.dateOfBirth || (userDetail ? userDetail.dateOfBirth : '')}
+                                                onChange={e => setUpdateData({ ...updateData, dateOfBirth: e.target.value })}
                                             />
                                         ) : (
                                             <span>{userDetail ? convertISODateToYYYYMMDD(userDetail.dateOfBirth) : ''}</span>
@@ -286,8 +357,8 @@ const UserDetail = () => {
                                                     <input
                                                         id='male'
                                                         type="checkbox"
-                                                        checked={newData.gender}
-                                                        onChange={() => setNewData({ ...newData, gender: true })}
+                                                        checked={updateData.gender}
+                                                        onChange={() => setUpdateData({ ...updateData, gender: true })}
                                                     />
                                                     Male
                                                 </label>
@@ -295,8 +366,8 @@ const UserDetail = () => {
                                                     <input
                                                         id='female'
                                                         type="checkbox"
-                                                        checked={!newData.gender}
-                                                        onChange={() => setNewData({ ...newData, gender: false })}
+                                                        checked={!updateData.gender}
+                                                        onChange={() => setUpdateData({ ...updateData, gender: false })}
                                                     />
                                                     Female
                                                 </label>
@@ -311,9 +382,8 @@ const UserDetail = () => {
                                             <>
                                                 <label>Image URL:</label>
                                                 <input
-                                                    type="text"
-                                                    value={imageURL}
-                                                    onChange={handleImageChange}
+                                                    type="file"
+                                                    onChange={handleEditFileUpload}
                                                 />
                                             </>
                                         )}

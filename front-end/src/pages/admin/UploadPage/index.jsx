@@ -7,9 +7,9 @@ import { toast } from 'react-toastify'
 import Loading from '../../Loading'
 import './UploadPage.scss'
 
-function UploadPage(){
+function UploadPage() {
 
-    const [name,setName] = useState('')
+    const [name, setName] = useState('')
     const [price, setPrice] = useState('')
     const [type, setType] = useState('')
     const [img, setImg] = useState('')
@@ -25,190 +25,190 @@ function UploadPage(){
 
     const account = useSelector(state => state.account)
 
-    useEffect(() =>{
+    useEffect(() => {
         axios
-        .get('/api/category/getAll')
-        .then((res) =>{
-            setCategory(res.data.data)
-        })
-        .catch(err => console.log(err))
+            .get('/api/category/getAll')
+            .then((res) => {
+                setCategory(res.data.data)
+            })
+            .catch(err => console.log(err))
 
-       
-        axios
-        .get('/api/inventory/getAll',{
-            headers: {
-                Authorization: `Bearer ${account?.accessToken}`
-            }
-        })
-        .then(res => {
-            setInventories(res.data.data)
-        })
-        .catch(err => console.log(err))
 
         axios
-        .get("/api/inventory/getAll",{
-             headers: {
-                Authorization: `Bearer ${account?.accessToken}`
-            }
-        })
-        .then( res =>{
-            setSelectInventory(res.data)
-            console.log(res.data)
-        })
-        .catch(err => console.log(err))
+            .get('/api/inventory/getAll', {
+                headers: {
+                    Authorization: `Bearer ${account?.accessToken}`
+                }
+            })
+            .then(res => {
+                setInventories(res.data.data)
+            })
+            .catch(err => console.log(err))
 
-       
-    },[])
+        axios
+            .get("/api/inventory/getAll", {
+                headers: {
+                    Authorization: `Bearer ${account?.accessToken}`
+                }
+            })
+            .then(res => {
+                setSelectInventory(res.data)
+                console.log(res.data)
+            })
+            .catch(err => console.log(err))
+
+
+    }, [])
 
     useEffect(() => {
         axios
-        .put('/api/subCategory/getByCategoryId',{
-            categoryId: type
-        })
-        .then(res => {
-            setSubcategory(res.data.data)
-        })
-        .catch(err => console.log(err + "Can not get subcategory"))
+            .put('/api/subCategory/getByCategoryId', {
+                categoryId: type
+            })
+            .then(res => {
+                setSubcategory(res.data.data)
+            })
+            .catch(err => console.log(err + "Can not get subcategory"))
 
     }, [type])
-    
+
     useEffect(() => {
 
         // Clean up
         return () => {
-           showImg && URL.revokeObjectURL(showImg.preview)
+            showImg && URL.revokeObjectURL(showImg.preview)
         }
     }, [showImg])
 
     const handleFileUpload = (e) => {
-            setImg(e.target.files[0])
-            const fileImg = e.target.files[0];
+        setImg(e.target.files[0])
+        const fileImg = e.target.files[0];
 
-            fileImg.preview = URL.createObjectURL(fileImg)
+        fileImg.preview = URL.createObjectURL(fileImg)
 
-            setShowImg(fileImg)
+        setShowImg(fileImg)
     }
 
     const navigate = useNavigate()
 
-    const handleUpload = () =>{
-        if(!name || !price || !type || !typeSubcategory){
+    const handleUpload = () => {
+        if (!name || !price || !type || !typeSubcategory) {
             toast.warning("An Information is blank!")
-        }else{
+        } else {
             setLoadingUpload(false)
             const data = new FormData();
-            data.append("file",img);
+            data.append("file", img);
             data.append("upload_preset", "seafood");
-            data.append("cloud_name", "dggciohw8");      
-            
-             fetch("https://api.cloudinary.com/v1_1/dggciohw8/image/upload", {
+            data.append("cloud_name", "dggciohw8");
+
+            fetch("https://api.cloudinary.com/v1_1/dggciohw8/image/upload", {
                 method: "post",
                 body: data,
             })
-            .then((res) => res.json())
-            .then((data) => {
-                const newProduct = {
-                    name: name, 
-                    price: price, 
-                    quantity: quantity,
-                    image: data.url,
-                    description: description,
-                    subCategoryId: typeSubcategory,
-                    inventoryId: selectInventory
-                };
-                
-                axios
-                .post('/api/product/create',newProduct,{
-                    headers: {
-                        Authorization: `Bearer ${account?.accessToken}`
-                    }
-                })
-                .then(res => {
-                    toast.success(`Upload Product ${name} successfully!`)
-                    setName('')
-                    setPrice()
-                    setType('')
-                    setTypeSubcategory()
-                    setImg()
-                    setShowImg()
-                    setDescription('')
-                    setSelectInventory()
-                    setLoadingUpload(true)
-                    setQuantity()
-                })
-                .catch(err => console.log(err + "Can not upload new product"))
+                .then((res) => res.json())
+                .then((data) => {
+                    const newProduct = {
+                        name: name,
+                        price: price,
+                        quantity: quantity,
+                        image: data.url,
+                        description: description,
+                        subCategoryId: typeSubcategory,
+                        inventoryId: selectInventory
+                    };
+
+                    axios
+                        .post('/api/product/create', newProduct, {
+                            headers: {
+                                Authorization: `Bearer ${account?.accessToken}`
+                            }
+                        })
+                        .then(res => {
+                            toast.success(`Upload Product ${name} successfully!`)
+                            setName('')
+                            setPrice()
+                            setType('')
+                            setTypeSubcategory()
+                            setImg()
+                            setShowImg()
+                            setDescription('')
+                            setSelectInventory()
+                            setLoadingUpload(true)
+                            setQuantity()
+                        })
+                        .catch(err => console.log(err + "Can not upload new product"))
 
 
-            })
-             .catch(err => console.log(err + "Can not upload"))
+                })
+                .catch(err => console.log(err + "Can not upload"))
 
         }
 
     }
 
     return (
-       <div className="uploadPage">
-           {loadingUpload  ?  <div className='uploadContain'>
+        <div className="uploadPage">
+            {loadingUpload ? <div className='uploadContain'>
                 <h3 className="uploadTitle">Upload Product</h3>
                 <div className="uploadContent">
                     <div className="inputBox">
                         <label htmlFor='inputName'>Name</label>
-                        <input 
-                            type="text" 
-                            className='inputName' 
-                            id='inputName' 
-                            placeholder='Enter Food Name' 
+                        <input
+                            type="text"
+                            className='inputName'
+                            id='inputName'
+                            placeholder='Enter Food Name'
                             value={name}
-                            onChange={(e) => setName(e.target.value)}/>
+                            onChange={(e) => setName(e.target.value)} />
                     </div>
                     <div className="inputBox">
                         <label htmlFor='inputPrice'>Price</label>
-                        <input 
-                            type="number"  
-                            className='inputPrice' 
-                            id='inputPrice' 
+                        <input
+                            type="number"
+                            className='inputPrice'
+                            id='inputPrice'
                             placeholder='Enter Food Price'
                             value={price}
-                            onChange={e => setPrice(e.target.value)}/>
+                            onChange={e => setPrice(e.target.value)} />
                     </div>
                     <div className="inputBox">
                         <label htmlFor='description'>Description</label>
-                        <textarea 
-                            className='inputPrice' 
-                            id='description' 
+                        <textarea
+                            className='inputPrice'
+                            id='description'
                             placeholder='Enter Description'
                             value={description}
-                            onChange={e => setDescription(e.target.value)}/>
+                            onChange={e => setDescription(e.target.value)} />
                     </div>
                     <div className="inputBox">
                         <label htmlFor='inputQuantity'>Quantity</label>
-                        <input 
-                            type="number"  
-                            className='inputPrice' 
-                            id='inputQuantity' 
+                        <input
+                            type="number"
+                            className='inputPrice'
+                            id='inputQuantity'
                             placeholder='Enter Quantity'
                             value={quantity}
-                            onChange={e => setQuantity(e.target.value)}/>
+                            onChange={e => setQuantity(e.target.value)} />
                     </div>
                     <div className="inputBox">
                         <label htmlFor='inputType'>Category</label>
-                        <select 
-                            className='inputType' 
-                            id='inputType' 
+                        <select
+                            className='inputType'
+                            id='inputType'
                             value={type}
                             onChange={e => setType(e.target.value)}>
-                            
+
                             <option value="">Choose a category</option>
                             {category?.map((e) => {
                                 return <option value={e?._id} key={e?._id}>{e?.name}</option>
-                            } )}
+                            })}
                         </select>
                     </div>
                     <div className="inputBox">
                         <label htmlFor='inputTypeSub'>Subcategory</label>
-                        <select 
-                            className='inputTypeSub' 
-                            id='inputTypeSub' 
+                        <select
+                            className='inputTypeSub'
+                            id='inputTypeSub'
                             value={typeSubcategory}
                             onChange={e => setTypeSubcategory(e.target.value)}>
                             <option value="">Choose a category</option>
@@ -217,11 +217,11 @@ function UploadPage(){
                             })}
                         </select>
                     </div>
-                     <div className="inputBox">
+                    <div className="inputBox">
                         <label htmlFor='inputInven'>Inventory</label>
-                        <select 
-                            className='inputTypeSub' 
-                            id='inputInven' 
+                        <select
+                            className='inputTypeSub'
+                            id='inputInven'
                             value={selectInventory}
                             onChange={e => setSelectInventory(e.target.value)}>
                             <option value="">Choose a category</option>
@@ -232,14 +232,14 @@ function UploadPage(){
                     </div>
                     <div className="inputBox">
                         <label htmlFor="">Image</label>
-                        <input 
+                        <input
                             type="file"
                             className='inputImg'
-                            onChange={handleFileUpload}/>
+                            onChange={handleFileUpload} />
                     </div>
                     <div className="inputBox">
                         {showImg && (
-                            <img src={showImg.preview} alt='' width={"100%"}/>
+                            <img src={showImg.preview} alt='' width={"100%"} />
                         )}
                     </div>
                     <div className="submitForm">
@@ -248,8 +248,8 @@ function UploadPage(){
 
                 </div>
 
-            </div> : <Loading/> }
-       </div>
+            </div> : <Loading />}
+        </div>
     )
 }
 
