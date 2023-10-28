@@ -12,6 +12,7 @@ import Loading from '../Loading';
 import './FoodDetails.scss'
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
+
 function FoodDetails(){
 
     const [number, setNumber] = useState(1)
@@ -226,71 +227,76 @@ function FoodDetails(){
 
     const handleSubmitEdit = () => {
         setLoadingUpload(false)
-        if(editImage === ''){
-            const updateFeedback = {
-                    accountId: commentEdit.accountId,
-                    productId: commentEdit.productId,
-                    content: contentEdit,
-                    image: showEditImage,
-                    rate: +starEdit
-                }
-                axios
-                .put(`/api/feedback/update/${commentEdit._id}`, updateFeedback, {
-                        headers: {
-                            Authorization: `Bearer ${account?.accessToken}`
-                        }
-                    })
-                    .then((res) => {
-                    setContentEdit('');
-                    setStarEdit(0)
-                    setEditImage()
-                    setShowEditImage()
-                    setIsComment(!isComment)
-                    setLoadingUpload(true)       
-                    setStatusEdit('')            
-                    setModalEdit(false)       
-                    toast.success("Update Comment Successfully!")    
-                    })
-                .catch(err => console.log("Can not Update comment"))
+        if(contentEdit === ''){
+            toast.warning("Comment is blank!!")
+            setLoadingUpload(true)
         }else{
-            const data = new FormData();
-            data.append("file",editImage);
-            data.append("upload_preset", "seafood");
-            data.append("cloud_name", "dggciohw8");  
-
-            fetch("https://api.cloudinary.com/v1_1/dggciohw8/image/upload", {
-                    method: "post",
-                    body: data,
-                })
-                .then((res) => res.json())
-                .then((data) => {
-                    const updateFeedback = {
+            if(editImage === ''){
+                const updateFeedback = {
                         accountId: commentEdit.accountId,
                         productId: commentEdit.productId,
                         content: contentEdit,
-                        image: data.url,
+                        image: showEditImage,
                         rate: +starEdit
                     }
                     axios
-                         .put(`/api/feedback/update/${commentEdit._id}`,updateFeedback, {
+                    .put(`/api/feedback/update/${commentEdit._id}`, updateFeedback, {
                             headers: {
                                 Authorization: `Bearer ${account?.accessToken}`
                             }
                         })
                         .then((res) => {
-                            setContentEdit('');
-                            setStarEdit(0)
-                            setEditImage()
-                            setShowEditImage()
-                            setIsComment(!isComment)
-                            setLoadingUpload(true)       
-                            setStatusEdit('')       
-                            setModalEdit(false)            
-                            toast.success("Update Comment Successfully!")    
+                        setContentEdit('');
+                        setStarEdit(0)
+                        setEditImage()
+                        setShowEditImage()
+                        setIsComment(!isComment)
+                        setLoadingUpload(true)       
+                        setStatusEdit('')            
+                        setModalEdit(false)       
+                        toast.success("Update Comment Successfully!")    
                         })
-                        .catch(err => console.log(err))
-                })
-                .catch(err => console.log(err + "Can not comment"))
+                    .catch(err => console.log("Can not Update comment"))
+            }else{
+                const data = new FormData();
+                data.append("file",editImage);
+                data.append("upload_preset", "seafood");
+                data.append("cloud_name", "dggciohw8");  
+
+                fetch("https://api.cloudinary.com/v1_1/dggciohw8/image/upload", {
+                        method: "post",
+                        body: data,
+                    })
+                    .then((res) => res.json())
+                    .then((data) => {
+                        const updateFeedback = {
+                            accountId: commentEdit.accountId,
+                            productId: commentEdit.productId,
+                            content: contentEdit,
+                            image: data.url,
+                            rate: +starEdit
+                        }
+                        axios
+                            .put(`/api/feedback/update/${commentEdit._id}`,updateFeedback, {
+                                headers: {
+                                    Authorization: `Bearer ${account?.accessToken}`
+                                }
+                            })
+                            .then((res) => {
+                                setContentEdit('');
+                                setStarEdit(0)
+                                setEditImage()
+                                setShowEditImage()
+                                setIsComment(!isComment)
+                                setLoadingUpload(true)       
+                                setStatusEdit('')       
+                                setModalEdit(false)            
+                                toast.success("Update Comment Successfully!")    
+                            })
+                            .catch(err => console.log(err))
+                    })
+                    .catch(err => console.log(err + "Can not comment"))
+            }
         }
           
     }
@@ -347,7 +353,7 @@ function FoodDetails(){
                     </div>
                     <div className="inforDetail">
                         <span className='detailTitle'>{foodDetail?.name}</span>
-                        {foodDetail?.quantity <= 0 ?<p className='soldOut'>SOLD OUT</p>:'' }
+                        {foodDetail?.quantity <= 0 ?<p className='soldOut'>SOLD OUT</p>: <p className='quantity'>Quantity: {foodDetail?.quantity}</p> }
                         <p className='detailPrice'>
                             {foodDetail?.price.toLocaleString('vi', {style : 'currency', currency : 'VND'})}
                         </p>

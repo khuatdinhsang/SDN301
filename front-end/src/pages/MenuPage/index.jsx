@@ -136,17 +136,29 @@ function MenuPage(){
             }
         }else{
             if(optionDisplay!==''){
-                const newList = listProducts.filter(product => {
-                    return product?.name.includes(search)
+                const cate = {
+                    categoryId: optionDisplay
+                }
+                axios
+                .put('/api/product/getByCategoryId',cate)
+                .then(res => {
+                    const listProduct = res.data.data; 
+                    const newList = listProduct.filter(product => {
+                        return product?.name.includes(search)
+                    })
+                    setListProducts(newList)
+                    setLoading(true)
                 })
                 // console.log(newList);
-                setListProducts(newList)
-                setLoading(true)
             }else{
                 axios
-                .get(`/api/product/search?page=1&limit=10&name=${search}`)
+                .get(`/api/product/getAll?page=3&limit=10`)
                 .then(res => {
-                    setListProducts(res.data.data)
+                    const listProduct = res.data.data;
+                    var newListProduct = listProduct.filter(product => {
+                        return product?.name.includes(search)
+                    })
+                    setListProducts(newListProduct)
                     setLoading(true)
                 })
                 .catch(err => console.log(err))
