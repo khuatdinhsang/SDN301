@@ -35,9 +35,34 @@ const dataMonth = async (req, res) => {
         })
     }
 }
+const numberOrder = async (req, res) => {
+    try {
+        const response = await AdminServices.numberOrder();
+        return res.status(201).json(response)
+    } catch (err) {
+        return res.status(404).json({
+            status: 'ERR',
+            message: err.message
+        })
+    }
+}
+
+const dataMonth = async (req, res) => {
+    try {
+        const response = await AdminServices.dataMonth();
+        return res.status(201).json(response);
+    } catch (err) {
+        return res.status(404).json({
+            status: 'ERR',
+            message: err.message
+        })
+    }
+}
 
 module.exports = {
     totalOrder,
+    numberOrder,
+    dataMonth,
     numberOrder,
     dataMonth
 }
