@@ -55,8 +55,9 @@ const ShipperTable = () => {
       {/* Sidebar */}
       <div className="sidebar">
         <div className="sidebar-icon">
-          <a href="#">Home</a><br></br>
-          <a href="#">Chat</a>
+          <a href="/shipping">Home</a><br></br>
+          <a href="/shipping/chat">Chat</a><br></br>
+        
         </div>
       </div>
 

@@ -17,6 +17,7 @@ import UpdateProduct from "../pages/admin/ProductManager/UpdateProduct";
 import UserDetail from "../pages/UserDetail";
 import ChatStaff from "../pages/admin/Chat";
 import ShipperTable from "../pages/Shipper";
+import Chat from "../pages/Shipper/chat.jsx"
 const publicRoutes = [
     { path: "/", component: HomePage },
     { path: "/login", component: Login, layout: HeaderOnly },
@@ -25,6 +26,13 @@ const publicRoutes = [
     { path: "/menu/foodDetail/:slug", component: FoodDetails },
     { path: "/cart", component: CartPage },
     { path: "/payment", component: Payment },
+    { path: "/UserDetail/:username", component: UserDetail, layout: HeaderOnly },
+    { path: "/shipping", component: ShipperTable },
+    { path: "/shipping/chat", component: Chat},
+
+]
+
+const staffRoutes = [
     { path: "/admin/chat", component: ChatStaff, layout: Dashboard },
     { path: "/admin/productsManager", component: ProductManager, layout: Dashboard },
     { path: "/admin/categoriesManager", component: CategoryManager, layout: Dashboard },
@@ -38,4 +46,5 @@ const adminRoutes = [
     { path: "/admin/general", component: General, layout: Dashboard },
 ]
 
-export { publicRoutes, privateRoutes }
+
+export { publicRoutes, staffRoutes, adminRoutes }
