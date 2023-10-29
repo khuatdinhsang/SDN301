@@ -12,12 +12,13 @@ import Login from "../pages/Login";
 import MenuPage from "../pages/MenuPage";
 import Payment from "../pages/Payment";
 import SignUp from "../pages/SignUp";
-import OrderManager from "../pages/admin/OrderManager";
 import UpdateProduct from "../pages/admin/ProductManager/UpdateProduct";
 import UserDetail from "../pages/UserDetail";
 import ChatStaff from "../pages/admin/Chat";
 import ShipperTable from "../pages/Shipper";
-import Chat from "../pages/Shipper/chat.jsx"
+import OrderManager from "../pages/admin/OrderManager";
+import ChatShipper from "../pages/ChatShipper";
+
 const publicRoutes = [
     { path: "/", component: HomePage },
     { path: "/login", component: Login, layout: HeaderOnly },
@@ -26,17 +27,16 @@ const publicRoutes = [
     { path: "/menu/foodDetail/:slug", component: FoodDetails },
     { path: "/cart", component: CartPage },
     { path: "/payment", component: Payment },
-    { path: "/UserDetail/:username", component: UserDetail, layout: HeaderOnly },
-    { path: "/shipping", component: ShipperTable },
-    { path: "/shipping/chat", component: Chat},
-
+    { path: "/userDetail/:username", component: UserDetail, layout: HeaderOnly },
+    { path: "/shipper", component: ShipperTable },
+    { path: "/chatShipping", component: ChatShipper }
 ]
 
 const staffRoutes = [
     { path: "/admin/chat", component: ChatStaff, layout: Dashboard },
     { path: "/admin/productsManager", component: ProductManager, layout: Dashboard },
     { path: "/admin/categoriesManager", component: CategoryManager, layout: Dashboard },
-    { path: "/admin/OrderManager", component: OrderManager, layout: Dashboard },
+    { path: "/admin/orderManager", component: OrderManager, layout: Dashboard },
     { path: "/admin/upload", component: UploadPage, layout: Dashboard },
     { path: "/admin/updateProduct/:slug", component: UpdateProduct, layout: Dashboard },
 ]
