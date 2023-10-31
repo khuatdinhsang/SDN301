@@ -46,7 +46,7 @@ function App() {
                             Layout = Fragment;
                         }
                         return (
-                           ((account?.role === 1 || account?.role === 2) &&  <Route
+                           ((account?.role === 2) &&  <Route
                                 path={route.path}
                                 element={
                                     <Layout>

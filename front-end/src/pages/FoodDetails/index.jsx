@@ -40,7 +40,7 @@ function FoodDetails(){
     const [showEditImage, setShowEditImage] = useState()
     const [commentEdit, setCommentEdit] = useState()
     const [modalEdit, setModalEdit] = useState(false)
-
+    const [isFile, setIsFile] = useState(false)
 
 
     const account = useSelector(state => state.account)
@@ -145,14 +145,25 @@ function FoodDetails(){
 
          const fileImg = e.target.files[0];
 
+         if(fileImg.type === 'image/jpeg' || fileImg.type === 'image/png'){
+             toast.success("Upload image successfully!")
             fileImg.preview = URL.createObjectURL(fileImg)
-
+            setIsFile(true)
             setShowImgUpload(fileImg)
+        }else{
+            setIsFile(false)
+            toast.error("File is not a image!")
+        }
+
+
+            
     }
 
     const handleSubmit = () => {
         if(!ratingStar || !commentContent  || !image){
             toast.warning("Please rating and comment a feedback!")
+        }else if(!isFile){
+            toast.warning("File is not a image!")
         }else{
             setLoadingUpload(false)
             const data = new FormData();
@@ -230,7 +241,7 @@ function FoodDetails(){
         if(contentEdit === ''){
             toast.warning("Comment is blank!!")
             setLoadingUpload(true)
-        }else{
+        }else {
             if(editImage === ''){
                 const updateFeedback = {
                         accountId: commentEdit.accountId,
@@ -290,7 +301,8 @@ function FoodDetails(){
                                 setIsComment(!isComment)
                                 setLoadingUpload(true)       
                                 setStatusEdit('')       
-                                setModalEdit(false)            
+                                setModalEdit(false)        
+                                setIsFile(false)    
                                 toast.success("Update Comment Successfully!")    
                             })
                             .catch(err => console.log(err))

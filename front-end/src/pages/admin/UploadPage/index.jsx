@@ -22,6 +22,7 @@ function UploadPage() {
     const [loadingUpload, setLoadingUpload] = useState(true)
     const [selectInventory, setSelectInventory] = useState('')
     const [description, setDescription] = useState('')
+    const [isTrueFile, setIsTrueFile] = useState(false)
 
     const account = useSelector(state => state.account)
 
@@ -40,23 +41,11 @@ function UploadPage() {
                     Authorization: `Bearer ${account?.accessToken}`
                 }
             })
-            .then(res => {
+            .then((res) => {
                 setInventories(res.data.data)
+                console.log(res.data.data + "11");
             })
             .catch(err => console.log(err))
-
-        axios
-            .get("/api/inventory/getAll", {
-                headers: {
-                    Authorization: `Bearer ${account?.accessToken}`
-                }
-            })
-            .then(res => {
-                setSelectInventory(res.data)
-                console.log(res.data)
-            })
-            .catch(err => console.log(err))
-
 
     }, [])
 
@@ -84,9 +73,17 @@ function UploadPage() {
         setImg(e.target.files[0])
         const fileImg = e.target.files[0];
 
-        fileImg.preview = URL.createObjectURL(fileImg)
+        if(fileImg.type === 'image/jpeg' || fileImg.type === 'image/png'){
+            fileImg.preview = URL.createObjectURL(fileImg)
+            toast.success("Upload image successfully!")
+            setIsTrueFile(true)
+            setShowImg(fileImg)
+        }else{
+            setIsTrueFile(false)
+            toast.error("File is not a image!")
+        }
 
-        setShowImg(fileImg)
+       
     }
 
     const navigate = useNavigate()
@@ -94,7 +91,9 @@ function UploadPage() {
     const handleUpload = () => {
         if (!name || !price || !type || !typeSubcategory) {
             toast.warning("An Information is blank!")
-        } else {
+        } else if(!isTrueFile){
+            toast.warning("File is not a Image!")
+        }else{
             setLoadingUpload(false)
             const data = new FormData();
             data.append("file", img);
@@ -135,6 +134,7 @@ function UploadPage() {
                             setSelectInventory()
                             setLoadingUpload(true)
                             setQuantity()
+                            setIsTrueFile(false)
                         })
                         .catch(err => console.log(err + "Can not upload new product"))
 
