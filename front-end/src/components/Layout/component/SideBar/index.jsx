@@ -27,22 +27,27 @@ function SideBar(){
                  <div className="customerManager"  onClick={() => {navigate("/admin/customerManager")}}>
                     <span>Customers</span>
                 </div>}
+                {account?.role === 2 &&
                 <div className="orderManager" onClick={() => { navigate("/admin/OrderManager") }}>
                     <span>Orders</span>
-                </div>
-                <div className="productManager" onClick={() => navigate("/admin/productsManager")}>
+                </div>}
+                {account?.role === 2 &&
+                    <div className="productManager" onClick={() => navigate("/admin/productsManager")}>
                     <span>Products</span>
-                </div>
-                <div className="categoryManager" onClick={() => navigate("/admin/categoriesManager")}>
+                </div>}
+                {account?.role === 2 &&
+                    <div className="categoryManager" onClick={() => navigate("/admin/categoriesManager")}>
                     <span>Category</span>
-                </div>
+                </div>}
+                {account?.role === 2 &&
                 <div className="addProduct" onClick={() => navigate("/admin/upload")} >
                     <span>Add Product</span>
                     {containPath(location.pathname, 'upload')}
-                </div>
+                </div>}
+                {account?.role === 2 &&
                 <div className="chatStaff" onClick={() => navigate("/admin/chat")} >
                     <span>Chat</span>
-                </div>
+                </div>}
             </div>
             <div className="backHome">
                 <span className="back" onClick={() => navigate('/')}>Back to home</span>
