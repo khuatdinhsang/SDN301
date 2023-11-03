@@ -33,7 +33,12 @@ function CategoryManager() {
   const [isUpdateFormVisible, setIsUpdateFormVisible] = useState(false);
   const [updateCategory, setUpdateCategory] = useState(null);
   const [updateSubcategory, setUpdateSubcategory] = useState(null);
+ 
+  const [optionDisplay, setOptionDisplay] = useState("Category");
 
+  const toggleOptionDisplay = (option) => {
+    setOptionDisplay(option);
+  };
   function getCategoryName(categoryId) {
     const foundCategory = categories.find(
       (category) => category._id === categoryId
@@ -436,278 +441,154 @@ function CategoryManager() {
   };
   return (
     <div className="categoryManager">
-      <div className="categories">
-        <h3 className="categoriesTitle">Categories</h3>
-        <button onClick={isFormVisible ? hideForm : handleAddCategory}>
-          {isFormVisible ? "Cancel" : "Add Category"}
-        </button>
-
-        <div className={`selectedCategory${openModal ? " open" : ""}`}>
-          {isFormVisible && (
-            <div className="uploadContain">
-              <h3 className="uploadTitle">Create Category</h3>
-              <div className="uploadContent">
-                <div className="inputBox">
-                  <label htmlFor="inputName">Name</label>
-                  <input
-                    type="text"
-                    className="inputName"
-                    id="inputName"
-                    placeholder="Enter Category Name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </div>
-                <div className="inputBox">
-                  <label htmlFor="inputImage">Image</label>
-                  <input
-                    type="file"
-                    className="inputImg"
-                    onChange={handleFileUpload}
-                  />
-                </div>
-                <div className="inputBox">
-                  {showImgUpload && (
-                    <img
-                      src={showSubImgUpload}
-                      alt="Selected Image"
-                      width="100%"
-                    />
-                  )}
-                </div>
-                <div className="submitForm">
-                  <button className="uploadBtn" onClick={handleUpload}>
-                    Create Category
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {isUpdateFormVisible && (
-            <div className="uploadContain">
-              <h3 className="uploadTitle">Update Category</h3>
-              <div className="uploadContent">
-                <div className="inputBox">
-                  <label htmlFor="updateName">Name</label>
-                  <input
-                    type="text"
-                    className="inputName"
-                    id="updateName"
-                    placeholder="Enter Updated Category Name"
-                    value={updateCategory ? updateCategory.name : ""}
-                    // Display the updated name
-                    onChange={(e) => {
-                      setUpdateCategory({
-                        ...updateCategory,
-                        name: e.target.value,
-                      });
-                    }}
-                  />
-                </div>
-                <div className="inputBox">
-                  <label htmlFor="updateImage">Image</label>
-                  <input
-                    type="file"
-                    className="inputImg"
-                    onChange={(e) => {
-                      const updatedImage = e.target.files[0];
-                      setUpdateCategory({
-                        ...updateCategory,
-                        image: updatedImage,
-                      });
-                    }}
-                  />
-                </div>
-
-                <div className="inputBox">
-                  {updateCategory.image && (
-                    <img
-                      src={updateCategory.image}
-                      alt="Selected Image"
-                      width="100%"
-                    />
-                  )}
-                </div>
-                <div className="submitForm">
-                  <button className="uploadBtn" onClick={handleUpdateCategory}>
-                    Update Category
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Image</th>
-              <th>Created At</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {categories.map((category) => (
-              <tr key={category._id}>
-                <td>
-                  {category._id === updateCategory?._id
-                    ? updateCategory.name
-                    : category.name}
-                </td>
-                <td>
-                  <img
-                    src={
-                      category._id === updateCategory?._id
-                        ? updateCategory.image
-                        : category.image
-                    }
-                    alt={category.name}
-                    width="100"
-                  />
-                </td>
-                <td>{new Date(category.createdAt).toLocaleDateString()}</td>
-                <td>
-                  <button onClick={() => showUpdateForm(category)}>Edit</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="optionDisplay">
+        <select
+          className="option"
+          value={optionDisplay}
+          onChange={(e) => toggleOptionDisplay(e.target.value)}
+        >
+          <option value="Category">Category</option>
+          <option value="Subcategory">Subcategory</option>
+        </select>
       </div>
-      <div className="subcategories">
-        <h3 className="subcategoriesTitle">Subcategories</h3>
-        <button onClick={isFormVisible ? hideForm : handleAddSubcategory}>
-          {isFormVisible ? "Cancel" : "Add SubCategory"}
-        </button>
-        <div className={`selectedSubcategory${openModal ? " open" : ""}`}>
-          {isFormVisible && (
-            <div className="uploadContain">
-              <h3 className="uploadTitle">Create Subcategory</h3>
-              <div className="uploadContent">
-                <div className="inputBox">
-                  <label htmlFor="inputName">Name</label>
-                  <input
-                    type="text"
-                    className="inputName"
-                    id="updateName"
-                    placeholder="Enter Updated Subcategory Name"
-                    value={updateSubcategory ? updateSubcategory.name : ""}
-                    onChange={(e) => {
-                      setUpdateSubcategory({
-                        ...updateSubcategory,
-                        name: e.target.value,
-                      });
-                    }}
-                  />
+      {optionDisplay === "Category" && (
+        <div className="categories">
+          <h3 className="categoriesTitle">Categories</h3>
+          <button onClick={isFormVisible ? hideForm : handleAddCategory}>
+            {isFormVisible ? "Cancel" : "Add Category"}
+          </button>
 
+          <div className={`selectedCategory${openModal ? " open" : ""}`}>
+            {isFormVisible && (
+              <div className="uploadContain">
+                <h3 className="uploadTitle">Create Category</h3>
+                <div className="uploadContent">
+                  <div className="inputBox">
+                    <label htmlFor="inputName">Name</label>
+                    <input
+                      type="text"
+                      className="inputName"
+                      id="inputName"
+                      placeholder="Enter Category Name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                    />
+                  </div>
                   <div className="inputBox">
                     <label htmlFor="inputImage">Image</label>
                     <input
                       type="file"
                       className="inputImg"
-                      onChange={(e) => {
-                        const updatedImage = e.target.files[0];
-                        setSubImage(updatedImage);
-                      }}
+                      onChange={handleFileUpload}
                     />
                   </div>
                   <div className="inputBox">
-                    {subImage && (
+                    {showImgUpload && (
                       <img
-                        src={URL.createObjectURL(subImage)}
+                        src={showSubImgUpload}
                         alt="Selected Image"
                         width="100%"
                       />
                     )}
                   </div>
+                  <div className="submitForm">
+                    <button className="uploadBtn" onClick={handleUpload}>
+                      Create Category
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {isUpdateFormVisible && (
+              <div className="uploadContain">
+                <h3 className="uploadTitle">Update Category</h3>
+                <div className="uploadContent">
                   <div className="inputBox">
-                    <label htmlFor="inputName">Description</label>
+                    <label htmlFor="updateName">Name</label>
                     <input
                       type="text"
-                      className="inputDescription"
-                      id="updateDescription"
-                      placeholder="Enter Updated Description"
-                      value={
-                        updateSubcategory ? updateSubcategory.description : ""
-                      }
+                      className="inputName"
+                      id="updateName"
+                      placeholder="Enter Updated Category Name"
+                      value={updateCategory ? updateCategory.name : ""}
+                      // Display the updated name
                       onChange={(e) => {
-                        setUpdateSubcategory({
-                          ...updateSubcategory,
-                          description: e.target.value,
+                        setUpdateCategory({
+                          ...updateCategory,
+                          name: e.target.value,
                         });
                       }}
                     />
                   </div>
                   <div className="inputBox">
-                    <label htmlFor="categoryDropdown">Category</label>
-                    <select
-                      id="categoryDropdown"
-                      value={selectedCategory}
-                      onChange={(e) => setSelectedCategory(e.target.value)}
-                    >
-                      <option value="">Select a category</option>
-                      {categories.map((category) => (
-                        <option key={category._id} value={category._id}>
-                          {category.name}
-                        </option>
-                      ))}
-                    </select>
+                    <label htmlFor="updateImage">Image</label>
+                    <input
+                      type="file"
+                      className="inputImg"
+                      onChange={(e) => {
+                        const updatedImage = e.target.files[0];
+                        setUpdateCategory({
+                          ...updateCategory,
+                          image: updatedImage,
+                        });
+                      }}
+                    />
                   </div>
 
+                  <div className="inputBox">
+                    {updateCategory.image && (
+                      <img
+                        src={updateCategory.image}
+                        alt="Selected Image"
+                        width="100%"
+                      />
+                    )}
+                  </div>
                   <div className="submitForm">
-                    <button onClick={() => handleUpdateSubcategory()}>
-                      Update Subcategory
-                    </button>{" "}
+                    <button
+                      className="uploadBtn"
+                      onClick={handleUpdateCategory}
+                    >
+                      Update Category
+                    </button>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
-          {/* Hiển thị danh sách Subcategories */}
           <table>
             <thead>
               <tr>
                 <th>Name</th>
                 <th>Image</th>
-                <th>Description</th>
                 <th>Created At</th>
-                <th>Category</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {subcategories.map((subcategory) => (
-                <tr key={subcategory._id}>
+              {categories.map((category) => (
+                <tr key={category._id}>
                   <td>
-                    {updateSubcategory &&
-                    updateSubcategory._id === subcategory._id
-                      ? updateSubcategory.name
-                      : subcategory.name}
+                    {category._id === updateCategory?._id
+                      ? updateCategory.name
+                      : category.name}
                   </td>
                   <td>
                     <img
                       src={
-                        updateSubcategory &&
-                        updateSubcategory._id === subcategory._id
-                          ? updateSubcategory.image
-                          : subcategory.image
+                        category._id === updateCategory?._id
+                          ? updateCategory.image
+                          : category.image
                       }
-                      alt={subcategory.name}
+                      alt={category.name}
                       width="100"
                     />
                   </td>
-                  <td>{subcategory.description}</td>
+                  <td>{new Date(category.createdAt).toLocaleDateString()}</td>
                   <td>
-                    {new Date(subcategory.createdAt).toLocaleDateString()}
-                  </td>
-                  <td>{getCategoryName(subcategory.category)}</td>
-                  <td>
-                    <button
-                      onClick={() => showUpdateSubcategoryForm(subcategory)}
-                    >
+                    <button onClick={() => showUpdateForm(category)}>
                       Edit
                     </button>
                   </td>
@@ -716,7 +597,150 @@ function CategoryManager() {
             </tbody>
           </table>
         </div>
-      </div>
+      )}{" "}
+      {optionDisplay === "Subcategory" && (
+        <div className="subcategories">
+          <h3 className="subcategoriesTitle">Subcategories</h3>
+          <button onClick={isFormVisible ? hideForm : handleAddSubcategory}>
+            {isFormVisible ? "Cancel" : "Add SubCategory"}
+          </button>
+          <div className={`selectedSubcategory${openModal ? " open" : ""}`}>
+            {isFormVisible && (
+              <div className="uploadContain">
+                <h3 className="uploadTitle">Create Subcategory</h3>
+                <div className="uploadContent">
+                  <div className="inputBox">
+                    <label htmlFor="inputName">Name</label>
+                    <input
+                      type="text"
+                      className="inputName"
+                      id="updateName"
+                      placeholder="Enter Updated Subcategory Name"
+                      value={updateSubcategory ? updateSubcategory.name : ""}
+                      onChange={(e) => {
+                        setUpdateSubcategory({
+                          ...updateSubcategory,
+                          name: e.target.value,
+                        });
+                      }}
+                    />
+
+                    <div className="inputBox">
+                      <label htmlFor="inputImage">Image</label>
+                      <input
+                        type="file"
+                        className="inputImg"
+                        onChange={(e) => {
+                          const updatedImage = e.target.files[0];
+                          setSubImage(updatedImage);
+                        }}
+                      />
+                    </div>
+                    <div className="inputBox">
+                      {subImage && (
+                        <img
+                          src={URL.createObjectURL(subImage)}
+                          alt="Selected Image"
+                          width="100%"
+                        />
+                      )}
+                    </div>
+                    <div className="inputBox">
+                      <label htmlFor="inputName">Description</label>
+                      <input
+                        type="text"
+                        className="inputDescription"
+                        id="updateDescription"
+                        placeholder="Enter Updated Description"
+                        value={
+                          updateSubcategory ? updateSubcategory.description : ""
+                        }
+                        onChange={(e) => {
+                          setUpdateSubcategory({
+                            ...updateSubcategory,
+                            description: e.target.value,
+                          });
+                        }}
+                      />
+                    </div>
+                    <div className="inputBox">
+                      <label htmlFor="categoryDropdown">Category</label>
+                      <select
+                        id="categoryDropdown"
+                        value={selectedCategory}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                      >
+                        <option value="">Select a category</option>
+                        {categories.map((category) => (
+                          <option key={category._id} value={category._id}>
+                            {category.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="submitForm">
+                      <button onClick={() => handleUpdateSubcategory()}>
+                        Update Subcategory
+                      </button>{" "}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Hiển thị danh sách Subcategories */}
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Image</th>
+                  <th>Description</th>
+                  <th>Created At</th>
+                  <th>Category</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {subcategories.map((subcategory) => (
+                  <tr key={subcategory._id}>
+                    <td>
+                      {updateSubcategory &&
+                      updateSubcategory._id === subcategory._id
+                        ? updateSubcategory.name
+                        : subcategory.name}
+                    </td>
+                    <td>
+                      <img
+                        src={
+                          updateSubcategory &&
+                          updateSubcategory._id === subcategory._id
+                            ? updateSubcategory.image
+                            : subcategory.image
+                        }
+                        alt={subcategory.name}
+                        width="100"
+                      />
+                    </td>
+                    <td>{subcategory.description}</td>
+                    <td>
+                      {new Date(subcategory.createdAt).toLocaleDateString()}
+                    </td>
+                    <td>{getCategoryName(subcategory.category)}</td>
+                    <td>
+                      <button
+                        onClick={() => showUpdateSubcategoryForm(subcategory)}
+                      >
+                        Edit
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
