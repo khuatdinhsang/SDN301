@@ -15,6 +15,8 @@ const ShipperTable = () => {
   const [selectOrder, setSelectOrder] = useState();
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
   const account = useSelector(state => state.account);
 
   useEffect(() => {
@@ -89,7 +91,7 @@ const ShipperTable = () => {
                     isDelivery: selectedStatus === "Start Receive Order",
                     isDeliverySuccess: selectedStatus === "Success Delivery Order",
                     isCancel: selectedStatus === "Failed Delivery Order",
-                    reasonCancel: selectedStatus === "Failed Delivery Order" ? cancelReason : order.reasonCancel,
+                    reasonCancel: updatedReasonCancel,
                   };
                 }
                 return order;
@@ -103,13 +105,21 @@ const ShipperTable = () => {
             console.error("Error updating order status", err);
           });
       } else {
-        console.log("Bạn không có quyền thay đổi trạng thái đơn hàng.");
+        console.log("You do not have permission to change order status.");
       }
     } else {
-      console.log("Vui lòng chọn một đơn hàng để thay đổi trạng thái.");
+      console.log("Please select an order to change the status.");
     }
   };
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = searchResults.slice(indexOfFirstItem, indexOfLastItem);
+
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(searchResults.length / itemsPerPage); i++) {
+    pageNumbers.push(i);
+  }
   return (
     <div className="container-fluid shipper-container">
       <div>
@@ -161,7 +171,7 @@ const ShipperTable = () => {
             </div>
           </div>
           <div className="tableBody">
-            {(searchResults.length > 0 ? searchResults : orderList).map((o) => (
+            {currentItems.map((o) => (
               <div className="rowBody" key={o._id}>
                 <div className="nameBody">
                   <span>{o.addressShippingId.customerName}</span>
@@ -201,6 +211,17 @@ const ShipperTable = () => {
                   }}>Change</button>
                 </div>
               </div>
+            ))}
+          </div>
+          <div className="pagination">
+            {pageNumbers.map((number) => (
+              <button
+                key={number}
+                onClick={() => setCurrentPage(number)}
+                className={number === currentPage ? "active" : ""}
+              >
+                {number}
+              </button>
             ))}
           </div>
 
