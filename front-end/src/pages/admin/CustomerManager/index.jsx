@@ -14,6 +14,9 @@ function CustomerManager() {
   const [selectedReason, setSelectedReason] = useState("")
   const [selectedDate, setSelectedDate] = useState("")
   const [newUsersCount, setNewUsersCount] = useState(0)
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
   const account = useSelector(state => state.account)
   useEffect(() => {
     axios
@@ -116,6 +119,15 @@ function CustomerManager() {
     a.username.toLowerCase().includes(userSearch.toLowerCase())
   )
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredAccounts.slice(indexOfFirstItem, indexOfLastItem);
+
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(filteredAccounts.length / itemsPerPage); i++) {
+    pageNumbers.push(i);
+  }
+
   return (
     <div className="customerManager">
       <div className="portfolio">
@@ -185,7 +197,7 @@ function CustomerManager() {
           </div>
           <div className={`overlay${openModal ? " show" : ""}`}></div>
           <div className="tableBody">
-            {filteredAccounts.map((a) => (
+            {currentItems.map((a) => (
               <div className="rowBody" key={a._id}>
                 <div className="nameBody">
                   <span>{a.username}</span>
@@ -217,6 +229,17 @@ function CustomerManager() {
                   </button>
                 </div>
               </div>
+            ))}
+          </div>
+          <div className="pagination">
+            {pageNumbers.map((number) => (
+              <button
+                key={number}
+                onClick={() => setCurrentPage(number)}
+                className={number === currentPage ? "active" : ""}
+              >
+                {number}
+              </button>
             ))}
           </div>
           {openModal && (

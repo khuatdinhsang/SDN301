@@ -8,7 +8,10 @@ function OrderManager() {
     const [orderManage, setOrderManage] = useState([]);
     const [openModal, setOpenModal] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
     const account = useSelector(state => state.account);
+    console.log(currentPage);
     useEffect(() => {
         axios
             .get(`/api/order/getAll`, {
@@ -17,7 +20,9 @@ function OrderManager() {
                 }
             })
             .then((res) => {
-                setOrderManage(res.data.data);
+                if (res.data.data) {
+                    setOrderManage(res.data.data);
+                }
             })
             .catch(err => console.log(err));
 
@@ -28,7 +33,14 @@ function OrderManager() {
         setOpenModal(true);
     };
 
-    console.log(selectedProduct);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = orderManage.slice(indexOfFirstItem, indexOfLastItem);
+
+    const pageNumbers = [];
+    for (let i = 1; i <= Math.ceil(orderManage.length / itemsPerPage); i++) {
+        pageNumbers.push(i);
+    }
     return (
         <div className='categoryManager'>
             <div className="listCate">
@@ -65,10 +77,13 @@ function OrderManager() {
                         <div className="createdAt">
                             <span>Status</span>
                         </div>
+                        <div className="createdAt">
+                            <span>Reason</span>
+                        </div>
 
                     </div>
                     <div className="tableBody">
-                        {orderManage.map((o, index) => (
+                        {currentItems.map((o, index) => (
                             <div className="rowBody" key={index}>
                                 <div className="nameBody">
                                     <span>{o.addressShippingId.customerName}</span>
@@ -97,6 +112,18 @@ function OrderManager() {
                                 </div>
                                 <div className="createAtBody">
                                     <span>{new Date(o.createdAt).toLocaleString()}</span>
+                                </div>
+                                <div className="createAtBody">
+                                    <span>
+                                        {o.isCancel ? "Cancelled" : o.isDeliverySuccess ? "Delivered" : "Pending"}
+                                    </span>
+                                </div>
+                                <div className="createAtBody">
+                                    {o.isCancel ? (
+                                        <span>{o.reasonCancel}</span>
+                                    ) : (
+                                        <span>N/A</span>
+                                    )}
                                 </div>
                             </div>
                         ))}
@@ -162,6 +189,17 @@ function OrderManager() {
                             </div>
                         </div>
                     )}
+                </div>
+                <div className="pagination">
+                    {pageNumbers.map((number) => (
+                        <button
+                            key={number}
+                            onClick={() => setCurrentPage(number)}
+                            className={number === currentPage ? "active" : ""}
+                        >
+                            {number}
+                        </button>
+                    ))}
                 </div>
             </div>
         </div>
