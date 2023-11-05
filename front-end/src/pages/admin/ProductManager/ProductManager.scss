@@ -81,4 +81,13 @@
             }
         }
     }
+    .menuHeader{
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+
+        .inputSearchMenu,.option{
+            padding: 4px 16px;
+        }
+    }
 }
