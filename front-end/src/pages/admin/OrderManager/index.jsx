@@ -86,26 +86,26 @@ function OrderManager() {
                         {currentItems.map((o, index) => (
                             <div className="rowBody" key={index}>
                                 <div className="nameBody">
-                                    <span>{o.addressShippingId.customerName}</span>
+                                    <span>{o?.addressShippingId.customerName}</span>
                                 </div>
                                 <div className="phoneBody">
-                                    <span>{o.addressShippingId.phone}</span>
+                                    <span>{o?.addressShippingId.phone}</span>
                                 </div>
                                 <div className="addressBody">
-                                    <span>{o.addressShippingId.address}</span>
+                                    <span>{o?.addressShippingId.address}</span>
                                 </div>
                                 <div className="productBody">
                                     <div className="representativeImage">
-                                        <img src={o.cart[0].image} alt="" />
+                                        <img src={o?.cart[0]?.image} alt="" />
                                         <div className="middle">
-                                            <div className="text" onClick={() => openProductModal(o.cart)}>
+                                            <div className="text" onClick={() => openProductModal(o?.cart)}>
                                                 View
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="quantityBody">
-                                    <span>{o.cart.reduce((acc, item) => acc + item.quantity, 0)}</span>
+                                    <span>{o.cart.reduce((acc, item) => acc + item?.quantity, 0)}</span>
                                 </div>
                                 <div className="quantityBody">
                                     <span>{o.totalPrice.toLocaleString('en-US')} vnd</span>
@@ -115,12 +115,12 @@ function OrderManager() {
                                 </div>
                                 <div className="createAtBody">
                                     <span>
-                                        {o.isCancel ? "Cancelled" : o.isDeliverySuccess ? "Delivered" : "Pending"}
+                                        {o?.isCancel ? "Cancelled" : o?.isDeliverySuccess ? "Delivered" : "Pending"}
                                     </span>
                                 </div>
                                 <div className="createAtBody">
                                     {o.isCancel ? (
-                                        <span>{o.reasonCancel}</span>
+                                        <span>{o?.reasonCancel}</span>
                                     ) : (
                                         <span>N/A</span>
                                     )}
@@ -165,22 +165,22 @@ function OrderManager() {
                                         </div>
                                     </div>
                                     <div className="tableBodyProduct">
-                                        {selectedProduct.map((product, index) => (
+                                        {selectedProduct?.map((product, index) => (
                                             <div className="rowBodyProduct" key={index}>
                                                 <div className="productId">
                                                     <span>{index + 1}</span>
                                                 </div>
                                                 <div className="productImg">
-                                                    <img src={product.image} alt={product.name} />
+                                                    <img src={product?.image} alt={product?.name} />
                                                 </div>
                                                 <div className="productName">
-                                                    <span>{product.name}</span>
+                                                    <span>{product?.name}</span>
                                                 </div>
                                                 <div className="productQuantity">
-                                                    <span>{product.quantity}</span>
+                                                    <span>{product?.quantity}</span>
                                                 </div>
                                                 <div className="productPrice">
-                                                    <span>{product.totalPrice.toLocaleString('en-US')} vnd</span>
+                                                    <span>{product?.totalPrice.toLocaleString('en-US')} vnd</span>
                                                 </div>
                                             </div>
                                         ))}

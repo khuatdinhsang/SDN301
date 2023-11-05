@@ -174,17 +174,17 @@ const ShipperTable = () => {
             {currentItems.map((o) => (
               <div className="rowBody" key={o._id}>
                 <div className="nameBody">
-                  <span>{o.addressShippingId.customerName}</span>
+                  <span>{o?.addressShippingId.customerName}</span>
                 </div>
                 <div className="phoneBody">
-                  <span>{o.addressShippingId.phone}</span>
+                  <span>{o?.addressShippingId.phone}</span>
                 </div>
                 <div className="addressBody">
-                  <span>{o.addressShippingId.address}</span>
+                  <span>{o?.addressShippingId.address}</span>
                 </div>
                 <div className="productBody">
                   <div className="representativeImage">
-                    <img src={o.cart[0].image} alt="" />
+                    <img src={o?.cart[0]?.image} alt="" />
                     <div className="middle">
                       <div className="text" onClick={() => openProductModal(o.cart)}>
                         View
@@ -193,16 +193,16 @@ const ShipperTable = () => {
                   </div>
                 </div>
                 <div className="quantityBody">
-                  <span>{o.cart.reduce((acc, item) => acc + item.quantity, 0)}</span>
+                  <span>{o?.cart.reduce((acc, item) => acc + item?.quantity, 0)}</span>
                 </div>
                 <div className="priceBody">
-                  <span>{o.totalPrice.toLocaleString('en-US')} vnd</span>
+                  <span>{o?.totalPrice?.toLocaleString('en-US')} vnd</span>
                 </div>
                 <div className="statusBody">
-                  <span>{o.isDeliverySuccess ? "Delivered" : (o.isCancel ? "Cancelled" : (o.isDelivery ? "In Progress" : " "))}</span>
+                  <span>{o?.isDeliverySuccess ? "Delivered" : (o.isCancel ? "Cancelled" : (o?.isDelivery ? "In Progress" : " "))}</span>
                 </div>
                 <div className="reasonBody">
-                  <span>{o.reasonCancel}</span>
+                  <span>{o?.reasonCancel}</span>
                 </div>
                 <div className="actionBody">
                   <button onClick={() => {
@@ -331,7 +331,7 @@ const ShipperTable = () => {
                           <span>{product.quantity}</span>
                         </div>
                         <div className="productPrice">
-                          <span>{product.totalPrice.toLocaleString('en-US')} vnd</span>
+                          <span>{product?.totalPrice?.toLocaleString('en-US')} vnd</span>
                         </div>
                       </div>
                     ))}
