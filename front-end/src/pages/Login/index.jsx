@@ -122,10 +122,10 @@ function Login() {
             </p>
             <div className="handle">
               <button className="signUpBtn" onClick={() => handleLogin()} >Login</button>
-              <i className="remember" style={{ textAlign: "center" }}>
+              <i className="remember" style={{ textAlign: "center" }} onClick={() => navigate("/changePassword")}>
                 Change Password
               </i>
-              <i className="remember">Remember Password</i>
+              <i className="remember" onClick={() => navigate("/forgotPassword")}>Forgot Password</i>
             </div>
           </form>
           <div className="register">
