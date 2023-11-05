@@ -4,6 +4,7 @@ import axios from 'axios';
 import AddIcon from '@mui/icons-material/Add';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router';
 const UserDetail = () => {
     const [userDetail, setUserDetail] = useState()
     const [email, setEmail] = useState('')
@@ -20,6 +21,8 @@ const UserDetail = () => {
     const [isEditing, setIsEditing] = useState(false)
     const [openModalDetail, setOpenModalDetail] = useState(false)
     const account = useSelector(state => state.account)
+
+    const navigate = useNavigate()
     useEffect(() => {
         if (!userDetail) {
             axios
@@ -392,7 +395,11 @@ const UserDetail = () => {
                                         isEditing ? (
                                             <button onClick={handleSaveChanges}>Save Change</button>
                                         ) : (
-                                            <button onClick={() => setIsEditing(true)}>Edit</button>
+                                            <div style={{display: 'flex'}}>
+                                                <button onClick={() => setIsEditing(true)} style={{marginRight: "20px"}}>Edit</button>
+                                                <button onClick={() => navigate("/changePassword")}>Change Password</button>
+                                            </div>
+
                                         )
                                     ) : (
                                         <></>
