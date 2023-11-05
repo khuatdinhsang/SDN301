@@ -18,29 +18,33 @@ function CustomerManager() {
   const itemsPerPage = 5;
 
   const account = useSelector(state => state.account)
-  useEffect(() => {
-    axios
-      .get('/api/account/getAll', {
-        headers: {
-          Authorization: `Bearer ${account?.accessToken}`
-        }
-      })
-      .then((res) => {
-        const totalAccounts = res.data.totalAccount
-        setTotalAccount(totalAccounts)
-        setAccountManage(res.data.data)
-      })
-      .catch((error) => {
-        if (error.response) {
-          console.error("Server responded with an error:", error.response)
-        } else if (error.request) {
-          console.error("No response received:", error.request)
-        } else {
-          console.error("Request setup error:", error.message)
-        }
-        console.error("Error config:", error.config)
-      });
 
+  useEffect(() => {
+    const fetchAllOrders = async () => {
+      let allAccounts = [];
+      let page = 1;
+
+      while (true) {
+        const response = await axios.get(`/api/account/getAll?page=${page}`, {
+          headers: {
+            Authorization: `Bearer ${account?.accessToken}`
+          }
+        });
+
+        if (response.data.data.length === 0) {
+          break;
+        }
+
+        allAccounts = allAccounts.concat(response.data.data);
+        page++;
+        const totalAccounts = response.data.totalAccount
+        setTotalAccount(totalAccounts)
+      }
+
+      setAccountManage(allAccounts);
+    };
+
+    fetchAllOrders();
   }, [accountManage]);
 
   useEffect(() => {

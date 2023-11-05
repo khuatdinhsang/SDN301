@@ -52,12 +52,33 @@
           width: 28%;
         }
 
-        .phoneHeader,
-        .addressHeader,
-        .productHeader,
-        .createdAt,
+        .phoneHeader {
+          width: 30%;
+          text-align: center;
+        }
+        .addressHeader {
+          width: 30%;
+          text-align: center;
+        }
+        .productHeader {
+          width: 30%;
+          text-align: center;
+        }
+        .createAtheader {
+          width: 30%;
+          text-align: center;
+        }
         .quantityHeader {
-          width: 28%;
+          width: 30%;
+          text-align: center;
+        }
+        .statusHeader {
+          width: 30%;
+          text-align: center;
+        }
+        .reasonHeader {
+          width: 30%;
+          text-align: center;
         }
       }
 
@@ -80,12 +101,44 @@
             display: flex;
           }
 
-          .createAtBody,
-          .phoneBody,
-          .addressBody,
-          .quantityBody,
+          .createAtBody {
+            width: 30%;
+            text-align: center;
+          }
+          .phoneBody {
+            width: 30%;
+            text-align: center;
+          }
+          .addressBody {
+            width: 30%;
+            text-align: center;
+          }
+          .statusBody {
+            width: 30%;
+            text-align: center;
+          }
+          .reasonBody {
+            width: 30%;
+            text-align: center;
+          }
+
+          .priceBody {
+            width: 30%;
+            text-align: center;
+          }
+
+          .quantityBody {
+            width: 30%;
+            text-align: center;
+          }
+
           .createAtBody {
             width: 25%;
+            display: flex;
+            flex-direction: column;
+            .createAtBody span {
+              margin-bottom: 5px;
+            }
           }
           .productBody {
             width: 28%;
@@ -111,7 +164,7 @@
 
               .text {
                 font-size: 16px;
-                padding: 16px 20px;
+                padding: 16px 7px;
                 cursor: pointer;
 
                 // button {
@@ -151,9 +204,9 @@
           }
         }
       }
-      .modalBackground {
+      .modalDetail {
         width: 70vw;
-        height: 80vh;
+        height: 100vh;
         position: fixed;
         display: flex;
         justify-content: center;
@@ -161,9 +214,10 @@
         top: 0;
         transition: 0.4s;
 
-        .modalContainer {
+        .modalShowDetail {
           width: 1300px;
-          height: 700px;
+          max-height: 600px;
+          overflow-y: auto;
           border-radius: 12px;
           background-color: white;
           box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;

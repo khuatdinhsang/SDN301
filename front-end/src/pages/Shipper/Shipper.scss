@@ -107,7 +107,7 @@
 
           .text {
             font-size: 16px;
-            padding: 16px 40px;
+            padding: 16px 20px;
             cursor: pointer;
 
             // button {
@@ -184,8 +184,8 @@
   }
 
   .modalStatusBackground {
-    width: 90vw;
-    height: 80vh;
+    width: 75vw;
+    height: 100vh;
     position: fixed;
     display: flex;
     justify-content: center;
@@ -195,7 +195,7 @@
 
     .modalContainer {
       width: 500px;
-      height: 500px;
+      max-height: 500px;
       border-radius: 12px;
       background-color: white;
       box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
@@ -314,7 +314,7 @@
 
   .modalBackground {
     width: 85vw;
-    height: 100vh;
+    height: 108vh;
     position: fixed;
     display: flex;
     justify-content: center;
@@ -323,8 +323,9 @@
     transition: 0.4s;
 
     .modalContainer {
-      width: 1300px;
-      height: 700px;
+      width: 900px;
+      max-height: 600px;
+      overflow-y: auto;
       border-radius: 12px;
       background-color: white;
       box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;

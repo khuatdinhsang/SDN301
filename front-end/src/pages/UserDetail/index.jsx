@@ -395,8 +395,8 @@ const UserDetail = () => {
                                         isEditing ? (
                                             <button onClick={handleSaveChanges}>Save Change</button>
                                         ) : (
-                                            <div style={{display: 'flex'}}>
-                                                <button onClick={() => setIsEditing(true)} style={{marginRight: "20px"}}>Edit</button>
+                                            <div style={{ display: 'flex' }}>
+                                                <button onClick={() => setIsEditing(true)} style={{ marginRight: "20px" }}>Edit</button>
                                                 <button onClick={() => navigate("/changePassword")}>Change Password</button>
                                             </div>
 

@@ -1,4 +1,4 @@
-import "../OrderManager/OrderManager.scss";
+import '../OrderManager/OrderManager.scss'
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import AddIcon from '@mui/icons-material/Add';
@@ -6,31 +6,42 @@ import axios from 'axios';
 
 function OrderManager() {
     const [orderManage, setOrderManage] = useState([]);
-    const [openModal, setOpenModal] = useState(false);
+    const [openModalDetail, setOpenModalDetail] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
     const account = useSelector(state => state.account);
-    console.log(currentPage);
+    console.log(orderManage);
     useEffect(() => {
-        axios
-            .get(`/api/order/getAll`, {
-                headers: {
-                    Authorization: `Bearer ${account?.accessToken}`
-                }
-            })
-            .then((res) => {
-                if (res.data.data) {
-                    setOrderManage(res.data.data);
-                }
-            })
-            .catch(err => console.log(err));
+        const fetchAllOrders = async () => {
+            let allOrders = [];
+            let page = 1;
 
+            while (true) {
+                const response = await axios.get(`/api/order/getAll?page=${page}`, {
+                    headers: {
+                        Authorization: `Bearer ${account?.accessToken}`
+                    }
+                });
+
+                if (response.data.data.length === 0) {
+                    break; // Hết dữ liệu
+                }
+
+                allOrders = allOrders.concat(response.data.data);
+                page++;
+            }
+
+            setOrderManage(allOrders);
+        };
+
+        fetchAllOrders();
     }, []);
+
 
     const openProductModal = (products) => {
         setSelectedProduct(products);
-        setOpenModal(true);
+        setOpenModalDetail(true);
     };
 
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -71,13 +82,13 @@ function OrderManager() {
                         <div className="quantityHeader">
                             <span>TotalPrice</span>
                         </div>
-                        <div className="createdAt">
+                        <div className="createAtheader">
                             <span>Time</span>
                         </div>
-                        <div className="createdAt">
+                        <div className="statusHeader">
                             <span>Status</span>
                         </div>
-                        <div className="createdAt">
+                        <div className="reasonHeader">
                             <span>Reason</span>
                         </div>
 
@@ -107,18 +118,18 @@ function OrderManager() {
                                 <div className="quantityBody">
                                     <span>{o.cart.reduce((acc, item) => acc + item.quantity, 0)}</span>
                                 </div>
-                                <div className="quantityBody">
+                                <div className="priceBody">
                                     <span>{o.totalPrice.toLocaleString('en-US')} vnd</span>
                                 </div>
                                 <div className="createAtBody">
                                     <span>{new Date(o.createdAt).toLocaleString()}</span>
                                 </div>
-                                <div className="createAtBody">
+                                <div className="statusBody">
                                     <span>
                                         {o.isCancel ? "Cancelled" : o.isDeliverySuccess ? "Delivered" : "Pending"}
                                     </span>
                                 </div>
-                                <div className="createAtBody">
+                                <div className="reasonBody">
                                     {o.isCancel ? (
                                         <span>{o.reasonCancel}</span>
                                     ) : (
@@ -129,12 +140,12 @@ function OrderManager() {
                         ))}
                     </div>
                     {selectedProduct && (
-                        <div className="modalBackground">
-                            <div className={`modalContainer${openModal ? " show" : ""}`}>
+                        <div className="modalDetail">
+                            <div className={`modalShowDetail${openModalDetail ? " show" : ""}`}>
                                 <div className="titleCloseBtn">
                                     <button
                                         onClick={() => {
-                                            setOpenModal(false);
+                                            setOpenModalDetail(false);
                                             setSelectedProduct(null);
                                         }}
                                     >
