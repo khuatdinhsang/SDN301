@@ -18,6 +18,8 @@ import ChatStaff from "../pages/admin/Chat";
 import ShipperTable from "../pages/Shipper";
 import OrderManager from "../pages/admin/OrderManager";
 import ChatShipper from "../pages/ChatShipper";
+import ChangePassword from "../pages/ChangePassword";
+import ForgotPassword from "../pages/ForgotPassword";
 
 const publicRoutes = [
     { path: "/", component: HomePage },
@@ -29,7 +31,10 @@ const publicRoutes = [
     { path: "/payment", component: Payment },
     { path: "/userDetail/:username", component: UserDetail, layout: HeaderOnly },
     { path: "/shipper", component: ShipperTable },
-    { path: "/chatShipping", component: ChatShipper }
+    { path: "/chatShipping", component: ChatShipper },
+    { path: "/changePassword", component: ChangePassword },
+    { path: "/forgotPassword", component: ForgotPassword },
+    
 ]
 
 const staffRoutes = [
@@ -37,7 +42,7 @@ const staffRoutes = [
     { path: "/admin/productsManager", component: ProductManager, layout: Dashboard },
     { path: "/admin/categoriesManager", component: CategoryManager, layout: Dashboard },
     { path: "/admin/orderManager", component: OrderManager, layout: Dashboard },
-    { path: "/admin/upload", component: UploadPage, layout: Dashboard },
+    { path: "/admin/upload", component: UploadPage, layout: Dashboard },    
     { path: "/admin/updateProduct/:slug", component: UpdateProduct, layout: Dashboard },
 ]
 
