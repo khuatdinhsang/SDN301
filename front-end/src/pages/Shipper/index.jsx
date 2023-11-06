@@ -281,7 +281,7 @@ const ShipperTable = () => {
 
           {selectedProduct && (
             <div className="modalBackground">
-              <div className={`modalContainer${openModal ? " show" : ""}`}>
+              <div className={`modalContainer${openModal ? " show" : ""}   modalDetailSip`}>
                 <div className="titleCloseBtn">
                   <button
                     onClick={() => {

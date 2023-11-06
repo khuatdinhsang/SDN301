@@ -333,6 +333,9 @@ function FoodDetails(){
             toast.warning(`${foodDetail?.name} is sold out`)
         }else if(account?.username === undefined){
             toast.warning("You have to login to add food!")
+        } else if(number > foodDetail?.quantity){
+            toast.warning("The quantity is not enough!")
+            setNumber(1)
         } else{
             const newItem = {
                 _id: foodDetail?._id,

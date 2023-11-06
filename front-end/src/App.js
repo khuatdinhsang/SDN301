@@ -6,7 +6,7 @@ import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css";
 import DefaultLayout from "./components/Layout/DefaultLayout"
 import Page404 from "./pages/404Page"
-import { adminRoutes, privateRoutes, publicRoutes, staffRoutes } from "./routes"
+import { adminRoutes, shipperRoutes, publicRoutes, staffRoutes } from "./routes"
 
 axios.defaults.baseURL = "http://localhost:3001"
 
@@ -71,6 +71,27 @@ function App() {
                                 element={
                                     <Layout>
                                         <Page />
+                                    </Layout>
+                                }
+                                key={index}
+                            />)
+                        )
+                    })}
+
+                    {shipperRoutes.map((route, index) =>{
+                        const Page = route.component;
+                        let Layout = DefaultLayout;
+                        if(route.layout){
+                            Layout = route.Layout;
+                        }else if(route.layout = null){
+                            Layout = Fragment;
+                        }
+                        return(
+                            (account?.role === 3 && <Route
+                                path={route.path}
+                                element={
+                                    <Layout>
+                                        <Page/>
                                     </Layout>
                                 }
                                 key={index}

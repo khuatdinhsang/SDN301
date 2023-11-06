@@ -30,10 +30,10 @@ const publicRoutes = [
     { path: "/cart", component: CartPage },
     { path: "/payment", component: Payment },
     { path: "/userDetail/:username", component: UserDetail, layout: HeaderOnly },
-    { path: "/shipper", component: ShipperTable },
     { path: "/chatShipping", component: ChatShipper },
     { path: "/changePassword", component: ChangePassword },
     { path: "/forgotPassword", component: ForgotPassword },
+    { path: "/shipper", component: ShipperTable },
     
 ]
 
@@ -49,7 +49,13 @@ const staffRoutes = [
 const adminRoutes = [
     { path: "/admin/customerManager", component: CustomerManager, layout: Dashboard },
     { path: "/admin/general", component: General, layout: Dashboard },
+    { path: "/shipper", component: ShipperTable },
+
+]
+
+const shipperRoutes = [
+
 ]
 
 
-export { publicRoutes, staffRoutes, adminRoutes }
+export { publicRoutes, staffRoutes, adminRoutes, shipperRoutes }
