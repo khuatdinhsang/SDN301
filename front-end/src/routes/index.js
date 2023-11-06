@@ -33,7 +33,6 @@ const publicRoutes = [
     { path: "/chatShipping", component: ChatShipper },
     { path: "/changePassword", component: ChangePassword },
     { path: "/forgotPassword", component: ForgotPassword },
-    { path: "/shipper", component: ShipperTable },
     
 ]
 
@@ -54,6 +53,7 @@ const adminRoutes = [
 ]
 
 const shipperRoutes = [
+    { path: "/shipper", component: ShipperTable },
 
 ]
 

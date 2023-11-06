@@ -20,18 +20,30 @@ const ShipperTable = () => {
   const account = useSelector(state => state.account);
 
   useEffect(() => {
-    axios
-      .get(`/api/shipping/getAllOrder`, {
-        headers: {
-          Authorization: `Bearer ${account?.accessToken}`
-        }
-      })
-      .then((res) => {
-        setOdrerList(res.data.data);
-      })
-      .catch(err => console.log(err));
+    const fetchAllOrders = async () => {
+      let allOrders = [];
+      let page = 1;
 
-  }, [account]);
+      while (true) {
+        const response = await axios.get(`/api/shipping/getAllOrder?page=${page}`, {
+          headers: {
+            Authorization: `Bearer ${account?.accessToken}`
+          }
+        });
+
+        if (response.data.data.length === 0) {
+          break;
+        }
+
+        allOrders = allOrders.concat(response.data.data);
+        page++;
+      }
+
+      setOdrerList(allOrders);
+    };
+
+    fetchAllOrders();
+  }, []);
 
   useEffect(() => {
     const filteredResults = orderList.filter((o) => {
